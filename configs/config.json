@@ -1,0 +1,18 @@
+{
+  "host": "abf-guard",
+  "port": "6666",
+  "level": 2,
+  "db": {
+    "name": "abfg_db",
+    "user": "abfg_user",
+    "ssl": "disable",
+    "host": "postgres",
+    "password": "some_pwd",
+    "port": "5432"
+  },
+  "limits": {
+    "login": 10,
+    "password": 100,
+    "ip": 1000
+  }
+}

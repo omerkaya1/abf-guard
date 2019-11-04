@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+// TODO: complete comments!
+// AuthorisationRequest .
+message AuthorisationRequest {
+    string login = 1;
+    string password = 2;
+    string ip = 3;
+}
+
+// SimpleResponse .
+message SimpleResponse {
+    oneof result {
+        bool ok = 1;
+        string error = 2;
+    }
+}
+
+// FlashBucketRequest .
+message FlashBucketRequest {
+    string login = 1;
+    string ip = 2;
+}
+
+// SubnetRequest .
+message SubnetRequest {
+    string login = 1;
+    string ip = 2;
+}
+
+// Main API for the project
+service ABFGuardService {
+    // Authorisation .
+    rpc Authorisation(AuthorisationRequest) returns (SimpleResponse) {}
+    // FlashBucket .
+    rpc FlashBucket(FlashBucketRequest) returns (SimpleResponse) {}
+    // AddIpToWhitelist .
+    rpc AddIpToWhitelist(SubnetRequest) returns (SimpleResponse) {}
+    // DeleteIpFromWhitelist .
+    rpc DeleteIpFromWhitelist(SubnetRequest) returns (SimpleResponse) {}
+    // AddIpToBlacklist .
+    rpc AddIpToBlacklist(SubnetRequest) returns (SimpleResponse) {}
+    // DeleteIpFromBlacklist .
+    rpc DeleteIpFromBlacklist(SubnetRequest) returns (SimpleResponse) {}
+}
