@@ -2,15 +2,14 @@ package models
 
 import abfg "github.com/omerkaya1/abf-guard/internal/grpc/api"
 
+// Authorisation .
 type Authorisation struct {
 	Login    string `json:"login"`
 	Password string `json:"password"`
 	IP       string `json:"ip"`
 }
 
-type AuthRequestConverter struct {
-}
-
+// NewGRPCAuthorisationBody .
 func NewGRPCAuthorisationBody(login, password, ip string) *abfg.AuthorisationRequest {
 	return &abfg.AuthorisationRequest{
 		Login:    login,
@@ -19,6 +18,7 @@ func NewGRPCAuthorisationBody(login, password, ip string) *abfg.AuthorisationReq
 	}
 }
 
-func (arc *AuthRequestConverter) GrpcToInternalModel() {
-
+// GrpcToInternalModel .
+func GrpcToInternalModel() {
+	return
 }

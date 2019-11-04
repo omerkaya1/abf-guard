@@ -3,7 +3,6 @@ package grpc
 import (
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"google.golang.org/grpc"
-
 	"log"
 
 	abfg "github.com/omerkaya1/abf-guard/internal/grpc/api"
@@ -53,13 +52,13 @@ var (
 
 func init() {
 	ClientRootCmd.AddCommand(authoriseActionCmd, flashBucketCmd, addIpActionCmd, deleteIpActionCmd)
-	ClientRootCmd.Flags().StringVarP(&host, "host", "s", "127.0.0.1", "-h, --host=127.0.0.1")
-	ClientRootCmd.Flags().StringVarP(&port, "port", "p", "6666", "-p, --port=7777")
-	ClientRootCmd.Flags().StringVarP(&login, "login", "l", "", "-l, --login=morty")
-	ClientRootCmd.Flags().StringVarP(&password, "password", "w", "", "-w, --password=oh_jeez")
-	ClientRootCmd.Flags().StringVarP(&ip, "ip", "i", "", "-i, --ip=127.0.0.1")
-	ClientRootCmd.Flags().StringVarP(&mask, "mask", "m", "", "-m, --mask=")
-	ClientRootCmd.Flags().BoolVarP(&black, "blacklist", "b", false, "-b, --blacklist=true")
+	ClientRootCmd.PersistentFlags().StringVarP(&host, "host", "s", "127.0.0.1", "-h, --host=127.0.0.1")
+	ClientRootCmd.PersistentFlags().StringVarP(&port, "port", "p", "6666", "-p, --port=7777")
+	ClientRootCmd.PersistentFlags().StringVarP(&login, "login", "l", "", "-l, --login=morty")
+	ClientRootCmd.PersistentFlags().StringVarP(&password, "password", "w", "", "-w, --password=oh_jeez")
+	ClientRootCmd.PersistentFlags().StringVarP(&ip, "ip", "i", "", "-i, --ip=127.0.0.1")
+	ClientRootCmd.PersistentFlags().StringVarP(&mask, "mask", "m", "", "-m, --mask=")
+	ClientRootCmd.PersistentFlags().BoolVarP(&black, "blacklist", "b", false, "-b, --blacklist=true")
 }
 
 func authoriseCmdFunc(cmd *cobra.Command, args []string) {
@@ -68,7 +67,7 @@ func authoriseCmdFunc(cmd *cobra.Command, args []string) {
 	}
 
 	//client := getGRPCClient()
-	//ctx := context.Background()
+	//ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
 	//rb := models.Authorisation{
 	//	Login:    login,
 	//	Password: password,

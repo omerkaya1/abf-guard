@@ -6,7 +6,7 @@ services:
     container_name: pgs_db
     environment:
       - POSTGRES_USER=abfg_user
-      - POSTGRES_PASSWORD=calendar
+      - POSTGRES_PASSWORD=some_pwd
       - POSTGRES_DB=abfg_db
     volumes:
       - ../db/data:/var/lib/postgresql/data

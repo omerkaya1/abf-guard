@@ -2,15 +2,14 @@ package interfaces
 
 import "context"
 
-// TODO: comments!
-// StorageProcessor .
+// StorageProcessor is an interface to communicate with the DB
 type StorageProcessor interface {
-	// Authenticate .
+	// Authenticate tries to authenticate the user to the resource
 	Authenticate(context.Context, string, string, string) (bool, error)
-	// Flash .
+	// Flash resets the selected bucket
 	Flash(context.Context, string, string, string) (bool, error)
-	// Add .
+	// Add either adds the IP to the whitelist or the blacklist of the app
 	Add(context.Context, string, string, string) (bool, error)
-	// Delete .
+	// Delete either deletes the IP from the whitelist or the blacklist of the app
 	Delete(context.Context, string, string, string) (bool, error)
 }

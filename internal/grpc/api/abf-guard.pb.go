@@ -24,8 +24,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-// TODO: complete comments!
-// AuthorisationRequest .
+// AuthorisationRequest is a message that is being send while trying to log in to a resource
 type AuthorisationRequest struct {
 	Login                string   `protobuf:"bytes,1,opt,name=login,proto3" json:"login,omitempty"`
 	Password             string   `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
@@ -81,89 +80,89 @@ func (m *AuthorisationRequest) GetIp() string {
 	return ""
 }
 
-// SimpleResponse .
-type SimpleResponse struct {
+// Response is a return message that is used by all rpc methods; returns either a boolean response or an error
+type Response struct {
 	// Types that are valid to be assigned to Result:
-	//	*SimpleResponse_Ok
-	//	*SimpleResponse_Error
-	Result               isSimpleResponse_Result `protobuf_oneof:"result"`
-	XXX_NoUnkeyedLiteral struct{}                `json:"-"`
-	XXX_unrecognized     []byte                  `json:"-"`
-	XXX_sizecache        int32                   `json:"-"`
+	//	*Response_Ok
+	//	*Response_Error
+	Result               isResponse_Result `protobuf_oneof:"result"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
 }
 
-func (m *SimpleResponse) Reset()         { *m = SimpleResponse{} }
-func (m *SimpleResponse) String() string { return proto.CompactTextString(m) }
-func (*SimpleResponse) ProtoMessage()    {}
-func (*SimpleResponse) Descriptor() ([]byte, []int) {
+func (m *Response) Reset()         { *m = Response{} }
+func (m *Response) String() string { return proto.CompactTextString(m) }
+func (*Response) ProtoMessage()    {}
+func (*Response) Descriptor() ([]byte, []int) {
 	return fileDescriptor_79d920cdee07ab3e, []int{1}
 }
 
-func (m *SimpleResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_SimpleResponse.Unmarshal(m, b)
+func (m *Response) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_Response.Unmarshal(m, b)
 }
-func (m *SimpleResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_SimpleResponse.Marshal(b, m, deterministic)
+func (m *Response) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_Response.Marshal(b, m, deterministic)
 }
-func (m *SimpleResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_SimpleResponse.Merge(m, src)
+func (m *Response) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Response.Merge(m, src)
 }
-func (m *SimpleResponse) XXX_Size() int {
-	return xxx_messageInfo_SimpleResponse.Size(m)
+func (m *Response) XXX_Size() int {
+	return xxx_messageInfo_Response.Size(m)
 }
-func (m *SimpleResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_SimpleResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_SimpleResponse proto.InternalMessageInfo
-
-type isSimpleResponse_Result interface {
-	isSimpleResponse_Result()
+func (m *Response) XXX_DiscardUnknown() {
+	xxx_messageInfo_Response.DiscardUnknown(m)
 }
 
-type SimpleResponse_Ok struct {
+var xxx_messageInfo_Response proto.InternalMessageInfo
+
+type isResponse_Result interface {
+	isResponse_Result()
+}
+
+type Response_Ok struct {
 	Ok bool `protobuf:"varint,1,opt,name=ok,proto3,oneof"`
 }
 
-type SimpleResponse_Error struct {
+type Response_Error struct {
 	Error string `protobuf:"bytes,2,opt,name=error,proto3,oneof"`
 }
 
-func (*SimpleResponse_Ok) isSimpleResponse_Result() {}
+func (*Response_Ok) isResponse_Result() {}
 
-func (*SimpleResponse_Error) isSimpleResponse_Result() {}
+func (*Response_Error) isResponse_Result() {}
 
-func (m *SimpleResponse) GetResult() isSimpleResponse_Result {
+func (m *Response) GetResult() isResponse_Result {
 	if m != nil {
 		return m.Result
 	}
 	return nil
 }
 
-func (m *SimpleResponse) GetOk() bool {
-	if x, ok := m.GetResult().(*SimpleResponse_Ok); ok {
+func (m *Response) GetOk() bool {
+	if x, ok := m.GetResult().(*Response_Ok); ok {
 		return x.Ok
 	}
 	return false
 }
 
-func (m *SimpleResponse) GetError() string {
-	if x, ok := m.GetResult().(*SimpleResponse_Error); ok {
+func (m *Response) GetError() string {
+	if x, ok := m.GetResult().(*Response_Error); ok {
 		return x.Error
 	}
 	return ""
 }
 
 // XXX_OneofWrappers is for the internal use of the proto package.
-func (*SimpleResponse) XXX_OneofWrappers() []interface{} {
+func (*Response) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
-		(*SimpleResponse_Ok)(nil),
-		(*SimpleResponse_Error)(nil),
+		(*Response_Ok)(nil),
+		(*Response_Error)(nil),
 	}
 }
 
-// FlashBucketRequest .
-type FlashBucketRequest struct {
+// FlushBucketRequest is a message that contains information on a bucket that needs to be flashed
+type FlushBucketRequest struct {
 	Login                string   `protobuf:"bytes,1,opt,name=login,proto3" json:"login,omitempty"`
 	Ip                   string   `protobuf:"bytes,2,opt,name=ip,proto3" json:"ip,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -171,39 +170,39 @@ type FlashBucketRequest struct {
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *FlashBucketRequest) Reset()         { *m = FlashBucketRequest{} }
-func (m *FlashBucketRequest) String() string { return proto.CompactTextString(m) }
-func (*FlashBucketRequest) ProtoMessage()    {}
-func (*FlashBucketRequest) Descriptor() ([]byte, []int) {
+func (m *FlushBucketRequest) Reset()         { *m = FlushBucketRequest{} }
+func (m *FlushBucketRequest) String() string { return proto.CompactTextString(m) }
+func (*FlushBucketRequest) ProtoMessage()    {}
+func (*FlushBucketRequest) Descriptor() ([]byte, []int) {
 	return fileDescriptor_79d920cdee07ab3e, []int{2}
 }
 
-func (m *FlashBucketRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_FlashBucketRequest.Unmarshal(m, b)
+func (m *FlushBucketRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_FlushBucketRequest.Unmarshal(m, b)
 }
-func (m *FlashBucketRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_FlashBucketRequest.Marshal(b, m, deterministic)
+func (m *FlushBucketRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_FlushBucketRequest.Marshal(b, m, deterministic)
 }
-func (m *FlashBucketRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_FlashBucketRequest.Merge(m, src)
+func (m *FlushBucketRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_FlushBucketRequest.Merge(m, src)
 }
-func (m *FlashBucketRequest) XXX_Size() int {
-	return xxx_messageInfo_FlashBucketRequest.Size(m)
+func (m *FlushBucketRequest) XXX_Size() int {
+	return xxx_messageInfo_FlushBucketRequest.Size(m)
 }
-func (m *FlashBucketRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_FlashBucketRequest.DiscardUnknown(m)
+func (m *FlushBucketRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_FlushBucketRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_FlashBucketRequest proto.InternalMessageInfo
+var xxx_messageInfo_FlushBucketRequest proto.InternalMessageInfo
 
-func (m *FlashBucketRequest) GetLogin() string {
+func (m *FlushBucketRequest) GetLogin() string {
 	if m != nil {
 		return m.Login
 	}
 	return ""
 }
 
-func (m *FlashBucketRequest) GetIp() string {
+func (m *FlushBucketRequest) GetIp() string {
 	if m != nil {
 		return m.Ip
 	}
@@ -260,35 +259,34 @@ func (m *SubnetRequest) GetIp() string {
 
 func init() {
 	proto.RegisterType((*AuthorisationRequest)(nil), "AuthorisationRequest")
-	proto.RegisterType((*SimpleResponse)(nil), "SimpleResponse")
-	proto.RegisterType((*FlashBucketRequest)(nil), "FlashBucketRequest")
+	proto.RegisterType((*Response)(nil), "Response")
+	proto.RegisterType((*FlushBucketRequest)(nil), "FlushBucketRequest")
 	proto.RegisterType((*SubnetRequest)(nil), "SubnetRequest")
 }
 
 func init() { proto.RegisterFile("api/abf-guard.proto", fileDescriptor_79d920cdee07ab3e) }
 
 var fileDescriptor_79d920cdee07ab3e = []byte{
-	// 305 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0x4d, 0x4f, 0xf2, 0x40,
-	0x14, 0x85, 0x61, 0xde, 0x40, 0x78, 0xaf, 0xe1, 0x23, 0x03, 0x18, 0xc2, 0xca, 0x74, 0xe5, 0xc6,
-	0x9a, 0x68, 0x58, 0xc8, 0x8e, 0x86, 0x20, 0x6c, 0x8b, 0x89, 0x6e, 0x07, 0x7a, 0x85, 0x49, 0x87,
-	0xde, 0x71, 0x3e, 0xf4, 0x37, 0xfb, 0x2f, 0x8c, 0x6d, 0x82, 0x12, 0x1b, 0x93, 0xba, 0x3c, 0x33,
-	0x79, 0xee, 0x3d, 0xe7, 0xe4, 0x42, 0x5f, 0x68, 0x79, 0x2d, 0x36, 0xcf, 0x57, 0x3b, 0x2f, 0x4c,
-	0x12, 0x6a, 0x43, 0x8e, 0x82, 0x27, 0x18, 0xcc, 0xbc, 0xdb, 0x93, 0x91, 0x56, 0x38, 0x49, 0x59,
-	0x8c, 0x2f, 0x1e, 0xad, 0xe3, 0x03, 0x68, 0x28, 0xda, 0xc9, 0x6c, 0x54, 0xbf, 0xa8, 0x5f, 0xfe,
-	0x8f, 0x0b, 0xc1, 0xc7, 0xd0, 0xd2, 0xc2, 0xda, 0x37, 0x32, 0xc9, 0x88, 0xe5, 0x1f, 0x47, 0xcd,
-	0x3b, 0xc0, 0xa4, 0x1e, 0xfd, 0xcb, 0x5f, 0x99, 0xd4, 0xc1, 0x1c, 0x3a, 0x6b, 0x79, 0xd0, 0x0a,
-	0x63, 0xb4, 0x9a, 0x32, 0x8b, 0xbc, 0x07, 0x8c, 0xd2, 0x7c, 0x60, 0x6b, 0x59, 0x8b, 0x19, 0xa5,
-	0xfc, 0x1c, 0x1a, 0x68, 0x0c, 0x99, 0x62, 0xd8, 0xb2, 0x16, 0x17, 0x32, 0x6a, 0x41, 0xd3, 0xa0,
-	0xf5, 0xca, 0x05, 0x53, 0xe0, 0x0b, 0x25, 0xec, 0x3e, 0xf2, 0xdb, 0x14, 0xdd, 0xef, 0xee, 0x0a,
-	0x07, 0xec, 0xe8, 0x60, 0x02, 0xed, 0xb5, 0xdf, 0x64, 0x15, 0xb1, 0x9b, 0x77, 0x06, 0xdd, 0x59,
-	0xb4, 0xb8, 0xff, 0x6c, 0x69, 0x8d, 0xe6, 0x55, 0x6e, 0x91, 0xdf, 0x41, 0xfb, 0xa4, 0x26, 0x3e,
-	0x0c, 0xcb, 0x6a, 0x1b, 0x77, 0xc3, 0xd3, 0xcc, 0x41, 0x8d, 0x4f, 0xe0, 0xec, 0x5b, 0x02, 0xde,
-	0x0f, 0x7f, 0xe6, 0x29, 0xc7, 0x7a, 0xb3, 0x24, 0x59, 0xe9, 0x07, 0x7a, 0xdc, 0x4b, 0x87, 0x4a,
-	0x5a, 0xc7, 0x3b, 0xe1, 0x49, 0x9e, 0x32, 0x6c, 0x0a, 0xc3, 0x39, 0x2a, 0x74, 0xb8, 0xd2, 0x0b,
-	0x43, 0x87, 0x4a, 0xec, 0xd7, 0xca, 0x48, 0x89, 0x6d, 0xfa, 0xc7, 0x95, 0x55, 0xd8, 0x4d, 0x33,
-	0xbf, 0xc2, 0xdb, 0x8f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xf5, 0x01, 0x16, 0x5b, 0x9c, 0x02, 0x00,
-	0x00,
+	// 299 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0x4f, 0x4f, 0xc2, 0x40,
+	0x10, 0xc5, 0x61, 0x0d, 0xa4, 0x8c, 0x01, 0xc9, 0x02, 0x86, 0x70, 0x32, 0x3d, 0x79, 0xb1, 0x24,
+	0xa2, 0x17, 0x0f, 0x26, 0x34, 0x06, 0xe1, 0x5a, 0x4c, 0xf4, 0xba, 0xd0, 0x11, 0x36, 0x5d, 0x3b,
+	0xeb, 0xfe, 0xd1, 0x4f, 0xe8, 0xf7, 0x32, 0xb6, 0x11, 0x45, 0x8d, 0x81, 0xe3, 0xdb, 0xcd, 0x6f,
+	0xde, 0xbc, 0x97, 0x81, 0x8e, 0xd0, 0x72, 0x28, 0x16, 0x8f, 0x67, 0x2b, 0x2f, 0x4c, 0x1a, 0x69,
+	0x43, 0x8e, 0xc2, 0x07, 0xe8, 0x8e, 0xbd, 0x5b, 0x93, 0x91, 0x56, 0x38, 0x49, 0x79, 0x82, 0xcf,
+	0x1e, 0xad, 0xe3, 0x5d, 0xa8, 0x29, 0x5a, 0xc9, 0xbc, 0x5f, 0x3d, 0xa9, 0x9e, 0x36, 0x92, 0x52,
+	0xf0, 0x01, 0x04, 0x5a, 0x58, 0xfb, 0x4a, 0x26, 0xed, 0xb3, 0xe2, 0x63, 0xa3, 0x79, 0x0b, 0x98,
+	0xd4, 0xfd, 0x83, 0xe2, 0x95, 0x49, 0x1d, 0x5e, 0x43, 0x90, 0xa0, 0xd5, 0x94, 0x5b, 0xe4, 0x6d,
+	0x60, 0x94, 0x15, 0xa3, 0x82, 0x69, 0x25, 0x61, 0x94, 0xf1, 0x63, 0xa8, 0xa1, 0x31, 0x64, 0xca,
+	0x31, 0xd3, 0x4a, 0x52, 0xca, 0x38, 0x80, 0xba, 0x41, 0xeb, 0x95, 0x0b, 0xaf, 0x80, 0x4f, 0x94,
+	0xb7, 0xeb, 0xd8, 0x2f, 0x33, 0x74, 0xff, 0xef, 0x55, 0x7a, 0xb3, 0x8d, 0xf7, 0x25, 0x34, 0xe7,
+	0x7e, 0x91, 0xef, 0x89, 0x9d, 0xbf, 0x31, 0x38, 0x1a, 0xc7, 0x93, 0xdb, 0x8f, 0x7e, 0xe6, 0x68,
+	0x5e, 0xe4, 0x12, 0xf9, 0x08, 0x9a, 0x5b, 0x05, 0xf1, 0x5e, 0xf4, 0x57, 0x61, 0x83, 0x46, 0xf4,
+	0x99, 0x36, 0xac, 0xf0, 0x21, 0x1c, 0x7e, 0xdb, 0x9d, 0x77, 0xa2, 0xdf, 0x49, 0x7e, 0x02, 0xed,
+	0x71, 0x9a, 0xce, 0xf4, 0x1d, 0xdd, 0xaf, 0xa5, 0x43, 0x25, 0xad, 0xe3, 0xad, 0x68, 0x2b, 0xc3,
+	0x36, 0x70, 0x01, 0xbd, 0x1b, 0x54, 0xe8, 0x70, 0xa6, 0x27, 0x86, 0x9e, 0x76, 0xa4, 0xbe, 0x6c,
+	0x62, 0x25, 0x96, 0xd9, 0xde, 0x36, 0xbb, 0x51, 0x8b, 0x7a, 0x71, 0x5b, 0xa3, 0xf7, 0x00, 0x00,
+	0x00, 0xff, 0xff, 0xd3, 0xc0, 0x8c, 0x34, 0x72, 0x02, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -304,17 +302,17 @@ const _ = grpc.SupportPackageIsVersion4
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type ABFGuardServiceClient interface {
 	// Authorisation .
-	Authorisation(ctx context.Context, in *AuthorisationRequest, opts ...grpc.CallOption) (*SimpleResponse, error)
+	Authorisation(ctx context.Context, in *AuthorisationRequest, opts ...grpc.CallOption) (*Response, error)
 	// FlashBucket .
-	FlashBucket(ctx context.Context, in *FlashBucketRequest, opts ...grpc.CallOption) (*SimpleResponse, error)
+	FlushBucket(ctx context.Context, in *FlushBucketRequest, opts ...grpc.CallOption) (*Response, error)
 	// AddIpToWhitelist .
-	AddIpToWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*SimpleResponse, error)
+	AddIpToWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error)
 	// DeleteIpFromWhitelist .
-	DeleteIpFromWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*SimpleResponse, error)
+	DeleteIpFromWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error)
 	// AddIpToBlacklist .
-	AddIpToBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*SimpleResponse, error)
+	AddIpToBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error)
 	// DeleteIpFromBlacklist .
-	DeleteIpFromBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*SimpleResponse, error)
+	DeleteIpFromBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error)
 }
 
 type aBFGuardServiceClient struct {
@@ -325,8 +323,8 @@ func NewABFGuardServiceClient(cc *grpc.ClientConn) ABFGuardServiceClient {
 	return &aBFGuardServiceClient{cc}
 }
 
-func (c *aBFGuardServiceClient) Authorisation(ctx context.Context, in *AuthorisationRequest, opts ...grpc.CallOption) (*SimpleResponse, error) {
-	out := new(SimpleResponse)
+func (c *aBFGuardServiceClient) Authorisation(ctx context.Context, in *AuthorisationRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
 	err := c.cc.Invoke(ctx, "/ABFGuardService/Authorisation", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -334,17 +332,17 @@ func (c *aBFGuardServiceClient) Authorisation(ctx context.Context, in *Authorisa
 	return out, nil
 }
 
-func (c *aBFGuardServiceClient) FlashBucket(ctx context.Context, in *FlashBucketRequest, opts ...grpc.CallOption) (*SimpleResponse, error) {
-	out := new(SimpleResponse)
-	err := c.cc.Invoke(ctx, "/ABFGuardService/FlashBucket", in, out, opts...)
+func (c *aBFGuardServiceClient) FlushBucket(ctx context.Context, in *FlushBucketRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/ABFGuardService/FlushBucket", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBFGuardServiceClient) AddIpToWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*SimpleResponse, error) {
-	out := new(SimpleResponse)
+func (c *aBFGuardServiceClient) AddIpToWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
 	err := c.cc.Invoke(ctx, "/ABFGuardService/AddIpToWhitelist", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -352,8 +350,8 @@ func (c *aBFGuardServiceClient) AddIpToWhitelist(ctx context.Context, in *Subnet
 	return out, nil
 }
 
-func (c *aBFGuardServiceClient) DeleteIpFromWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*SimpleResponse, error) {
-	out := new(SimpleResponse)
+func (c *aBFGuardServiceClient) DeleteIpFromWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
 	err := c.cc.Invoke(ctx, "/ABFGuardService/DeleteIpFromWhitelist", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -361,8 +359,8 @@ func (c *aBFGuardServiceClient) DeleteIpFromWhitelist(ctx context.Context, in *S
 	return out, nil
 }
 
-func (c *aBFGuardServiceClient) AddIpToBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*SimpleResponse, error) {
-	out := new(SimpleResponse)
+func (c *aBFGuardServiceClient) AddIpToBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
 	err := c.cc.Invoke(ctx, "/ABFGuardService/AddIpToBlacklist", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -370,8 +368,8 @@ func (c *aBFGuardServiceClient) AddIpToBlacklist(ctx context.Context, in *Subnet
 	return out, nil
 }
 
-func (c *aBFGuardServiceClient) DeleteIpFromBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*SimpleResponse, error) {
-	out := new(SimpleResponse)
+func (c *aBFGuardServiceClient) DeleteIpFromBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
 	err := c.cc.Invoke(ctx, "/ABFGuardService/DeleteIpFromBlacklist", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -382,39 +380,39 @@ func (c *aBFGuardServiceClient) DeleteIpFromBlacklist(ctx context.Context, in *S
 // ABFGuardServiceServer is the server API for ABFGuardService service.
 type ABFGuardServiceServer interface {
 	// Authorisation .
-	Authorisation(context.Context, *AuthorisationRequest) (*SimpleResponse, error)
+	Authorisation(context.Context, *AuthorisationRequest) (*Response, error)
 	// FlashBucket .
-	FlashBucket(context.Context, *FlashBucketRequest) (*SimpleResponse, error)
+	FlushBucket(context.Context, *FlushBucketRequest) (*Response, error)
 	// AddIpToWhitelist .
-	AddIpToWhitelist(context.Context, *SubnetRequest) (*SimpleResponse, error)
+	AddIpToWhitelist(context.Context, *SubnetRequest) (*Response, error)
 	// DeleteIpFromWhitelist .
-	DeleteIpFromWhitelist(context.Context, *SubnetRequest) (*SimpleResponse, error)
+	DeleteIpFromWhitelist(context.Context, *SubnetRequest) (*Response, error)
 	// AddIpToBlacklist .
-	AddIpToBlacklist(context.Context, *SubnetRequest) (*SimpleResponse, error)
+	AddIpToBlacklist(context.Context, *SubnetRequest) (*Response, error)
 	// DeleteIpFromBlacklist .
-	DeleteIpFromBlacklist(context.Context, *SubnetRequest) (*SimpleResponse, error)
+	DeleteIpFromBlacklist(context.Context, *SubnetRequest) (*Response, error)
 }
 
 // UnimplementedABFGuardServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedABFGuardServiceServer struct {
 }
 
-func (*UnimplementedABFGuardServiceServer) Authorisation(ctx context.Context, req *AuthorisationRequest) (*SimpleResponse, error) {
+func (*UnimplementedABFGuardServiceServer) Authorisation(ctx context.Context, req *AuthorisationRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authorisation not implemented")
 }
-func (*UnimplementedABFGuardServiceServer) FlashBucket(ctx context.Context, req *FlashBucketRequest) (*SimpleResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FlashBucket not implemented")
+func (*UnimplementedABFGuardServiceServer) FlushBucket(ctx context.Context, req *FlushBucketRequest) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FlushBucket not implemented")
 }
-func (*UnimplementedABFGuardServiceServer) AddIpToWhitelist(ctx context.Context, req *SubnetRequest) (*SimpleResponse, error) {
+func (*UnimplementedABFGuardServiceServer) AddIpToWhitelist(ctx context.Context, req *SubnetRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddIpToWhitelist not implemented")
 }
-func (*UnimplementedABFGuardServiceServer) DeleteIpFromWhitelist(ctx context.Context, req *SubnetRequest) (*SimpleResponse, error) {
+func (*UnimplementedABFGuardServiceServer) DeleteIpFromWhitelist(ctx context.Context, req *SubnetRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIpFromWhitelist not implemented")
 }
-func (*UnimplementedABFGuardServiceServer) AddIpToBlacklist(ctx context.Context, req *SubnetRequest) (*SimpleResponse, error) {
+func (*UnimplementedABFGuardServiceServer) AddIpToBlacklist(ctx context.Context, req *SubnetRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddIpToBlacklist not implemented")
 }
-func (*UnimplementedABFGuardServiceServer) DeleteIpFromBlacklist(ctx context.Context, req *SubnetRequest) (*SimpleResponse, error) {
+func (*UnimplementedABFGuardServiceServer) DeleteIpFromBlacklist(ctx context.Context, req *SubnetRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIpFromBlacklist not implemented")
 }
 
@@ -440,20 +438,20 @@ func _ABFGuardService_Authorisation_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ABFGuardService_FlashBucket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FlashBucketRequest)
+func _ABFGuardService_FlushBucket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FlushBucketRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ABFGuardServiceServer).FlashBucket(ctx, in)
+		return srv.(ABFGuardServiceServer).FlushBucket(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ABFGuardService/FlashBucket",
+		FullMethod: "/ABFGuardService/FlushBucket",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ABFGuardServiceServer).FlashBucket(ctx, req.(*FlashBucketRequest))
+		return srv.(ABFGuardServiceServer).FlushBucket(ctx, req.(*FlushBucketRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -539,8 +537,8 @@ var _ABFGuardService_serviceDesc = grpc.ServiceDesc{
 			Handler:    _ABFGuardService_Authorisation_Handler,
 		},
 		{
-			MethodName: "FlashBucket",
-			Handler:    _ABFGuardService_FlashBucket_Handler,
+			MethodName: "FlushBucket",
+			Handler:    _ABFGuardService_FlushBucket_Handler,
 		},
 		{
 			MethodName: "AddIpToWhitelist",
