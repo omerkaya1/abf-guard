@@ -23,7 +23,7 @@ require (
 	golang.org/x/crypto v0.0.0-20191117063200-497ca9f6d64f // indirect
 	golang.org/x/net v0.0.0-20191116160921-f9c825593386 // indirect
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
-	golang.org/x/sys v0.0.0-20191118073850-2f86c98f3482 // indirect
+	golang.org/x/sys v0.0.0-20191118090420-b5d5184f72d2 // indirect
 	golang.org/x/text v0.3.2 // indirect
 	golang.org/x/tools v0.0.0-20191118051429-5a76f03bc7c3 // indirect
 	golang.org/x/xerrors v0.0.0-20191011141410-1b5146add898 // indirect

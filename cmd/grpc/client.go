@@ -18,6 +18,7 @@ var (
 )
 
 var (
+	// ClientRootCmd .
 	ClientRootCmd = &cobra.Command{
 		Use:     "grpc-client",
 		Short:   "Run GRPC Web Service client",
@@ -38,30 +39,30 @@ var (
 		Example: "  abf-guard grpc-client flash -l morty -i 127.0.0.1",
 	}
 
-	addIpActionCmd = &cobra.Command{
+	addIPActionCmd = &cobra.Command{
 		Use:     "add",
 		Short:   "add ip command",
-		Run:     addIpCmdFunc,
+		Run:     addIPCmdFunc,
 		Example: "  abf-guard grpc-client add -b true ",
 	}
 
-	deleteIpActionCmd = &cobra.Command{
+	deleteIPActionCmd = &cobra.Command{
 		Use:     "delete",
 		Short:   "delete ip command",
-		Run:     deleteIpCmdFunc,
+		Run:     deleteIPCmdFunc,
 		Example: "  abf-guard grpc-client delete -b true ",
 	}
 
-	getIpListActionCmd = &cobra.Command{
+	getIPListActionCmd = &cobra.Command{
 		Use:     "get",
 		Short:   "get ip list command",
-		Run:     getIpListCmdFunc,
+		Run:     getIPListCmdFunc,
 		Example: "  abf-guard grpc-client delete -b true ",
 	}
 )
 
 func init() {
-	ClientRootCmd.AddCommand(authoriseActionCmd, flashBucketCmd, addIpActionCmd, deleteIpActionCmd)
+	ClientRootCmd.AddCommand(authoriseActionCmd, flashBucketCmd, addIPActionCmd, deleteIPActionCmd, getIPListActionCmd)
 	ClientRootCmd.PersistentFlags().StringVarP(&host, "host", "s", "127.0.0.1", "-h, --host=127.0.0.1")
 	ClientRootCmd.PersistentFlags().StringVarP(&port, "port", "p", "6666", "-p, --port=7777")
 	ClientRootCmd.PersistentFlags().StringVarP(&login, "login", "l", "", "-l, --login=morty")
@@ -98,14 +99,14 @@ func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
 	log.Println(ok)
 }
 
-func addIpCmdFunc(cmd *cobra.Command, args []string) {
+func addIPCmdFunc(cmd *cobra.Command, args []string) {
 	if ip == "" {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
 	}
 	client := getGRPCClient()
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
 
-	resp, err := client.AddIpToWhitelist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
+	resp, err := client.AddIPToWhitelist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
 	if err != nil {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
 	}
@@ -115,14 +116,14 @@ func addIpCmdFunc(cmd *cobra.Command, args []string) {
 	log.Println(resp.GetOk())
 }
 
-func deleteIpCmdFunc(cmd *cobra.Command, args []string) {
+func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
 	if ip == "" {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
 	}
 	client := getGRPCClient()
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
 
-	resp, err := client.DeleteIpFromBlacklist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
+	resp, err := client.DeleteIPFromBlacklist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
 	if err != nil {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
 	}
@@ -132,11 +133,11 @@ func deleteIpCmdFunc(cmd *cobra.Command, args []string) {
 	log.Println(resp.GetOk())
 }
 
-func getIpListCmdFunc(cmd *cobra.Command, args []string) {
+func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 	client := getGRPCClient()
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
 
-	resp, err := client.GetIpList(ctx, req.PrepareIpListGrpcRequest(black))
+	resp, err := client.GetIPList(ctx, req.PrepareIPListGrpcRequest(black))
 	if err != nil {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
 	}

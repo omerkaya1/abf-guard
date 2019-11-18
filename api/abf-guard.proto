@@ -33,14 +33,14 @@ message ListRequest {
 }
 
 // IpList is a message that holds all the IP addresses stored either in the whitelist or the blacklist
-message IpList {
+message IPList {
     repeated string list = 1;
 }
 
 // SubnetRequest is a message that is used to request black and white lists actions
 message ListResponse {
     oneof result {
-        IpList ips = 1;
+        IPList ips = 1;
         string error = 2;
     }
 }
@@ -52,13 +52,13 @@ service ABFGuardService {
     // FlashBucket .
     rpc FlushBucket(FlushBucketRequest) returns (Response) {}
     // AddIpToWhitelist .
-    rpc AddIpToWhitelist(SubnetRequest) returns (Response) {}
+    rpc AddIPToWhitelist(SubnetRequest) returns (Response) {}
     // DeleteIpFromWhitelist .
-    rpc DeleteIpFromWhitelist(SubnetRequest) returns (Response) {}
+    rpc DeleteIPFromWhitelist(SubnetRequest) returns (Response) {}
     // AddIpToBlacklist .
-    rpc AddIpToBlacklist(SubnetRequest) returns (Response) {}
+    rpc AddIPToBlacklist(SubnetRequest) returns (Response) {}
     // DeleteIpFromBlacklist .
-    rpc DeleteIpFromBlacklist(SubnetRequest) returns (Response) {}
+    rpc DeleteIPFromBlacklist(SubnetRequest) returns (Response) {}
     // GetWhiteList .
-    rpc GetIpList(ListRequest) returns (ListResponse) {}
+    rpc GetIPList(ListRequest) returns (ListResponse) {}
 }

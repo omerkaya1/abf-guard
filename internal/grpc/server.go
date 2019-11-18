@@ -10,12 +10,14 @@ import (
 	"google.golang.org/grpc"
 )
 
+// ABFGServer .
 type ABFGServer struct {
 	Cfg            *config.Config
 	Logger         *zap.Logger
 	StorageService *services.Storage
 }
 
+// NewServer .
 func NewServer(cfg *config.Config, log *zap.Logger, ss *services.Storage) *ABFGServer {
 	return &ABFGServer{
 		Cfg:            cfg,
@@ -24,6 +26,7 @@ func NewServer(cfg *config.Config, log *zap.Logger, ss *services.Storage) *ABFGS
 	}
 }
 
+// Run .
 func (s *ABFGServer) Run() {
 	server := grpc.NewServer()
 	l, err := net.Listen("tcp", s.Cfg.Server.Host+":"+s.Cfg.Server.Port)

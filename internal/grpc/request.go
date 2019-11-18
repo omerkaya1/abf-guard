@@ -40,7 +40,7 @@ func PrepareSubnetGrpcRequest(ip string, black bool) *abfg.SubnetRequest {
 	return &abfg.SubnetRequest{Ip: ip, List: black}
 }
 
-// PrepareIpListGrpcRequest .
-func PrepareIpListGrpcRequest(list bool) *abfg.ListRequest {
+// PrepareIPListGrpcRequest .
+func PrepareIPListGrpcRequest(list bool) *abfg.ListRequest {
 	return &abfg.ListRequest{ListType: list}
 }

@@ -6,6 +6,7 @@ import (
 	abfg "github.com/omerkaya1/abf-guard/internal/grpc/api"
 )
 
+// Authorisation .
 func (s *ABFGServer) Authorisation(ctx context.Context, r *abfg.AuthorisationRequest) (*abfg.Response, error) {
 	if r == nil {
 		return PrepareGRPCResponse(false, errors.ErrBadRequest), nil
@@ -13,6 +14,7 @@ func (s *ABFGServer) Authorisation(ctx context.Context, r *abfg.AuthorisationReq
 	return PrepareGRPCResponse(true, nil), nil
 }
 
+// FlashBucket .
 func (s *ABFGServer) FlashBucket(ctx context.Context, r *abfg.FlushBucketRequest) (*abfg.Response, error) {
 	if r == nil {
 		return PrepareGRPCResponse(false, errors.ErrBadRequest), nil
@@ -20,37 +22,42 @@ func (s *ABFGServer) FlashBucket(ctx context.Context, r *abfg.FlushBucketRequest
 	return PrepareGRPCResponse(true, nil), nil
 }
 
-func (s *ABFGServer) AddIpToWhitelist(ctx context.Context, r *abfg.SubnetRequest) (*abfg.Response, error) {
+// AddIPToWhitelist .
+func (s *ABFGServer) AddIPToWhitelist(ctx context.Context, r *abfg.SubnetRequest) (*abfg.Response, error) {
 	if r == nil {
 		return PrepareGRPCResponse(false, errors.ErrBadRequest), nil
 	}
 	return PrepareGRPCResponse(true, nil), nil
 }
 
-func (s *ABFGServer) DeleteIpFromWhitelist(ctx context.Context, r *abfg.SubnetRequest) (*abfg.Response, error) {
+// DeleteIPFromWhitelist .
+func (s *ABFGServer) DeleteIPFromWhitelist(ctx context.Context, r *abfg.SubnetRequest) (*abfg.Response, error) {
 	if r == nil {
 		return PrepareGRPCResponse(false, errors.ErrBadRequest), nil
 	}
 	return PrepareGRPCResponse(true, nil), nil
 }
 
-func (s *ABFGServer) AddIpToBlacklist(ctx context.Context, r *abfg.SubnetRequest) (*abfg.Response, error) {
+// AddIPToBlacklist .
+func (s *ABFGServer) AddIPToBlacklist(ctx context.Context, r *abfg.SubnetRequest) (*abfg.Response, error) {
 	if r == nil {
 		return PrepareGRPCResponse(false, errors.ErrBadRequest), nil
 	}
 	return PrepareGRPCResponse(true, nil), nil
 }
 
-func (s *ABFGServer) DeleteIpFromBlacklist(ctx context.Context, r *abfg.SubnetRequest) (*abfg.Response, error) {
+// DeleteIPFromBlacklist .
+func (s *ABFGServer) DeleteIPFromBlacklist(ctx context.Context, r *abfg.SubnetRequest) (*abfg.Response, error) {
 	if r == nil {
 		return PrepareGRPCResponse(false, errors.ErrBadRequest), nil
 	}
 	return PrepareGRPCResponse(true, nil), nil
 }
 
-func (s *ABFGServer) GetIpList(ctx context.Context, r *abfg.ListRequest) (*abfg.ListResponse, error) {
+// GetIPList .
+func (s *ABFGServer) GetIPList(ctx context.Context, r *abfg.ListRequest) (*abfg.ListResponse, error) {
 	if r == nil {
-		return PrepareGRPCListIpResponse(nil, errors.ErrBadRequest)
+		return PrepareGRPCListIPResponse(nil, errors.ErrBadRequest)
 	}
-	return PrepareGRPCListIpResponse(nil, errors.ErrBadRequest)
+	return PrepareGRPCListIPResponse(nil, errors.ErrBadRequest)
 }

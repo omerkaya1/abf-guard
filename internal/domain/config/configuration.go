@@ -25,7 +25,7 @@ type Server struct {
 type Limits struct {
 	Login    int `json:"login" yaml:"login" toml:"login"`
 	Password int `json:"password" yaml:"password" toml:"password"`
-	Ip       int `json:"ip" yaml:"ip" toml:"ip"`
+	IP       int `json:"ip" yaml:"ip" toml:"ip"`
 }
 
 // DBConf is a struct that holds settings for the project's DB

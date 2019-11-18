@@ -1,7 +1,7 @@
 package grpc
 
 import (
-	"github.com/omerkaya1/abf-guard/internal/db/psql"
+	"github.com/omerkaya1/abf-guard/internal/db"
 	"github.com/omerkaya1/abf-guard/internal/domain/services"
 	"log"
 
@@ -30,17 +30,18 @@ var ServerRootCmd = &cobra.Command{
 			log.Fatalf("%s: InitConfig failed: %s", errors.ErrServiceCmdPrefix, err)
 		}
 		// Initialise project's logger
-		l, err := logger.InitLogger(cfg.Level)
+		l, err := logger.InitLogger(cfg.Server.Level)
 		if err != nil {
 			log.Fatalf("%s: InitLogger failed: %s", errors.ErrServiceCmdPrefix, err)
 		}
 		//Init DB
-		mainDB, err := psql.NewPsqlStorage(cfg.DB)
+		mainDB, err := db.NewPsqlStorage(cfg.DB)
 		if err != nil {
 			log.Fatalf("%s: dbFromConfig failed: %s", errors.ErrServiceCmdPrefix, err)
 		}
 		//Init GRPC server
-		srv := grpc.NewServer(cfg, l, &services.StorageService{Processor: mainDB})
+		srv := grpc.NewServer(cfg, l, &services.Storage{Processor: mainDB})
+		// Run the GRPC server
 		srv.Run()
 	},
 }
