@@ -7,6 +7,7 @@ import (
 	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	grpc2 "github.com/omerkaya1/abf-guard/internal/grpc"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -209,10 +210,10 @@ func (m *FlushBucketRequest) GetIp() string {
 	return ""
 }
 
-// SubnetRequest .
+// SubnetRequest is a message that is used to request black and white lists actions
 type SubnetRequest struct {
-	Login                string   `protobuf:"bytes,1,opt,name=login,proto3" json:"login,omitempty"`
-	Ip                   string   `protobuf:"bytes,2,opt,name=ip,proto3" json:"ip,omitempty"`
+	Ip                   string   `protobuf:"bytes,1,opt,name=ip,proto3" json:"ip,omitempty"`
+	List                 bool     `protobuf:"varint,2,opt,name=list,proto3" json:"list,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -243,13 +244,6 @@ func (m *SubnetRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_SubnetRequest proto.InternalMessageInfo
 
-func (m *SubnetRequest) GetLogin() string {
-	if m != nil {
-		return m.Login
-	}
-	return ""
-}
-
 func (m *SubnetRequest) GetIp() string {
 	if m != nil {
 		return m.Ip
@@ -257,36 +251,213 @@ func (m *SubnetRequest) GetIp() string {
 	return ""
 }
 
+func (m *SubnetRequest) GetList() bool {
+	if m != nil {
+		return m.List
+	}
+	return false
+}
+
+// SubnetRequest is a message that is used to request black and white lists actions
+type ListRequest struct {
+	ListType             bool     `protobuf:"varint,1,opt,name=listType,proto3" json:"listType,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *ListRequest) Reset()         { *m = ListRequest{} }
+func (m *ListRequest) String() string { return proto.CompactTextString(m) }
+func (*ListRequest) ProtoMessage()    {}
+func (*ListRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_79d920cdee07ab3e, []int{4}
+}
+
+func (m *ListRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListRequest.Unmarshal(m, b)
+}
+func (m *ListRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListRequest.Marshal(b, m, deterministic)
+}
+func (m *ListRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListRequest.Merge(m, src)
+}
+func (m *ListRequest) XXX_Size() int {
+	return xxx_messageInfo_ListRequest.Size(m)
+}
+func (m *ListRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListRequest proto.InternalMessageInfo
+
+func (m *ListRequest) GetListType() bool {
+	if m != nil {
+		return m.ListType
+	}
+	return false
+}
+
+// IpList is a message that holds all the IP addresses stored either in the whitelist or the blacklist
+type IpList struct {
+	List                 []string `protobuf:"bytes,1,rep,name=list,proto3" json:"list,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *IpList) Reset()         { *m = IpList{} }
+func (m *IpList) String() string { return proto.CompactTextString(m) }
+func (*IpList) ProtoMessage()    {}
+func (*IpList) Descriptor() ([]byte, []int) {
+	return fileDescriptor_79d920cdee07ab3e, []int{5}
+}
+
+func (m *IpList) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_IpList.Unmarshal(m, b)
+}
+func (m *IpList) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_IpList.Marshal(b, m, deterministic)
+}
+func (m *IpList) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_IpList.Merge(m, src)
+}
+func (m *IpList) XXX_Size() int {
+	return xxx_messageInfo_IpList.Size(m)
+}
+func (m *IpList) XXX_DiscardUnknown() {
+	xxx_messageInfo_IpList.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_IpList proto.InternalMessageInfo
+
+func (m *IpList) GetList() []string {
+	if m != nil {
+		return m.List
+	}
+	return nil
+}
+
+// SubnetRequest is a message that is used to request black and white lists actions
+type ListResponse struct {
+	// Types that are valid to be assigned to Result:
+	//	*ListResponse_Ips
+	//	*ListResponse_Error
+	Result               isListResponse_Result `protobuf_oneof:"result"`
+	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
+	XXX_unrecognized     []byte                `json:"-"`
+	XXX_sizecache        int32                 `json:"-"`
+}
+
+func (m *ListResponse) Reset()         { *m = ListResponse{} }
+func (m *ListResponse) String() string { return proto.CompactTextString(m) }
+func (*ListResponse) ProtoMessage()    {}
+func (*ListResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_79d920cdee07ab3e, []int{6}
+}
+
+func (m *ListResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_ListResponse.Unmarshal(m, b)
+}
+func (m *ListResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_ListResponse.Marshal(b, m, deterministic)
+}
+func (m *ListResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ListResponse.Merge(m, src)
+}
+func (m *ListResponse) XXX_Size() int {
+	return xxx_messageInfo_ListResponse.Size(m)
+}
+func (m *ListResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_ListResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ListResponse proto.InternalMessageInfo
+
+type isListResponse_Result interface {
+	isListResponse_Result()
+}
+
+type ListResponse_Ips struct {
+	Ips *IpList `protobuf:"bytes,1,opt,name=ips,proto3,oneof"`
+}
+
+type ListResponse_Error struct {
+	Error string `protobuf:"bytes,2,opt,name=error,proto3,oneof"`
+}
+
+func (*ListResponse_Ips) isListResponse_Result() {}
+
+func (*ListResponse_Error) isListResponse_Result() {}
+
+func (m *ListResponse) GetResult() isListResponse_Result {
+	if m != nil {
+		return m.Result
+	}
+	return nil
+}
+
+func (m *ListResponse) GetIps() *IpList {
+	if x, ok := m.GetResult().(*ListResponse_Ips); ok {
+		return x.Ips
+	}
+	return nil
+}
+
+func (m *ListResponse) GetError() string {
+	if x, ok := m.GetResult().(*ListResponse_Error); ok {
+		return x.Error
+	}
+	return ""
+}
+
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*ListResponse) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
+		(*ListResponse_Ips)(nil),
+		(*ListResponse_Error)(nil),
+	}
+}
+
 func init() {
 	proto.RegisterType((*AuthorisationRequest)(nil), "AuthorisationRequest")
 	proto.RegisterType((*Response)(nil), "Response")
 	proto.RegisterType((*FlushBucketRequest)(nil), "FlushBucketRequest")
 	proto.RegisterType((*SubnetRequest)(nil), "SubnetRequest")
+	proto.RegisterType((*ListRequest)(nil), "ListRequest")
+	proto.RegisterType((*IpList)(nil), "IpList")
+	proto.RegisterType((*ListResponse)(nil), "ListResponse")
 }
 
 func init() { proto.RegisterFile("api/abf-guard.proto", fileDescriptor_79d920cdee07ab3e) }
 
 var fileDescriptor_79d920cdee07ab3e = []byte{
-	// 299 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x92, 0x4f, 0x4f, 0xc2, 0x40,
-	0x10, 0xc5, 0x61, 0x0d, 0xa4, 0x8c, 0x01, 0xc9, 0x02, 0x86, 0x70, 0x32, 0x3d, 0x79, 0xb1, 0x24,
-	0xa2, 0x17, 0x0f, 0x26, 0x34, 0x06, 0xe1, 0x5a, 0x4c, 0xf4, 0xba, 0xd0, 0x11, 0x36, 0x5d, 0x3b,
-	0xeb, 0xfe, 0xd1, 0x4f, 0xe8, 0xf7, 0x32, 0xb6, 0x11, 0x45, 0x8d, 0x81, 0xe3, 0xdb, 0xcd, 0x6f,
-	0xde, 0xbc, 0x97, 0x81, 0x8e, 0xd0, 0x72, 0x28, 0x16, 0x8f, 0x67, 0x2b, 0x2f, 0x4c, 0x1a, 0x69,
-	0x43, 0x8e, 0xc2, 0x07, 0xe8, 0x8e, 0xbd, 0x5b, 0x93, 0x91, 0x56, 0x38, 0x49, 0x79, 0x82, 0xcf,
-	0x1e, 0xad, 0xe3, 0x5d, 0xa8, 0x29, 0x5a, 0xc9, 0xbc, 0x5f, 0x3d, 0xa9, 0x9e, 0x36, 0x92, 0x52,
-	0xf0, 0x01, 0x04, 0x5a, 0x58, 0xfb, 0x4a, 0x26, 0xed, 0xb3, 0xe2, 0x63, 0xa3, 0x79, 0x0b, 0x98,
-	0xd4, 0xfd, 0x83, 0xe2, 0x95, 0x49, 0x1d, 0x5e, 0x43, 0x90, 0xa0, 0xd5, 0x94, 0x5b, 0xe4, 0x6d,
-	0x60, 0x94, 0x15, 0xa3, 0x82, 0x69, 0x25, 0x61, 0x94, 0xf1, 0x63, 0xa8, 0xa1, 0x31, 0x64, 0xca,
-	0x31, 0xd3, 0x4a, 0x52, 0xca, 0x38, 0x80, 0xba, 0x41, 0xeb, 0x95, 0x0b, 0xaf, 0x80, 0x4f, 0x94,
-	0xb7, 0xeb, 0xd8, 0x2f, 0x33, 0x74, 0xff, 0xef, 0x55, 0x7a, 0xb3, 0x8d, 0xf7, 0x25, 0x34, 0xe7,
-	0x7e, 0x91, 0xef, 0x89, 0x9d, 0xbf, 0x31, 0x38, 0x1a, 0xc7, 0x93, 0xdb, 0x8f, 0x7e, 0xe6, 0x68,
-	0x5e, 0xe4, 0x12, 0xf9, 0x08, 0x9a, 0x5b, 0x05, 0xf1, 0x5e, 0xf4, 0x57, 0x61, 0x83, 0x46, 0xf4,
-	0x99, 0x36, 0xac, 0xf0, 0x21, 0x1c, 0x7e, 0xdb, 0x9d, 0x77, 0xa2, 0xdf, 0x49, 0x7e, 0x02, 0xed,
-	0x71, 0x9a, 0xce, 0xf4, 0x1d, 0xdd, 0xaf, 0xa5, 0x43, 0x25, 0xad, 0xe3, 0xad, 0x68, 0x2b, 0xc3,
-	0x36, 0x70, 0x01, 0xbd, 0x1b, 0x54, 0xe8, 0x70, 0xa6, 0x27, 0x86, 0x9e, 0x76, 0xa4, 0xbe, 0x6c,
-	0x62, 0x25, 0x96, 0xd9, 0xde, 0x36, 0xbb, 0x51, 0x8b, 0x7a, 0x71, 0x5b, 0xa3, 0xf7, 0x00, 0x00,
-	0x00, 0xff, 0xff, 0xd3, 0xc0, 0x8c, 0x34, 0x72, 0x02, 0x00, 0x00,
+	// 395 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x93, 0x5d, 0xef, 0xd2, 0x30,
+	0x14, 0xc6, 0xb7, 0x21, 0xb8, 0x1d, 0x5e, 0x24, 0x05, 0x0c, 0x99, 0x5e, 0x90, 0x5d, 0xa1, 0x89,
+	0x25, 0x01, 0xaf, 0xbc, 0x30, 0x61, 0x31, 0xbc, 0x24, 0x7a, 0x53, 0x48, 0xf4, 0x76, 0xb0, 0x0a,
+	0xcd, 0xe6, 0x5a, 0xdb, 0x4e, 0xe3, 0xc7, 0xf6, 0x1b, 0x98, 0xad, 0x30, 0x40, 0x8d, 0xf2, 0xbf,
+	0xdb, 0x39, 0x3b, 0xbf, 0xe7, 0xbc, 0x3c, 0x29, 0xf4, 0x22, 0xc1, 0x26, 0xd1, 0xee, 0xf3, 0xab,
+	0x43, 0x1e, 0xc9, 0x18, 0x0b, 0xc9, 0x35, 0x0f, 0x3e, 0x41, 0x7f, 0x9e, 0xeb, 0x23, 0x97, 0x4c,
+	0x45, 0x9a, 0xf1, 0x8c, 0xd0, 0xaf, 0x39, 0x55, 0x1a, 0xf5, 0xa1, 0x9e, 0xf2, 0x03, 0xcb, 0x86,
+	0xf6, 0xc8, 0x1e, 0x7b, 0xc4, 0x04, 0xc8, 0x07, 0x57, 0x44, 0x4a, 0x7d, 0xe7, 0x32, 0x1e, 0x3a,
+	0xe5, 0x8f, 0x2a, 0x46, 0x1d, 0x70, 0x98, 0x18, 0xd6, 0xca, 0xac, 0xc3, 0x44, 0xf0, 0x16, 0x5c,
+	0x42, 0x95, 0xe0, 0x99, 0xa2, 0xa8, 0x0b, 0x0e, 0x4f, 0x4a, 0x29, 0x77, 0x65, 0x11, 0x87, 0x27,
+	0xe8, 0x29, 0xd4, 0xa9, 0x94, 0x5c, 0x1a, 0x99, 0x95, 0x45, 0x4c, 0x18, 0xba, 0xd0, 0x90, 0x54,
+	0xe5, 0xa9, 0x0e, 0xde, 0x00, 0x5a, 0xa4, 0xb9, 0x3a, 0x86, 0xf9, 0x3e, 0xa1, 0xfa, 0xdf, 0x73,
+	0x99, 0xde, 0x4e, 0xd5, 0x7b, 0x06, 0xed, 0x4d, 0xbe, 0xcb, 0x2e, 0x98, 0x29, 0xb0, 0xcf, 0x05,
+	0x08, 0xc1, 0xa3, 0x94, 0x29, 0x5d, 0x22, 0x2e, 0x29, 0xbf, 0x83, 0x17, 0xd0, 0x7c, 0xcf, 0x54,
+	0x85, 0xf8, 0xe0, 0x16, 0xe9, 0xed, 0x0f, 0x41, 0xcd, 0xe4, 0xa4, 0x8a, 0x83, 0xe7, 0xd0, 0x58,
+	0x8b, 0xa2, 0xb8, 0x12, 0xb2, 0x47, 0xb5, 0xb1, 0x77, 0x12, 0xfa, 0x00, 0x2d, 0x23, 0x74, 0xda,
+	0xfe, 0x19, 0xd4, 0x98, 0x50, 0xa5, 0x48, 0x73, 0xfa, 0x18, 0x1b, 0x72, 0x65, 0x91, 0x22, 0xfb,
+	0xff, 0x43, 0x4c, 0x7f, 0x3a, 0xf0, 0x64, 0x1e, 0x2e, 0x96, 0x85, 0x6b, 0x1b, 0x2a, 0xbf, 0xb1,
+	0x3d, 0x45, 0x33, 0x68, 0xdf, 0xd8, 0x86, 0x06, 0xf8, 0x6f, 0x36, 0xfa, 0x1e, 0x3e, 0x4f, 0x11,
+	0x58, 0x68, 0x02, 0xcd, 0xab, 0x8b, 0xa2, 0x1e, 0xfe, 0xf3, 0xbe, 0xbf, 0x03, 0xdd, 0x79, 0x1c,
+	0xaf, 0xc5, 0x96, 0x7f, 0x3c, 0x32, 0x4d, 0x8b, 0xe5, 0x50, 0x07, 0xdf, 0x5c, 0xf6, 0x16, 0x78,
+	0x0d, 0x83, 0x77, 0x34, 0xa5, 0x9a, 0xae, 0xc5, 0x42, 0xf2, 0x2f, 0x77, 0x52, 0x97, 0x36, 0x61,
+	0x1a, 0xed, 0x93, 0x07, 0xb7, 0xb9, 0x93, 0x7a, 0x09, 0xde, 0x92, 0xea, 0x93, 0x6f, 0x2d, 0x7c,
+	0xe5, 0xb5, 0xdf, 0xc6, 0xd7, 0x86, 0x05, 0xd6, 0xae, 0x51, 0xbe, 0x8e, 0xd9, 0xaf, 0x00, 0x00,
+	0x00, 0xff, 0xff, 0xcc, 0xe1, 0x3e, 0xf6, 0x34, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -313,6 +484,8 @@ type ABFGuardServiceClient interface {
 	AddIpToBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error)
 	// DeleteIpFromBlacklist .
 	DeleteIpFromBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error)
+	// GetWhiteList .
+	GetIpList(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
 }
 
 type aBFGuardServiceClient struct {
@@ -377,6 +550,15 @@ func (c *aBFGuardServiceClient) DeleteIpFromBlacklist(ctx context.Context, in *S
 	return out, nil
 }
 
+func (c *aBFGuardServiceClient) GetIpList(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
+	out := new(ListResponse)
+	err := c.cc.Invoke(ctx, "/ABFGuardService/GetIpList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ABFGuardServiceServer is the server API for ABFGuardService service.
 type ABFGuardServiceServer interface {
 	// Authorisation .
@@ -391,6 +573,8 @@ type ABFGuardServiceServer interface {
 	AddIpToBlacklist(context.Context, *SubnetRequest) (*Response, error)
 	// DeleteIpFromBlacklist .
 	DeleteIpFromBlacklist(context.Context, *SubnetRequest) (*Response, error)
+	// GetWhiteList .
+	GetIpList(context.Context, *ListRequest) (*ListResponse, error)
 }
 
 // UnimplementedABFGuardServiceServer can be embedded to have forward compatible implementations.
@@ -415,8 +599,11 @@ func (*UnimplementedABFGuardServiceServer) AddIpToBlacklist(ctx context.Context,
 func (*UnimplementedABFGuardServiceServer) DeleteIpFromBlacklist(ctx context.Context, req *SubnetRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIpFromBlacklist not implemented")
 }
+func (*UnimplementedABFGuardServiceServer) GetIpList(ctx context.Context, req *ListRequest) (*ListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetIpList not implemented")
+}
 
-func RegisterABFGuardServiceServer(s *grpc.Server, srv ABFGuardServiceServer) {
+func RegisterABFGuardServiceServer(s *grpc.Server, srv *grpc2.ABFGServer) {
 	s.RegisterService(&_ABFGuardService_serviceDesc, srv)
 }
 
@@ -528,6 +715,24 @@ func _ABFGuardService_DeleteIpFromBlacklist_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ABFGuardService_GetIpList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ABFGuardServiceServer).GetIpList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ABFGuardService/GetIpList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ABFGuardServiceServer).GetIpList(ctx, req.(*ListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _ABFGuardService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "ABFGuardService",
 	HandlerType: (*ABFGuardServiceServer)(nil),
@@ -555,6 +760,10 @@ var _ABFGuardService_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteIpFromBlacklist",
 			Handler:    _ABFGuardService_DeleteIpFromBlacklist_Handler,
+		},
+		{
+			MethodName: "GetIpList",
+			Handler:    _ABFGuardService_GetIpList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -3,11 +3,21 @@ package services
 import "github.com/omerkaya1/abf-guard/internal/domain/interfaces"
 
 // StorageService .
-type StorageService struct {
+type Storage struct {
 	Processor interfaces.StorageProcessor
 }
 
-// AuthenticationRequest .
-func (ss *StorageService) AuthenticationRequest() {
+// AddIp .
+func (ss *Storage) AddIp() {
+
+}
+
+// DeleteIp .
+func (ss *Storage) DeleteIp() {
+
+}
+
+// GetIpList .
+func (ss *Storage) GetIpList() {
 
 }

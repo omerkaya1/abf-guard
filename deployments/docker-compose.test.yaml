@@ -8,9 +8,6 @@ services:
       - POSTGRES_USER=abfg_user
       - POSTGRES_PASSWORD=some_pwd
       - POSTGRES_DB=abfg_db
-    volumes:
-      - ../db/data:/var/lib/postgresql/data
-      - ../db/001.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "54321:5432"
     networks:
@@ -29,12 +26,24 @@ services:
     depends_on:
       - postgres
     ports:
-      - "7070:7070"
+      - "6666:6666"
     networks:
       db-net:
         aliases:
           - abf-guard
     restart: on-failure
+
+  # Integration tests
+  integration_tests:
+    build:
+      context: ../.
+      dockerfile: ./deployments/abfg-integration-test/Dockerfile
+    depends_on:
+      - postgres
+      - abf-guard
+    restart: on-failure
+    networks:
+      - db-net
 
 # Network definitions
 networks:

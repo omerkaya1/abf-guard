@@ -1,9 +1,12 @@
 package grpc
 
 import (
+	"context"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
+	req "github.com/omerkaya1/abf-guard/internal/grpc"
 	"google.golang.org/grpc"
 	"log"
+	"time"
 
 	abfg "github.com/omerkaya1/abf-guard/internal/grpc/api"
 	"github.com/spf13/cobra"
@@ -48,6 +51,13 @@ var (
 		Run:     deleteIpCmdFunc,
 		Example: "  abf-guard grpc-client delete -b true ",
 	}
+
+	getIpListActionCmd = &cobra.Command{
+		Use:     "get",
+		Short:   "get ip list command",
+		Run:     getIpListCmdFunc,
+		Example: "  abf-guard grpc-client delete -b true ",
+	}
 )
 
 func init() {
@@ -55,7 +65,7 @@ func init() {
 	ClientRootCmd.PersistentFlags().StringVarP(&host, "host", "s", "127.0.0.1", "-h, --host=127.0.0.1")
 	ClientRootCmd.PersistentFlags().StringVarP(&port, "port", "p", "6666", "-p, --port=7777")
 	ClientRootCmd.PersistentFlags().StringVarP(&login, "login", "l", "", "-l, --login=morty")
-	ClientRootCmd.PersistentFlags().StringVarP(&password, "password", "w", "", "-w, --password=oh_jeez")
+	ClientRootCmd.PersistentFlags().StringVarP(&password, "password", "w", "", "-w, --password=oh_geez")
 	ClientRootCmd.PersistentFlags().StringVarP(&ip, "ip", "i", "", "-i, --ip=127.0.0.1")
 	ClientRootCmd.PersistentFlags().StringVarP(&mask, "mask", "m", "", "-m, --mask=")
 	ClientRootCmd.PersistentFlags().BoolVarP(&black, "blacklist", "b", false, "-b, --blacklist=true")
@@ -65,28 +75,75 @@ func authoriseCmdFunc(cmd *cobra.Command, args []string) {
 	if login == "" || password == "" || ip == "" {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
 	}
-
-	//client := getGRPCClient()
-	//ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
-	//rb := models.Authorisation{
-	//	Login:    login,
-	//	Password: password,
-	//	IP:       ip,
-	//}
-	//ok, err := client.Authorisation(ctx, )
-
+	client := getGRPCClient()
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+	ok, err := client.Authorisation(ctx, req.PrepareGRPCAuthorisationBody(login, password, ip))
+	if err != nil {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
+	}
+	log.Println(ok)
 }
 
 func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
+	if login == "" || ip == "" {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
+	}
+	client := getGRPCClient()
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
 
+	ok, err := client.FlushBucket(ctx, req.PrepareFlushBucketGrpcRequest(login, ip))
+	if err != nil {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
+	}
+	log.Println(ok)
 }
 
 func addIpCmdFunc(cmd *cobra.Command, args []string) {
+	if ip == "" {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
+	}
+	client := getGRPCClient()
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
 
+	resp, err := client.AddIpToWhitelist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
+	if err != nil {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
+	}
+	if resp.GetError() != "" {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
+	}
+	log.Println(resp.GetOk())
 }
 
 func deleteIpCmdFunc(cmd *cobra.Command, args []string) {
+	if ip == "" {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
+	}
+	client := getGRPCClient()
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
 
+	resp, err := client.DeleteIpFromBlacklist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
+	if err != nil {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
+	}
+	if resp.GetError() != "" {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
+	}
+	log.Println(resp.GetOk())
+}
+
+func getIpListCmdFunc(cmd *cobra.Command, args []string) {
+	client := getGRPCClient()
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+
+	resp, err := client.GetIpList(ctx, req.PrepareIpListGrpcRequest(black))
+	if err != nil {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
+	}
+	if resp.GetError() != "" {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
+	}
+	log.Println(resp.GetResult())
 }
 
 func getGRPCClient() abfg.ABFGuardServiceClient {

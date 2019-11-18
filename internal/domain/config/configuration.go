@@ -7,14 +7,18 @@ import (
 	"github.com/spf13/viper"
 )
 
-// NOTE: maybe it's best to use an interface for configurations?
 // Config is a structure that holds all the configuration
 type Config struct {
-	Host   string `json:"host" yaml:"host" toml:"host"`
-	Port   string `json:"port" yaml:"port" toml:"port"`
-	Level  int    `json:"level" yaml:"level" toml:"level"`
+	Server Server `json:"server" yaml:"server" toml:"server"`
 	Limits Limits `json:"limits" yaml:"limits" toml:"limits"`
 	DB     DBConf `json:"db" yaml:"db" toml:"db"`
+}
+
+// Server is a structure that holds settings for the server
+type Server struct {
+	Host  string `json:"host" yaml:"host" toml:"host"`
+	Port  string `json:"port" yaml:"port" toml:"port"`
+	Level int    `json:"level" yaml:"level" toml:"level"`
 }
 
 // Limits is a structure that holds settings for all the limits

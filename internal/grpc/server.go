@@ -13,10 +13,10 @@ import (
 type ABFGServer struct {
 	Cfg            *config.Config
 	Logger         *zap.Logger
-	StorageService *services.StorageService
+	StorageService *services.Storage
 }
 
-func NewServer(cfg *config.Config, log *zap.Logger, ss *services.StorageService) *ABFGServer {
+func NewServer(cfg *config.Config, log *zap.Logger, ss *services.Storage) *ABFGServer {
 	return &ABFGServer{
 		Cfg:            cfg,
 		Logger:         log,
@@ -26,13 +26,13 @@ func NewServer(cfg *config.Config, log *zap.Logger, ss *services.StorageService)
 
 func (s *ABFGServer) Run() {
 	server := grpc.NewServer()
-	l, err := net.Listen("tcp", s.Cfg.Host+":"+s.Cfg.Port)
+	l, err := net.Listen("tcp", s.Cfg.Server.Host+":"+s.Cfg.Server.Port)
 	if err != nil {
 		s.Logger.Sugar().Errorf("%s", err)
 	}
 
 	abfg.RegisterABFGuardServiceServer(server, s)
 
-	s.Logger.Sugar().Infof("Server initialisation is completed. Server address: %s:%s", s.Cfg.Host, s.Cfg.Port)
+	s.Logger.Sugar().Infof("Server initialisation is completed. Server address: %s:%s", s.Cfg.Server.Host, s.Cfg.Server.Port)
 	s.Logger.Sugar().Errorf("%s", server.Serve(l))
 }

@@ -23,8 +23,26 @@ message FlushBucketRequest {
 
 // SubnetRequest is a message that is used to request black and white lists actions
 message SubnetRequest {
-    string login = 1;
-    string ip = 2;
+    string ip = 1;
+    bool list = 2;
+}
+
+// SubnetRequest is a message that is used to request black and white lists actions
+message ListRequest {
+    bool listType = 1;
+}
+
+// IpList is a message that holds all the IP addresses stored either in the whitelist or the blacklist
+message IpList {
+    repeated string list = 1;
+}
+
+// SubnetRequest is a message that is used to request black and white lists actions
+message ListResponse {
+    oneof result {
+        IpList ips = 1;
+        string error = 2;
+    }
 }
 
 // Main API for the project
@@ -41,4 +59,6 @@ service ABFGuardService {
     rpc AddIpToBlacklist(SubnetRequest) returns (Response) {}
     // DeleteIpFromBlacklist .
     rpc DeleteIpFromBlacklist(SubnetRequest) returns (Response) {}
+    // GetWhiteList .
+    rpc GetIpList(ListRequest) returns (ListResponse) {}
 }

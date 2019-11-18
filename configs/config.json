@@ -1,7 +1,9 @@
 {
-  "host": "abf-guard",
-  "port": "6666",
-  "level": 2,
+  "server": {
+    "host": "abf-guard",
+    "port": "6666",
+    "level": 2
+  },
   "db": {
     "name": "abfg_db",
     "user": "abfg_user",

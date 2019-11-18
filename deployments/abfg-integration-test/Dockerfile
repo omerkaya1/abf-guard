@@ -19,4 +19,4 @@ WORKDIR /opt/abf-guard
 COPY --from=app-builder /opt/abf-guard/bin/abf-guard ./bin/
 COPY --from=app-builder /opt/abf-guard/configs/config.json ./configs/
 EXPOSE 7070
-CMD ["./bin/abf-guard", "grpc-server", "-c", "./configs/config.json"]
+#CMD ["./bin/abf-guard", "grpc-server", "-c", "./configs/config.json"]

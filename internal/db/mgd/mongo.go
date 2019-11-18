@@ -28,22 +28,17 @@ func NewMongoStorage(cfg config.DBConf) (*MongoStorage, error) {
 	return &MongoStorage{db: client}, nil
 }
 
-// Authenticate .
-func (ps *MongoStorage) Authenticate(context.Context, string, string, string) (bool, error) {
-	return true, nil
-}
-
-// Flash .
-func (ps *MongoStorage) Flash(context.Context, string, string, string) (bool, error) {
-	return true, nil
-}
-
 // Add .
-func (ps *MongoStorage) Add(context.Context, string, string, string) (bool, error) {
-	return true, nil
+func (ps *MongoStorage) Add(context.Context, bool, string) error {
+	return nil
 }
 
 // Delete .
-func (ps *MongoStorage) Delete(context.Context, string, string, string) (bool, error) {
-	return true, nil
+func (ps *MongoStorage) Delete(context.Context, bool, string) error {
+	return nil
+}
+
+// GetIpList .
+func (ps *MongoStorage) GetIpList(context.Context, bool) ([]string, error) {
+	return nil, nil
 }
