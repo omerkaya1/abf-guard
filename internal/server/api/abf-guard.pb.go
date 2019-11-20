@@ -7,6 +7,7 @@ import (
 	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	grpc2 "github.com/omerkaya1/abf-guard/internal/grpc"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -602,7 +603,7 @@ func (*UnimplementedABFGuardServiceServer) GetIPList(ctx context.Context, req *L
 	return nil, status.Errorf(codes.Unimplemented, "method GetIPList not implemented")
 }
 
-func RegisterABFGuardServiceServer(s *grpc.Server, srv ABFGuardServiceServer) {
+func RegisterABFGuardServiceServer(s *grpc.Server, srv *grpc2.ABFGServer) {
 	s.RegisterService(&_ABFGuardService_serviceDesc, srv)
 }
 

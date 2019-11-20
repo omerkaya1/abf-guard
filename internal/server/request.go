@@ -1,6 +1,6 @@
-package grpc
+package server
 
-import abfg "github.com/omerkaya1/abf-guard/internal/grpc/api"
+import abfg "github.com/omerkaya1/abf-guard/internal/server/api"
 
 // Authorisation .
 type Authorisation struct {

@@ -15,6 +15,7 @@
   "limits": {
     "login": 10,
     "password": 100,
-    "ip": 1000
+    "ip": 1000,
+    "expire": "1m"
   }
 }

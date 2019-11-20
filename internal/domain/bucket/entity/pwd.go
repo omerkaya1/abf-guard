@@ -1,29 +1,50 @@
 package entity
 
-import "github.com/omerkaya1/abf-guard/internal/domain/bucket"
+import (
+	"context"
+	"sync"
+)
 
 // Password .
 type Password struct {
-	settings *bucket.Settings
-	flash    chan struct{}
+	limit int
+	name  string
+	stop  chan struct{}
+	m     sync.RWMutex
 }
 
 // NewPasswordBucket .
-func NewPasswordBucket() *Password {
-	return nil
+func NewPasswordBucket(name string, limit int) *Password {
+	return &Password{
+		name:  name,
+		limit: limit,
+		stop:  make(chan struct{}, 0),
+		m:     sync.RWMutex{},
+	}
 }
 
-// Add .
-func (ib *Password) Add() error {
-	return nil
+// Start .
+func (p *Password) Start(ctx context.Context, blacklist chan string, close chan string) {
+CYCLE:
+	for {
+		select {
+		case <-p.stop:
+			blacklist <- p.name
+			break CYCLE
+		case <-ctx.Done():
+			// The lifetime of the bucket has expired, leave now
+			close <- p.name
+			break CYCLE
+		}
+	}
 }
 
-// Flush .
-func (ib *Password) Flush() error {
-	return nil
-}
-
-// Delete .
-func (ib *Password) Delete() error {
-	return nil
+// Decrement .
+func (p *Password) Decrement() {
+	p.m.Lock()
+	defer p.m.Unlock()
+	if p.limit--; p.limit < 0 {
+		p.stop <- struct{}{}
+	}
+	return
 }

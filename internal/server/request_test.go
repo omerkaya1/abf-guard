@@ -1,4 +1,4 @@
-package grpc
+package server
 
 import (
 	abfg "github.com/omerkaya1/abf-guard/internal/grpc/api"

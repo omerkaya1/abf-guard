@@ -3,12 +3,12 @@ package grpc
 import (
 	"context"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	req "github.com/omerkaya1/abf-guard/internal/grpc"
+	req "github.com/omerkaya1/abf-guard/internal/server"
 	"google.golang.org/grpc"
 	"log"
 	"time"
 
-	abfg "github.com/omerkaya1/abf-guard/internal/grpc/api"
+	abfg "github.com/omerkaya1/abf-guard/internal/server/api"
 	"github.com/spf13/cobra"
 )
 

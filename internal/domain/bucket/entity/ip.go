@@ -1,29 +1,50 @@
 package entity
 
-import "github.com/omerkaya1/abf-guard/internal/domain/bucket"
+import (
+	"context"
+	"sync"
+)
 
 // IP .
 type IP struct {
-	settings *bucket.Settings
-	flash    chan struct{}
+	limit int
+	name  string
+	stop  chan struct{}
+	m     sync.RWMutex
 }
 
 // NewIPBucket .
-func NewIPBucket() *IP {
-	return nil
+func NewIPBucket(name string, limit int) *IP {
+	return &IP{
+		name:  name,
+		limit: limit,
+		stop:  make(chan struct{}, 0),
+		m:     sync.RWMutex{},
+	}
 }
 
-// Add .
-func (i *IP) Add() error {
-	return nil
+// Start .
+func (i *IP) Start(ctx context.Context, blacklist chan string, close chan string) {
+CYCLE:
+	for {
+		select {
+		case <-i.stop:
+			blacklist <- i.name
+			break CYCLE
+		case <-ctx.Done():
+			// The lifetime of the bucket has expired, leave now
+			close <- i.name
+			break CYCLE
+		}
+	}
 }
 
-// Flush .
-func (i *IP) Flush() error {
-	return nil
-}
-
-// Delete .
-func (i *IP) Delete() error {
-	return nil
+// Decrement .
+func (i *IP) Decrement() {
+	i.m.Lock()
+	defer i.m.Unlock()
+	if i.limit--; i.limit < 0 {
+		i.stop <- struct{}{}
+	}
+	return
 }

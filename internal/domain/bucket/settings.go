@@ -1,7 +1,11 @@
 package bucket
 
+import "time"
+
 // Settings .
 type Settings struct {
-	Limit  int
-	Expire int
+	LoginLimit    int
+	PasswordLimit int
+	IPLimit       int
+	Expire        time.Duration
 }

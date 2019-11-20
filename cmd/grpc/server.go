@@ -7,7 +7,7 @@ import (
 
 	"github.com/omerkaya1/abf-guard/internal/domain/config"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	"github.com/omerkaya1/abf-guard/internal/grpc"
+	"github.com/omerkaya1/abf-guard/internal/server"
 	logger "github.com/omerkaya1/abf-guard/log"
 	"github.com/spf13/cobra"
 )
@@ -40,7 +40,7 @@ var ServerRootCmd = &cobra.Command{
 			log.Fatalf("%s: dbFromConfig failed: %s", errors.ErrServiceCmdPrefix, err)
 		}
 		//Init GRPC server
-		srv := grpc.NewServer(cfg, l, &services.Storage{Processor: mainDB})
+		srv := server.NewServer(cfg, l, &services.Storage{Processor: mainDB})
 		// Run the GRPC server
 		srv.Run()
 	},

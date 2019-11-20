@@ -1,8 +1,8 @@
-package grpc
+package server
 
 import (
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	abfg "github.com/omerkaya1/abf-guard/internal/grpc/api"
+	abfg "github.com/omerkaya1/abf-guard/internal/server/api"
 )
 
 // PrepareGRPCResponse .

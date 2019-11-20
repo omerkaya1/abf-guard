@@ -29,7 +29,7 @@ build: ## Builds the project
 
 .PHONY: gen
 gen: ## Triggers code generation of
-	protoc --go_out=plugins=grpc:$(CURDIR)/internal/grpc api/*.proto
+	protoc --go_out=plugins=grpc:$(CURDIR)/internal/server api/*.proto
 
 .PHONY: dockerbuild
 dockerbuild: mod ## Builds a docker image with a project

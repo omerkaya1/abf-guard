@@ -1,11 +1,11 @@
-package grpc
+package server
 
 import (
 	"github.com/omerkaya1/abf-guard/internal/domain/services"
 	"net"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/config"
-	abfg "github.com/omerkaya1/abf-guard/internal/grpc/api"
+	abfg "github.com/omerkaya1/abf-guard/internal/server/api"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
