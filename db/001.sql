@@ -7,5 +7,3 @@ create table blacklist (
     id serial primary key,
     ip text not null
 );
-
--- create table tempBan ();

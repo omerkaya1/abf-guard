@@ -3,18 +3,18 @@ package grpc
 import (
 	"context"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	req "github.com/omerkaya1/abf-guard/internal/server"
+	req "github.com/omerkaya1/abf-guard/internal/grpc"
+	api "github.com/omerkaya1/abf-guard/internal/grpc/api"
 	"google.golang.org/grpc"
 	"log"
 	"time"
 
-	abfg "github.com/omerkaya1/abf-guard/internal/server/api"
 	"github.com/spf13/cobra"
 )
 
 var (
-	host, port, login, password, ip, mask string
-	black                                 bool
+	host, port, login, password, ip, entity string
+	black                                   bool
 )
 
 var (
@@ -26,49 +26,56 @@ var (
 	}
 
 	authoriseActionCmd = &cobra.Command{
-		Use:     "authorise",
-		Short:   "Send an authorisation request",
+		Use:     "auth",
+		Short:   "Authorisation request",
 		Run:     authoriseCmdFunc,
-		Example: "  abf-guard grpc-client authorise -s 127.0.0.1 -p 6666 -l user_name -p some_password -i 127.0.0.1",
+		Example: "  abf-guard grpc-client auth -s 127.0.0.1 -p 6666 -l user_name -w some_password -i 127.0.0.1",
 	}
 
 	flashBucketCmd = &cobra.Command{
-		Use:     "flash",
-		Short:   "Update calendar event",
+		Use:     "flush",
+		Short:   "Send a flush buckets request",
 		Run:     flashBucketCmdFunc,
-		Example: "  abf-guard grpc-client flash -l morty -i 127.0.0.1",
+		Example: "  abf-guard grpc-client flush -l morty -i 127.0.0.1",
+	}
+
+	purgeBucketCmd = &cobra.Command{
+		Use:     "purge",
+		Short:   "Purge single bucket",
+		Run:     purgeBucketCmdFunc,
+		Example: "  abf-guard grpc-client purge -e morty",
 	}
 
 	addIPActionCmd = &cobra.Command{
 		Use:     "add",
-		Short:   "add ip command",
+		Short:   "Add ip to a specified list",
 		Run:     addIPCmdFunc,
-		Example: "  abf-guard grpc-client add -b true ",
+		Example: "  abf-guard grpc-client add -i 10.0.0.1 -b",
 	}
 
 	deleteIPActionCmd = &cobra.Command{
 		Use:     "delete",
-		Short:   "delete ip command",
+		Short:   "Delete ip from a specified list",
 		Run:     deleteIPCmdFunc,
-		Example: "  abf-guard grpc-client delete -b true ",
+		Example: "  abf-guard grpc-client delete -i 10.0.0.1 -b",
 	}
 
 	getIPListActionCmd = &cobra.Command{
 		Use:     "get",
-		Short:   "get ip list command",
+		Short:   "Get a list of ip from a specified list",
 		Run:     getIPListCmdFunc,
-		Example: "  abf-guard grpc-client delete -b true ",
+		Example: "  abf-guard grpc-client get -b",
 	}
 )
 
 func init() {
-	ClientRootCmd.AddCommand(authoriseActionCmd, flashBucketCmd, addIPActionCmd, deleteIPActionCmd, getIPListActionCmd)
+	ClientRootCmd.AddCommand(authoriseActionCmd, flashBucketCmd, addIPActionCmd, deleteIPActionCmd, getIPListActionCmd, purgeBucketCmd)
 	ClientRootCmd.PersistentFlags().StringVarP(&host, "host", "s", "127.0.0.1", "-h, --host=127.0.0.1")
 	ClientRootCmd.PersistentFlags().StringVarP(&port, "port", "p", "6666", "-p, --port=7777")
 	ClientRootCmd.PersistentFlags().StringVarP(&login, "login", "l", "", "-l, --login=morty")
 	ClientRootCmd.PersistentFlags().StringVarP(&password, "password", "w", "", "-w, --password=oh_geez")
 	ClientRootCmd.PersistentFlags().StringVarP(&ip, "ip", "i", "", "-i, --ip=127.0.0.1")
-	ClientRootCmd.PersistentFlags().StringVarP(&mask, "mask", "m", "", "-m, --mask=")
+	ClientRootCmd.PersistentFlags().StringVarP(&entity, "entity", "e", "", "-e, --entity=bucket_name")
 	ClientRootCmd.PersistentFlags().BoolVarP(&black, "blacklist", "b", false, "-b, --blacklist=true")
 }
 
@@ -82,7 +89,10 @@ func authoriseCmdFunc(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
 	}
-	log.Println(ok)
+	if !ok.GetOk() {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrAuthorisationFailed)
+	}
+	log.Println("the request may proceed")
 }
 
 func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
@@ -92,11 +102,31 @@ func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
 	client := getGRPCClient()
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
 
-	ok, err := client.FlushBucket(ctx, req.PrepareFlushBucketGrpcRequest(login, ip))
+	ok, err := client.FlushBuckets(ctx, req.PrepareFlushBucketsGrpcRequest(login, ip))
 	if err != nil {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
 	}
-	log.Println(ok)
+	if !ok.GetOk() {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrFlushBucketsFailed)
+	}
+	log.Println("the flush request succeeded")
+}
+
+func purgeBucketCmdFunc(cmd *cobra.Command, args []string) {
+	if entity == "" {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
+	}
+	client := getGRPCClient()
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+
+	ok, err := client.PurgeBucket(ctx, req.PreparePurgeBucketGrpcRequest(entity))
+	if err != nil {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
+	}
+	if !ok.GetOk() {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrPurgeBucketFailed)
+	}
+	log.Println("the bucket was successfully removed")
 }
 
 func addIPCmdFunc(cmd *cobra.Command, args []string) {
@@ -113,7 +143,14 @@ func addIPCmdFunc(cmd *cobra.Command, args []string) {
 	if resp.GetError() != "" {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
 	}
-	log.Println(resp.GetOk())
+	if !resp.GetOk() {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrAddIPFailure)
+	}
+	if black {
+		log.Println("ip was added to the blacklist")
+	} else {
+		log.Println("ip was added to the whitelist")
+	}
 }
 
 func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
@@ -130,7 +167,14 @@ func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
 	if resp.GetError() != "" {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
 	}
-	log.Println(resp.GetOk())
+	if !resp.GetOk() {
+		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrDeleteIPFailure)
+	}
+	if black {
+		log.Println("ip was deleted from the blacklist")
+	} else {
+		log.Println("ip was deleted from the whitelist")
+	}
 }
 
 func getIPListCmdFunc(cmd *cobra.Command, args []string) {
@@ -147,10 +191,10 @@ func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 	log.Println(resp.GetResult())
 }
 
-func getGRPCClient() abfg.ABFGuardServiceClient {
+func getGRPCClient() api.ABFGuardClient {
 	conn, err := grpc.Dial(host+":"+port, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
 	}
-	return abfg.NewABFGuardServiceClient(conn)
+	return api.NewABFGuardClient(conn)
 }

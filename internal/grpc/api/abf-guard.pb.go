@@ -7,7 +7,6 @@ import (
 	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	grpc2 "github.com/omerkaya1/abf-guard/internal/grpc"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -162,7 +161,7 @@ func (*Response) XXX_OneofWrappers() []interface{} {
 	}
 }
 
-// FlushBucketRequest is a message that contains information on a bucket that needs to be flashed
+// FlushBucketRequest is a message that contains information on a bucket that needs to be flushed
 type FlushBucketRequest struct {
 	Login                string   `protobuf:"bytes,1,opt,name=login,proto3" json:"login,omitempty"`
 	Ip                   string   `protobuf:"bytes,2,opt,name=ip,proto3" json:"ip,omitempty"`
@@ -210,6 +209,46 @@ func (m *FlushBucketRequest) GetIp() string {
 	return ""
 }
 
+// FlushBucketRequest is a message that contains information on a bucket that needs to be flushed
+type PurgeBucketRequest struct {
+	Name                 string   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *PurgeBucketRequest) Reset()         { *m = PurgeBucketRequest{} }
+func (m *PurgeBucketRequest) String() string { return proto.CompactTextString(m) }
+func (*PurgeBucketRequest) ProtoMessage()    {}
+func (*PurgeBucketRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_79d920cdee07ab3e, []int{3}
+}
+
+func (m *PurgeBucketRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_PurgeBucketRequest.Unmarshal(m, b)
+}
+func (m *PurgeBucketRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_PurgeBucketRequest.Marshal(b, m, deterministic)
+}
+func (m *PurgeBucketRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_PurgeBucketRequest.Merge(m, src)
+}
+func (m *PurgeBucketRequest) XXX_Size() int {
+	return xxx_messageInfo_PurgeBucketRequest.Size(m)
+}
+func (m *PurgeBucketRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_PurgeBucketRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_PurgeBucketRequest proto.InternalMessageInfo
+
+func (m *PurgeBucketRequest) GetName() string {
+	if m != nil {
+		return m.Name
+	}
+	return ""
+}
+
 // SubnetRequest is a message that is used to request black and white lists actions
 type SubnetRequest struct {
 	Ip                   string   `protobuf:"bytes,1,opt,name=ip,proto3" json:"ip,omitempty"`
@@ -223,7 +262,7 @@ func (m *SubnetRequest) Reset()         { *m = SubnetRequest{} }
 func (m *SubnetRequest) String() string { return proto.CompactTextString(m) }
 func (*SubnetRequest) ProtoMessage()    {}
 func (*SubnetRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_79d920cdee07ab3e, []int{3}
+	return fileDescriptor_79d920cdee07ab3e, []int{4}
 }
 
 func (m *SubnetRequest) XXX_Unmarshal(b []byte) error {
@@ -270,7 +309,7 @@ func (m *ListRequest) Reset()         { *m = ListRequest{} }
 func (m *ListRequest) String() string { return proto.CompactTextString(m) }
 func (*ListRequest) ProtoMessage()    {}
 func (*ListRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_79d920cdee07ab3e, []int{4}
+	return fileDescriptor_79d920cdee07ab3e, []int{5}
 }
 
 func (m *ListRequest) XXX_Unmarshal(b []byte) error {
@@ -310,7 +349,7 @@ func (m *IPList) Reset()         { *m = IPList{} }
 func (m *IPList) String() string { return proto.CompactTextString(m) }
 func (*IPList) ProtoMessage()    {}
 func (*IPList) Descriptor() ([]byte, []int) {
-	return fileDescriptor_79d920cdee07ab3e, []int{5}
+	return fileDescriptor_79d920cdee07ab3e, []int{6}
 }
 
 func (m *IPList) XXX_Unmarshal(b []byte) error {
@@ -353,7 +392,7 @@ func (m *ListResponse) Reset()         { *m = ListResponse{} }
 func (m *ListResponse) String() string { return proto.CompactTextString(m) }
 func (*ListResponse) ProtoMessage()    {}
 func (*ListResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_79d920cdee07ab3e, []int{6}
+	return fileDescriptor_79d920cdee07ab3e, []int{7}
 }
 
 func (m *ListResponse) XXX_Unmarshal(b []byte) error {
@@ -423,6 +462,7 @@ func init() {
 	proto.RegisterType((*AuthorisationRequest)(nil), "AuthorisationRequest")
 	proto.RegisterType((*Response)(nil), "Response")
 	proto.RegisterType((*FlushBucketRequest)(nil), "FlushBucketRequest")
+	proto.RegisterType((*PurgeBucketRequest)(nil), "PurgeBucketRequest")
 	proto.RegisterType((*SubnetRequest)(nil), "SubnetRequest")
 	proto.RegisterType((*ListRequest)(nil), "ListRequest")
 	proto.RegisterType((*IPList)(nil), "IPList")
@@ -432,32 +472,34 @@ func init() {
 func init() { proto.RegisterFile("api/abf-guard.proto", fileDescriptor_79d920cdee07ab3e) }
 
 var fileDescriptor_79d920cdee07ab3e = []byte{
-	// 397 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x93, 0x5d, 0xcf, 0xd2, 0x30,
-	0x14, 0xc7, 0xb7, 0xe1, 0x83, 0xdb, 0xe1, 0x01, 0x49, 0x01, 0x43, 0xa6, 0x17, 0x64, 0x57, 0x68,
-	0x62, 0x49, 0xc0, 0x2b, 0x2f, 0x4c, 0x58, 0x0c, 0x2f, 0x89, 0x26, 0xa4, 0x90, 0xe8, 0xed, 0x60,
-	0x15, 0x9a, 0xcd, 0xb5, 0xb6, 0x9d, 0xc6, 0x8f, 0xed, 0x37, 0x30, 0x5b, 0x61, 0x80, 0x1a, 0xe5,
-	0xb9, 0xdb, 0x39, 0x3b, 0xbf, 0xff, 0x79, 0xf9, 0xa7, 0xd0, 0x89, 0x04, 0x1b, 0x45, 0xdb, 0xcf,
-	0xaf, 0xf6, 0x79, 0x24, 0x63, 0x2c, 0x24, 0xd7, 0x3c, 0xf8, 0x04, 0xdd, 0x69, 0xae, 0x0f, 0x5c,
-	0x32, 0x15, 0x69, 0xc6, 0x33, 0x42, 0xbf, 0xe6, 0x54, 0x69, 0xd4, 0x85, 0xbb, 0x94, 0xef, 0x59,
-	0xd6, 0xb7, 0x07, 0xf6, 0xd0, 0x23, 0x26, 0x40, 0x3e, 0xb8, 0x22, 0x52, 0xea, 0x3b, 0x97, 0x71,
-	0xdf, 0x29, 0x7f, 0x54, 0x31, 0x6a, 0x81, 0xc3, 0x44, 0xbf, 0x56, 0x66, 0x1d, 0x26, 0x82, 0xb7,
-	0xe0, 0x12, 0xaa, 0x04, 0xcf, 0x14, 0x45, 0x6d, 0x70, 0x78, 0x52, 0x4a, 0xb9, 0x0b, 0x8b, 0x38,
-	0x3c, 0x41, 0x4f, 0xe1, 0x8e, 0x4a, 0xc9, 0xa5, 0x91, 0x59, 0x58, 0xc4, 0x84, 0xa1, 0x0b, 0x75,
-	0x49, 0x55, 0x9e, 0xea, 0xe0, 0x0d, 0xa0, 0x59, 0x9a, 0xab, 0x43, 0x98, 0xef, 0x12, 0xaa, 0xff,
-	0x3d, 0x97, 0xe9, 0xed, 0x54, 0xbd, 0x27, 0xd0, 0x5c, 0xe7, 0xdb, 0xec, 0x8c, 0x99, 0x02, 0xfb,
-	0x54, 0x80, 0x10, 0x3c, 0x4a, 0x99, 0xd2, 0x25, 0xe2, 0x92, 0xf2, 0x3b, 0x78, 0x01, 0x8d, 0xf7,
-	0x4c, 0x55, 0x88, 0x0f, 0x6e, 0x91, 0xde, 0xfc, 0x10, 0xd4, 0x4c, 0x4e, 0xaa, 0x38, 0x78, 0x0e,
-	0xf5, 0xe5, 0xaa, 0x28, 0xae, 0x84, 0xec, 0x41, 0x6d, 0xe8, 0x1d, 0x85, 0x3e, 0xc0, 0xbd, 0x11,
-	0x3a, 0x6e, 0xff, 0x0c, 0x6a, 0x4c, 0xa8, 0x52, 0xa4, 0x31, 0x7e, 0x8c, 0x0d, 0xb9, 0xb0, 0x48,
-	0x91, 0xfd, 0xff, 0x21, 0xc6, 0x3f, 0x1d, 0x78, 0x32, 0x0d, 0x67, 0xf3, 0xc2, 0xb5, 0x35, 0x95,
-	0xdf, 0xd8, 0x8e, 0xa2, 0x09, 0x34, 0xaf, 0x6c, 0x43, 0x3d, 0xfc, 0x37, 0x1b, 0x7d, 0x0f, 0x9f,
-	0xa6, 0x08, 0x2c, 0x34, 0x82, 0xc6, 0xc5, 0x45, 0x51, 0x07, 0xff, 0x79, 0xdf, 0xdf, 0x81, 0xf6,
-	0x34, 0x8e, 0x97, 0xab, 0x0d, 0xff, 0x78, 0x60, 0x9a, 0x16, 0xcb, 0xa1, 0x16, 0xbe, 0xba, 0xec,
-	0x35, 0xf0, 0x1a, 0x7a, 0xef, 0x68, 0x4a, 0x35, 0x5d, 0xae, 0x66, 0x92, 0x7f, 0xb9, 0x91, 0x3a,
-	0xb7, 0x09, 0xd3, 0x68, 0x97, 0x3c, 0xb8, 0xcd, 0x8d, 0xd4, 0x4b, 0xf0, 0xe6, 0x54, 0x1f, 0x7d,
-	0xbb, 0xc7, 0x17, 0x5e, 0xfb, 0x4d, 0x7c, 0x69, 0x58, 0x60, 0x6d, 0xeb, 0xe5, 0xeb, 0x98, 0xfc,
-	0x0a, 0x00, 0x00, 0xff, 0xff, 0x85, 0xdb, 0x11, 0x05, 0x34, 0x03, 0x00, 0x00,
+	// 421 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x93, 0x5f, 0x6f, 0xd3, 0x30,
+	0x14, 0xc5, 0xd3, 0x94, 0x15, 0xf7, 0xb6, 0x9d, 0x26, 0x77, 0x43, 0x55, 0xe1, 0x61, 0xf2, 0xd3,
+	0x40, 0xc2, 0x43, 0x2b, 0x4f, 0x3c, 0x20, 0xb5, 0x42, 0x5d, 0x2b, 0x81, 0x14, 0x99, 0x49, 0xf0,
+	0x9a, 0x2e, 0xa6, 0xb5, 0x92, 0xc5, 0xc6, 0x7f, 0x84, 0xf8, 0x2e, 0x7c, 0x58, 0x14, 0xbb, 0xcb,
+	0x12, 0x86, 0x60, 0x7b, 0xf3, 0xbd, 0xf1, 0xf9, 0x9d, 0xe8, 0x9c, 0x04, 0xc6, 0xa9, 0x12, 0xe7,
+	0xe9, 0xe6, 0xdb, 0xeb, 0xad, 0x4b, 0x75, 0x46, 0x95, 0x96, 0x56, 0x92, 0xaf, 0x70, 0x3c, 0x77,
+	0x76, 0x27, 0xb5, 0x30, 0xa9, 0x15, 0xb2, 0x64, 0xfc, 0xbb, 0xe3, 0xc6, 0xe2, 0x63, 0x38, 0x28,
+	0xe4, 0x56, 0x94, 0x93, 0xce, 0x69, 0xe7, 0xac, 0xcf, 0xc2, 0x80, 0xa7, 0x80, 0x54, 0x6a, 0xcc,
+	0x0f, 0xa9, 0xb3, 0x49, 0xec, 0x1f, 0xd4, 0x33, 0x3e, 0x84, 0x58, 0xa8, 0x49, 0xd7, 0x6f, 0x63,
+	0xa1, 0xc8, 0x7b, 0x40, 0x8c, 0x1b, 0x25, 0x4b, 0xc3, 0xf1, 0x11, 0xc4, 0x32, 0xf7, 0x28, 0xb4,
+	0x8a, 0x58, 0x2c, 0x73, 0xfc, 0x0c, 0x0e, 0xb8, 0xd6, 0x52, 0x07, 0xcc, 0x2a, 0x62, 0x61, 0x5c,
+	0x20, 0xe8, 0x69, 0x6e, 0x5c, 0x61, 0xc9, 0x3b, 0xc0, 0xcb, 0xc2, 0x99, 0xdd, 0xc2, 0x5d, 0xe7,
+	0xdc, 0xfe, 0xfb, 0xbd, 0x82, 0x77, 0x5c, 0x7b, 0x9f, 0x01, 0x4e, 0x9c, 0xde, 0xf2, 0xb6, 0x16,
+	0xc3, 0x93, 0x32, 0xbd, 0xe1, 0x7b, 0xa9, 0x3f, 0x93, 0x19, 0x8c, 0x3e, 0xbb, 0x4d, 0x79, 0x77,
+	0x29, 0xa0, 0x3a, 0xb7, 0xa8, 0x4a, 0x54, 0x08, 0x63, 0x3d, 0x1c, 0x31, 0x7f, 0x26, 0x2f, 0x61,
+	0xf0, 0x51, 0x98, 0x5a, 0x32, 0x05, 0x54, 0xad, 0xaf, 0x7e, 0xaa, 0xc0, 0x46, 0xac, 0x9e, 0xc9,
+	0x0b, 0xe8, 0xad, 0x93, 0xea, 0x72, 0x0d, 0xea, 0x9c, 0x76, 0x2b, 0x77, 0x0f, 0xfa, 0x04, 0xc3,
+	0x00, 0xda, 0xe7, 0xf4, 0x1c, 0xba, 0x42, 0x19, 0x0f, 0x19, 0x5c, 0x3c, 0xa5, 0x41, 0xb9, 0x8a,
+	0x58, 0xb5, 0xfd, 0x7f, 0x64, 0x17, 0xbf, 0xba, 0x80, 0xe6, 0x8b, 0xe5, 0x65, 0xd5, 0x2f, 0x9e,
+	0xc1, 0xa8, 0xd5, 0x2c, 0x3e, 0xa1, 0x7f, 0x6b, 0x7a, 0xda, 0xa7, 0xb7, 0xf6, 0x24, 0xc2, 0x6f,
+	0x60, 0xd8, 0x08, 0xdd, 0xe0, 0x31, 0xbd, 0xdf, 0x41, 0x5b, 0x71, 0x0e, 0x83, 0x46, 0xd4, 0x78,
+	0x4c, 0xef, 0x07, 0xff, 0xa7, 0xe0, 0x68, 0x9e, 0x65, 0xeb, 0xe4, 0x4a, 0x7e, 0xd9, 0x09, 0xcb,
+	0xab, 0x1c, 0xf0, 0x21, 0x6d, 0x95, 0xd0, 0x16, 0xbc, 0x85, 0x93, 0x0f, 0xbc, 0xe0, 0x96, 0xaf,
+	0x93, 0xa5, 0x96, 0x37, 0x0f, 0x54, 0xdd, 0xd9, 0x2c, 0x8a, 0xf4, 0x3a, 0x7f, 0xb4, 0xcd, 0x03,
+	0x55, 0xaf, 0xa0, 0x7f, 0xc9, 0xed, 0xbe, 0xe2, 0x21, 0x6d, 0x7c, 0x16, 0xd3, 0x11, 0x6d, 0x76,
+	0x4b, 0xa2, 0x4d, 0xcf, 0xff, 0x72, 0xb3, 0xdf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x52, 0xe6, 0x6c,
+	0x3a, 0x89, 0x03, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -468,302 +510,340 @@ var _ grpc.ClientConn
 // is compatible with the grpc package it is being compiled against.
 const _ = grpc.SupportPackageIsVersion4
 
-// ABFGuardServiceClient is the client API for ABFGuardService service.
+// ABFGuardClient is the client API for ABFGuard service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type ABFGuardServiceClient interface {
-	// Authorisation .
+type ABFGuardClient interface {
+	// Authorisation sends the authorisation request
 	Authorisation(ctx context.Context, in *AuthorisationRequest, opts ...grpc.CallOption) (*Response, error)
-	// FlashBucket .
-	FlushBucket(ctx context.Context, in *FlushBucketRequest, opts ...grpc.CallOption) (*Response, error)
-	// AddIpToWhitelist .
+	// FlashBuckets sends a request to flush the buckets for the specified login and ip
+	FlushBuckets(ctx context.Context, in *FlushBucketRequest, opts ...grpc.CallOption) (*Response, error)
+	// PurgeBucket sends a request to purge the specified bucket
+	PurgeBucket(ctx context.Context, in *PurgeBucketRequest, opts ...grpc.CallOption) (*Response, error)
+	// AddIpToWhitelist sends a request to add the specified subnet to the whitelist
 	AddIPToWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error)
-	// DeleteIpFromWhitelist .
+	// DeleteIpFromWhitelist sends a request to remove the specified subnet from the whitelist
 	DeleteIPFromWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error)
-	// AddIpToBlacklist .
+	// AddIpToBlacklist sends a request to add the specified subnet to the blacklist
 	AddIPToBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error)
-	// DeleteIpFromBlacklist .
+	// DeleteIpFromBlacklist sends a request to remove the specified subnet from the blacklist
 	DeleteIPFromBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error)
-	// GetWhiteList .
+	// GetWhiteList send sa request to retrieve an ip list from a specified list
 	GetIPList(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
 }
 
-type aBFGuardServiceClient struct {
+type aBFGuardClient struct {
 	cc *grpc.ClientConn
 }
 
-func NewABFGuardServiceClient(cc *grpc.ClientConn) ABFGuardServiceClient {
-	return &aBFGuardServiceClient{cc}
+func NewABFGuardClient(cc *grpc.ClientConn) ABFGuardClient {
+	return &aBFGuardClient{cc}
 }
 
-func (c *aBFGuardServiceClient) Authorisation(ctx context.Context, in *AuthorisationRequest, opts ...grpc.CallOption) (*Response, error) {
+func (c *aBFGuardClient) Authorisation(ctx context.Context, in *AuthorisationRequest, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
-	err := c.cc.Invoke(ctx, "/ABFGuardService/Authorisation", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ABFGuard/Authorisation", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBFGuardServiceClient) FlushBucket(ctx context.Context, in *FlushBucketRequest, opts ...grpc.CallOption) (*Response, error) {
+func (c *aBFGuardClient) FlushBuckets(ctx context.Context, in *FlushBucketRequest, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
-	err := c.cc.Invoke(ctx, "/ABFGuardService/FlushBucket", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ABFGuard/FlushBuckets", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBFGuardServiceClient) AddIPToWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error) {
+func (c *aBFGuardClient) PurgeBucket(ctx context.Context, in *PurgeBucketRequest, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
-	err := c.cc.Invoke(ctx, "/ABFGuardService/AddIPToWhitelist", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ABFGuard/PurgeBucket", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBFGuardServiceClient) DeleteIPFromWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error) {
+func (c *aBFGuardClient) AddIPToWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
-	err := c.cc.Invoke(ctx, "/ABFGuardService/DeleteIPFromWhitelist", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ABFGuard/AddIPToWhitelist", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBFGuardServiceClient) AddIPToBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error) {
+func (c *aBFGuardClient) DeleteIPFromWhitelist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
-	err := c.cc.Invoke(ctx, "/ABFGuardService/AddIPToBlacklist", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ABFGuard/DeleteIPFromWhitelist", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBFGuardServiceClient) DeleteIPFromBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error) {
+func (c *aBFGuardClient) AddIPToBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
-	err := c.cc.Invoke(ctx, "/ABFGuardService/DeleteIPFromBlacklist", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ABFGuard/AddIPToBlacklist", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *aBFGuardServiceClient) GetIPList(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
+func (c *aBFGuardClient) DeleteIPFromBlacklist(ctx context.Context, in *SubnetRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/ABFGuard/DeleteIPFromBlacklist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aBFGuardClient) GetIPList(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
 	out := new(ListResponse)
-	err := c.cc.Invoke(ctx, "/ABFGuardService/GetIPList", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ABFGuard/GetIPList", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// ABFGuardServiceServer is the server API for ABFGuardService service.
-type ABFGuardServiceServer interface {
-	// Authorisation .
+// ABFGuardServer is the server API for ABFGuard service.
+type ABFGuardServer interface {
+	// Authorisation sends the authorisation request
 	Authorisation(context.Context, *AuthorisationRequest) (*Response, error)
-	// FlashBucket .
-	FlushBucket(context.Context, *FlushBucketRequest) (*Response, error)
-	// AddIpToWhitelist .
+	// FlashBuckets sends a request to flush the buckets for the specified login and ip
+	FlushBuckets(context.Context, *FlushBucketRequest) (*Response, error)
+	// PurgeBucket sends a request to purge the specified bucket
+	PurgeBucket(context.Context, *PurgeBucketRequest) (*Response, error)
+	// AddIpToWhitelist sends a request to add the specified subnet to the whitelist
 	AddIPToWhitelist(context.Context, *SubnetRequest) (*Response, error)
-	// DeleteIpFromWhitelist .
+	// DeleteIpFromWhitelist sends a request to remove the specified subnet from the whitelist
 	DeleteIPFromWhitelist(context.Context, *SubnetRequest) (*Response, error)
-	// AddIpToBlacklist .
+	// AddIpToBlacklist sends a request to add the specified subnet to the blacklist
 	AddIPToBlacklist(context.Context, *SubnetRequest) (*Response, error)
-	// DeleteIpFromBlacklist .
+	// DeleteIpFromBlacklist sends a request to remove the specified subnet from the blacklist
 	DeleteIPFromBlacklist(context.Context, *SubnetRequest) (*Response, error)
-	// GetWhiteList .
+	// GetWhiteList send sa request to retrieve an ip list from a specified list
 	GetIPList(context.Context, *ListRequest) (*ListResponse, error)
 }
 
-// UnimplementedABFGuardServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedABFGuardServiceServer struct {
+// UnimplementedABFGuardServer can be embedded to have forward compatible implementations.
+type UnimplementedABFGuardServer struct {
 }
 
-func (*UnimplementedABFGuardServiceServer) Authorisation(ctx context.Context, req *AuthorisationRequest) (*Response, error) {
+func (*UnimplementedABFGuardServer) Authorisation(ctx context.Context, req *AuthorisationRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authorisation not implemented")
 }
-func (*UnimplementedABFGuardServiceServer) FlushBucket(ctx context.Context, req *FlushBucketRequest) (*Response, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FlushBucket not implemented")
+func (*UnimplementedABFGuardServer) FlushBuckets(ctx context.Context, req *FlushBucketRequest) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FlushBuckets not implemented")
 }
-func (*UnimplementedABFGuardServiceServer) AddIPToWhitelist(ctx context.Context, req *SubnetRequest) (*Response, error) {
+func (*UnimplementedABFGuardServer) PurgeBucket(ctx context.Context, req *PurgeBucketRequest) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PurgeBucket not implemented")
+}
+func (*UnimplementedABFGuardServer) AddIPToWhitelist(ctx context.Context, req *SubnetRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddIPToWhitelist not implemented")
 }
-func (*UnimplementedABFGuardServiceServer) DeleteIPFromWhitelist(ctx context.Context, req *SubnetRequest) (*Response, error) {
+func (*UnimplementedABFGuardServer) DeleteIPFromWhitelist(ctx context.Context, req *SubnetRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIPFromWhitelist not implemented")
 }
-func (*UnimplementedABFGuardServiceServer) AddIPToBlacklist(ctx context.Context, req *SubnetRequest) (*Response, error) {
+func (*UnimplementedABFGuardServer) AddIPToBlacklist(ctx context.Context, req *SubnetRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddIPToBlacklist not implemented")
 }
-func (*UnimplementedABFGuardServiceServer) DeleteIPFromBlacklist(ctx context.Context, req *SubnetRequest) (*Response, error) {
+func (*UnimplementedABFGuardServer) DeleteIPFromBlacklist(ctx context.Context, req *SubnetRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteIPFromBlacklist not implemented")
 }
-func (*UnimplementedABFGuardServiceServer) GetIPList(ctx context.Context, req *ListRequest) (*ListResponse, error) {
+func (*UnimplementedABFGuardServer) GetIPList(ctx context.Context, req *ListRequest) (*ListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetIPList not implemented")
 }
 
-func RegisterABFGuardServiceServer(s *grpc.Server, srv *grpc2.ABFGServer) {
-	s.RegisterService(&_ABFGuardService_serviceDesc, srv)
+func RegisterABFGuardServer(s *grpc.Server, srv ABFGuardServer) {
+	s.RegisterService(&_ABFGuard_serviceDesc, srv)
 }
 
-func _ABFGuardService_Authorisation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ABFGuard_Authorisation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AuthorisationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ABFGuardServiceServer).Authorisation(ctx, in)
+		return srv.(ABFGuardServer).Authorisation(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ABFGuardService/Authorisation",
+		FullMethod: "/ABFGuard/Authorisation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ABFGuardServiceServer).Authorisation(ctx, req.(*AuthorisationRequest))
+		return srv.(ABFGuardServer).Authorisation(ctx, req.(*AuthorisationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ABFGuardService_FlushBucket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ABFGuard_FlushBuckets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FlushBucketRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ABFGuardServiceServer).FlushBucket(ctx, in)
+		return srv.(ABFGuardServer).FlushBuckets(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ABFGuardService/FlushBucket",
+		FullMethod: "/ABFGuard/FlushBuckets",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ABFGuardServiceServer).FlushBucket(ctx, req.(*FlushBucketRequest))
+		return srv.(ABFGuardServer).FlushBuckets(ctx, req.(*FlushBucketRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ABFGuardService_AddIPToWhitelist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ABFGuard_PurgeBucket_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PurgeBucketRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ABFGuardServer).PurgeBucket(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ABFGuard/PurgeBucket",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ABFGuardServer).PurgeBucket(ctx, req.(*PurgeBucketRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ABFGuard_AddIPToWhitelist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubnetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ABFGuardServiceServer).AddIPToWhitelist(ctx, in)
+		return srv.(ABFGuardServer).AddIPToWhitelist(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ABFGuardService/AddIPToWhitelist",
+		FullMethod: "/ABFGuard/AddIPToWhitelist",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ABFGuardServiceServer).AddIPToWhitelist(ctx, req.(*SubnetRequest))
+		return srv.(ABFGuardServer).AddIPToWhitelist(ctx, req.(*SubnetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ABFGuardService_DeleteIPFromWhitelist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ABFGuard_DeleteIPFromWhitelist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubnetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ABFGuardServiceServer).DeleteIPFromWhitelist(ctx, in)
+		return srv.(ABFGuardServer).DeleteIPFromWhitelist(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ABFGuardService/DeleteIPFromWhitelist",
+		FullMethod: "/ABFGuard/DeleteIPFromWhitelist",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ABFGuardServiceServer).DeleteIPFromWhitelist(ctx, req.(*SubnetRequest))
+		return srv.(ABFGuardServer).DeleteIPFromWhitelist(ctx, req.(*SubnetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ABFGuardService_AddIPToBlacklist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ABFGuard_AddIPToBlacklist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubnetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ABFGuardServiceServer).AddIPToBlacklist(ctx, in)
+		return srv.(ABFGuardServer).AddIPToBlacklist(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ABFGuardService/AddIPToBlacklist",
+		FullMethod: "/ABFGuard/AddIPToBlacklist",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ABFGuardServiceServer).AddIPToBlacklist(ctx, req.(*SubnetRequest))
+		return srv.(ABFGuardServer).AddIPToBlacklist(ctx, req.(*SubnetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ABFGuardService_DeleteIPFromBlacklist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ABFGuard_DeleteIPFromBlacklist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SubnetRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ABFGuardServiceServer).DeleteIPFromBlacklist(ctx, in)
+		return srv.(ABFGuardServer).DeleteIPFromBlacklist(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ABFGuardService/DeleteIPFromBlacklist",
+		FullMethod: "/ABFGuard/DeleteIPFromBlacklist",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ABFGuardServiceServer).DeleteIPFromBlacklist(ctx, req.(*SubnetRequest))
+		return srv.(ABFGuardServer).DeleteIPFromBlacklist(ctx, req.(*SubnetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ABFGuardService_GetIPList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ABFGuard_GetIPList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ABFGuardServiceServer).GetIPList(ctx, in)
+		return srv.(ABFGuardServer).GetIPList(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ABFGuardService/GetIPList",
+		FullMethod: "/ABFGuard/GetIPList",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ABFGuardServiceServer).GetIPList(ctx, req.(*ListRequest))
+		return srv.(ABFGuardServer).GetIPList(ctx, req.(*ListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-var _ABFGuardService_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "ABFGuardService",
-	HandlerType: (*ABFGuardServiceServer)(nil),
+var _ABFGuard_serviceDesc = grpc.ServiceDesc{
+	ServiceName: "ABFGuard",
+	HandlerType: (*ABFGuardServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "Authorisation",
-			Handler:    _ABFGuardService_Authorisation_Handler,
+			Handler:    _ABFGuard_Authorisation_Handler,
 		},
 		{
-			MethodName: "FlushBucket",
-			Handler:    _ABFGuardService_FlushBucket_Handler,
+			MethodName: "FlushBuckets",
+			Handler:    _ABFGuard_FlushBuckets_Handler,
+		},
+		{
+			MethodName: "PurgeBucket",
+			Handler:    _ABFGuard_PurgeBucket_Handler,
 		},
 		{
 			MethodName: "AddIPToWhitelist",
-			Handler:    _ABFGuardService_AddIPToWhitelist_Handler,
+			Handler:    _ABFGuard_AddIPToWhitelist_Handler,
 		},
 		{
 			MethodName: "DeleteIPFromWhitelist",
-			Handler:    _ABFGuardService_DeleteIPFromWhitelist_Handler,
+			Handler:    _ABFGuard_DeleteIPFromWhitelist_Handler,
 		},
 		{
 			MethodName: "AddIPToBlacklist",
-			Handler:    _ABFGuardService_AddIPToBlacklist_Handler,
+			Handler:    _ABFGuard_AddIPToBlacklist_Handler,
 		},
 		{
 			MethodName: "DeleteIPFromBlacklist",
-			Handler:    _ABFGuardService_DeleteIPFromBlacklist_Handler,
+			Handler:    _ABFGuard_DeleteIPFromBlacklist_Handler,
 		},
 		{
 			MethodName: "GetIPList",
-			Handler:    _ABFGuardService_GetIPList_Handler,
+			Handler:    _ABFGuard_GetIPList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

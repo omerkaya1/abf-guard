@@ -19,6 +19,10 @@ mod: ## Runs mod
 fmt: setup ## Run goimports on all go files
 	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do goimports -w "$$file"; done
 
+.PHONY: test
+test: setup ## Runs all the tests
+	echo 'mode: atomic' > coverage.txt && go test -covermode=atomic -coverprofile=coverage.txt -v -race -timeout=30s ./...
+
 .PHONY: lint
 lint: setup ## Runs all the linters
 	golint ./internal/... ./cmd/... ./log/...
@@ -29,7 +33,7 @@ build: ## Builds the project
 
 .PHONY: gen
 gen: ## Triggers code generation of
-	protoc --go_out=plugins=grpc:$(CURDIR)/internal/server api/*.proto
+	protoc --go_out=plugins=grpc:$(CURDIR)/internal/grpc api/*.proto
 
 .PHONY: dockerbuild
 dockerbuild: mod ## Builds a docker image with a project

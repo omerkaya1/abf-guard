@@ -1,4 +1,4 @@
-package interfaces
+package db
 
 import "context"
 
@@ -10,4 +10,6 @@ type StorageProcessor interface {
 	Delete(context.Context, string, bool) error
 	// GetIPList either deletes the IP from the whitelist or the blacklist of the app
 	GetIPList(context.Context, bool) ([]string, error)
+	// ExistInList checks whether an ip exists in a specified list
+	ExistInList(context.Context, string, bool) (bool, error)
 }

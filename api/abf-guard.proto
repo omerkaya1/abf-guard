@@ -15,10 +15,15 @@ message Response {
     }
 }
 
-// FlushBucketRequest is a message that contains information on a bucket that needs to be flashed
+// FlushBucketRequest is a message that contains information on a bucket that needs to be flushed
 message FlushBucketRequest {
     string login = 1;
     string ip = 2;
+}
+
+// FlushBucketRequest is a message that contains information on a bucket that needs to be flushed
+message PurgeBucketRequest {
+    string name = 1;
 }
 
 // SubnetRequest is a message that is used to request black and white lists actions
@@ -46,19 +51,21 @@ message ListResponse {
 }
 
 // Main API for the project
-service ABFGuardService {
-    // Authorisation .
+service ABFGuard {
+    // Authorisation sends the authorisation request
     rpc Authorisation(AuthorisationRequest) returns (Response) {}
-    // FlashBucket .
-    rpc FlushBucket(FlushBucketRequest) returns (Response) {}
-    // AddIpToWhitelist .
+    // FlashBuckets sends a request to flush the buckets for the specified login and ip
+    rpc FlushBuckets(FlushBucketRequest) returns (Response) {}
+    // PurgeBucket sends a request to purge the specified bucket
+    rpc PurgeBucket(PurgeBucketRequest) returns (Response) {}
+    // AddIpToWhitelist sends a request to add the specified subnet to the whitelist
     rpc AddIPToWhitelist(SubnetRequest) returns (Response) {}
-    // DeleteIpFromWhitelist .
+    // DeleteIpFromWhitelist sends a request to remove the specified subnet from the whitelist
     rpc DeleteIPFromWhitelist(SubnetRequest) returns (Response) {}
-    // AddIpToBlacklist .
+    // AddIpToBlacklist sends a request to add the specified subnet to the blacklist
     rpc AddIPToBlacklist(SubnetRequest) returns (Response) {}
-    // DeleteIpFromBlacklist .
+    // DeleteIpFromBlacklist sends a request to remove the specified subnet from the blacklist
     rpc DeleteIPFromBlacklist(SubnetRequest) returns (Response) {}
-    // GetWhiteList .
+    // GetWhiteList send sa request to retrieve an ip list from a specified list
     rpc GetIPList(ListRequest) returns (ListResponse) {}
 }
