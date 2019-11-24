@@ -32,7 +32,6 @@ func PrepareFlushBucketsGrpcRequest(login, ip string) *api.FlushBucketRequest {
 	}
 }
 
-// WARNING: Add tests!
 // PreparePurgeBucketGrpcRequest .
 func PreparePurgeBucketGrpcRequest(name string) *api.PurgeBucketRequest {
 	if name == "" {

@@ -11,5 +11,5 @@ type StorageProcessor interface {
 	// GetIPList either deletes the IP from the whitelist or the blacklist of the app
 	GetIPList(context.Context, bool) ([]string, error)
 	// ExistInList checks whether an ip exists in a specified list
-	ExistInList(context.Context, string, bool) (bool, error)
+	GreenLightPass(context.Context, string) error
 }

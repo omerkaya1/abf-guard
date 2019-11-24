@@ -27,7 +27,7 @@ func (ss *Storage) GetIPList(ctx context.Context, blacklist bool) ([]string, err
 	return ss.Processor.GetIPList(ctx, blacklist)
 }
 
-// ExistInList .
-func (ss *Storage) ExistInList(ctx context.Context, ip string, blacklist bool) (bool, error) {
-	return ss.Processor.ExistInList(ctx, ip, blacklist)
+// GreenLightPass .
+func (ss *Storage) GreenLightPass(ctx context.Context, ip string) error {
+	return ss.Processor.GreenLightPass(ctx, ip)
 }

@@ -7,7 +7,6 @@ import (
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/store"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
-	"log"
 	"os"
 	"os/signal"
 	"sync"
@@ -56,12 +55,10 @@ func (m *Manager) Dispatch(login, pwd, ip string) (bool, error) {
 	for v := range resultChan {
 		// The first false result reports that the request cannot proceed
 		if !v {
-			log.Println("not ok")
 			return v, errors.ErrBucketFull
 		}
 	}
 	// Everything is ok
-	log.Println("ok")
 	return true, nil
 }
 

@@ -44,6 +44,8 @@ const (
 	ErrAlreadyStored = ABFGuardError("provided IP is already stored")
 	// ErrDoesNotExist .
 	ErrDoesNotExist = ABFGuardError("provided IP does not exist in the DB")
+	// ErrIsInTheBlacklist .
+	ErrIsInTheBlacklist = ABFGuardError("the ip is in the blacklist")
 )
 
 /** Bucket-side errors */

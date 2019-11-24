@@ -48,7 +48,7 @@ func TestPrepareFlushBucketGrpcRequest(t *testing.T) {
 	}
 	for _, c := range testCases {
 		t.Run(c.header, func(t *testing.T) {
-			assert.Equal(t, c.response, PrepareFlushBucketGrpcRequest(c.login, c.ip))
+			assert.Equal(t, c.response, PrepareFlushBucketsGrpcRequest(c.login, c.ip))
 		})
 	}
 }
@@ -69,6 +69,24 @@ func TestPrepareSubnetGrpcRequest(t *testing.T) {
 	for _, c := range testCases {
 		t.Run(c.header, func(t *testing.T) {
 			assert.Equal(t, c.response, PrepareSubnetGrpcRequest(c.ip, c.result))
+		})
+	}
+}
+
+func TestPreparePurgeBucketGrpcRequest(t *testing.T) {
+	testCases := []struct {
+		header   string
+		name     string
+		response *api.PurgeBucketRequest
+	}{
+		{"Empty name", "", nil},
+		{"Args are present", "morty", &api.PurgeBucketRequest{
+			Name: "morty",
+		}},
+	}
+	for _, c := range testCases {
+		t.Run(c.header, func(t *testing.T) {
+			assert.Equal(t, c.response, PreparePurgeBucketGrpcRequest(c.name))
 		})
 	}
 }

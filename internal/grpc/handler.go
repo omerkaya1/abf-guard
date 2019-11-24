@@ -11,23 +11,17 @@ func (s *ABFGuardServer) Authorisation(ctx context.Context, r *api.Authorisation
 	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
-	ok := false
-	var err error
-	ok, err = s.StorageService.ExistInList(ctx, r.GetIp(), true)
-	if err != nil {
-		s.Logger.Sugar().Errorf("%s: %s", errors.ErrServiceCmdPrefix, err)
-	}
-	if ok {
+	err := s.StorageService.GreenLightPass(ctx, r.GetIp())
+	switch err {
+	case errors.ErrDoesNotExist:
+		return PrepareGRPCResponse(s.BucketService.Dispatch(r.GetLogin(), r.GetPassword(), r.GetIp())), nil
+	case errors.ErrIsInTheBlacklist:
 		return PrepareGRPCResponse(false, nil), nil
+	case nil:
+		return PrepareGRPCResponse(true, nil), nil
+	default:
+		return nil, err
 	}
-	ok, err = s.StorageService.ExistInList(ctx, r.GetIp(), false)
-	if err != nil {
-		s.Logger.Sugar().Errorf("%s: %s", errors.ErrServiceCmdPrefix, err)
-	}
-	if ok {
-		return PrepareGRPCResponse(ok, nil), nil
-	}
-	return PrepareGRPCResponse(s.BucketService.Dispatch(r.GetLogin(), r.GetPassword(), r.GetIp())), nil
 }
 
 // FlashBuckets .
