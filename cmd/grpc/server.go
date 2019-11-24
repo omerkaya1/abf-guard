@@ -1,11 +1,12 @@
 package grpc
 
 import (
+	"log"
+
 	"github.com/omerkaya1/abf-guard/internal/db"
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/manager"
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/settings"
 	"github.com/omerkaya1/abf-guard/internal/domain/services"
-	"log"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/config"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
@@ -42,14 +43,17 @@ var ServerRootCmd = &cobra.Command{
 			log.Fatalf("%s: dbFromConfig failed: %s", errors.ErrServiceCmdPrefix, err)
 		}
 		// Init settings for the bucket manager
-		mgrSettings, err := settings.InitBucketSettings(cfg.Limits)
+		mgrSettings, err := settings.InitBucketManagerSettings(cfg.Limits)
 		if err != nil {
 			log.Fatalf("%s: InitBucketSettings failed: %s", errors.ErrServiceCmdPrefix, err)
 		}
 		// Init BucketService
 		manager := manager.NewManager(mgrSettings)
 		//Init GRPC server
-		srv := grpc.NewServer(cfg.Server, l, &services.Storage{Processor: mainDB}, &services.Bucket{Manager: manager})
+		srv, err := grpc.NewServer(&cfg.Server, l, &services.Storage{Processor: mainDB}, &services.Bucket{Manager: manager})
+		if err != nil {
+			log.Fatalf("%s: %s", errors.ErrServiceCmdPrefix, err)
+		}
 		// Run the GRPC server
 		srv.Run()
 	},

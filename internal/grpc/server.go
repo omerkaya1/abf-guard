@@ -1,40 +1,44 @@
 package grpc
 
 import (
+	"net"
+
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/services"
 	api "github.com/omerkaya1/abf-guard/internal/grpc/api"
-	"net"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/config"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
 
-// ABFGuardServer .
+// ABFGuardServer is the object that represents a server for the ABFGuard service
 type ABFGuardServer struct {
-	Cfg            config.Server
+	Cfg            *config.Server
 	Logger         *zap.Logger
 	StorageService *services.Storage
 	BucketService  *services.Bucket
 }
 
-// NewServer .
-func NewServer(cfg config.Server, log *zap.Logger, ss *services.Storage, bs *services.Bucket) *ABFGuardServer {
+// NewServer creates a new ABFGuardServer object and returns it to the callee
+func NewServer(cfg *config.Server, l *zap.Logger, ss *services.Storage, bs *services.Bucket) (*ABFGuardServer, error) {
+	if cfg == nil || l == nil || ss == nil || bs == nil {
+		return nil, errors.ErrMissingServerParameters
+	}
 	return &ABFGuardServer{
 		Cfg:            cfg,
-		Logger:         log,
+		Logger:         l,
 		StorageService: ss,
 		BucketService:  bs,
-	}
+	}, nil
 }
 
-// Run .
+// Run starts the ABFGuard server
 func (s *ABFGuardServer) Run() {
 	server := grpc.NewServer()
 	l, err := net.Listen("tcp", s.Cfg.Host+":"+s.Cfg.Port)
 	if err != nil {
-		s.Logger.Sugar().Errorf("%s", err)
+		s.Logger.Sugar().Fatalf("%s", err)
 	}
 
 	api.RegisterABFGuardServer(server, s)

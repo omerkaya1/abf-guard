@@ -16,7 +16,7 @@ mod: ## Runs mod
 	go mod tidy
 
 .PHONY: fmt
-fmt: setup ## Run goimports on all go files
+fmt: ## Run goimports on all go files
 	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do goimports -w "$$file"; done
 
 .PHONY: test
@@ -24,8 +24,16 @@ test: setup ## Runs all the tests
 	echo 'mode: atomic' > coverage.txt && go test -covermode=atomic -coverprofile=coverage.txt -v -race -timeout=30s ./...
 
 .PHONY: lint
-lint: setup ## Runs all the linters
+lint: ## Runs all the linters
 	golint ./internal/... ./cmd/... ./log/...
+
+.PHONY: vet
+vet: ## Runs go vet
+	go vet ./...
+
+.PHONY: checks
+checks: setup fmt lint vet ## Runs all checks for the project
+	echo 'Checks done!'
 
 .PHONY: build
 build: ## Builds the project

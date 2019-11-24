@@ -1,9 +1,10 @@
 package grpc
 
 import (
+	"testing"
+
 	api "github.com/omerkaya1/abf-guard/internal/grpc/api"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestPrepareGRPCAuthorisationBody(t *testing.T) {

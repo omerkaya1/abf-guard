@@ -2,18 +2,18 @@ package manager
 
 import (
 	"fmt"
+	"os"
+	"os/signal"
+	"sync"
+
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/entity"
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/settings"
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/store"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
-	"os"
-	"os/signal"
-	"sync"
 )
 
-// Manager .
-// One ring to rule em all!
+// Manager is an object that controls all the functionality to manage buckets
 type Manager struct {
 	settings *settings.Settings
 	store    bucket.Storage
@@ -21,7 +21,7 @@ type Manager struct {
 	errChan  chan error
 }
 
-// NewManager .
+// NewManager creates a new Manager object and returns it to the callee
 func NewManager(settings *settings.Settings) *Manager {
 	mgr := &Manager{
 		settings: settings,
@@ -33,15 +33,15 @@ func NewManager(settings *settings.Settings) *Manager {
 	return mgr
 }
 
-// Dispatch accepts authorisation request parameters and creates a new or decrements  bucket
+// Dispatch accepts authorisation request parameters and creates a new or decrements a counter for each bucket
 func (m *Manager) Dispatch(login, pwd, ip string) (bool, error) {
-	if err := ValidateAuthorisationParams(login, pwd, ip); err != nil {
+	if err := validateAuthorisationParams(login, pwd, ip); err != nil {
 		return false, err
 	}
 	resultChan := make(chan bool, 3)
 	wg := &sync.WaitGroup{}
 	// Concurrently dispatch buckets
-	for bucketName, bucketType := range PrepareAuthorisationMap(login, pwd, ip) {
+	for bucketName, bucketType := range prepareAuthorisationMap(login, pwd, ip) {
 		wg.Add(1)
 		go func(group *sync.WaitGroup, bucketN string, bucketT int) {
 			m.concurrentDispatch(group, bucketN, bucketT, resultChan)
@@ -62,9 +62,9 @@ func (m *Manager) Dispatch(login, pwd, ip string) (bool, error) {
 	return true, nil
 }
 
-// FlushBucket .
+// FlushBuckets removes all buckets with the specified login and ip
 func (m *Manager) FlushBuckets(login, ip string) error {
-	if err := ValidateFlashParams(login, ip); err != nil {
+	if err := validateFlashParams(login, ip); err != nil {
 		return err
 	}
 	if m.store.CheckBucket(login) {
@@ -80,7 +80,7 @@ func (m *Manager) FlushBuckets(login, ip string) error {
 	return nil
 }
 
-// PurgeBucket .
+// PurgeBucket removes a bucket which name was specified as an argument
 func (m *Manager) PurgeBucket(name string) error {
 	if name == "" {
 		return errors.ErrEmptyBucketName
@@ -91,7 +91,7 @@ func (m *Manager) PurgeBucket(name string) error {
 	return m.store.RemoveBucket(name)
 }
 
-// GetErrChan .
+// GetErrChan returns an error channel to monitor the Manager's activity
 func (m *Manager) GetErrChan() chan error {
 	return m.errChan
 }

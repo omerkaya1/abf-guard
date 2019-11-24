@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
+
 	"github.com/omerkaya1/abf-guard/internal/domain/config"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	"log"
 
 	// We absolutely need this import and this comment.
 	_ "github.com/jackc/pgx/stdlib"

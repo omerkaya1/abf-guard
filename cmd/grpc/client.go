@@ -2,12 +2,13 @@ package grpc
 
 import (
 	"context"
+	"log"
+	"time"
+
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	req "github.com/omerkaya1/abf-guard/internal/grpc"
 	api "github.com/omerkaya1/abf-guard/internal/grpc/api"
 	"google.golang.org/grpc"
-	"log"
-	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -84,7 +85,7 @@ func authoriseCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
 	}
 	client := getGRPCClient()
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	ok, err := client.Authorisation(ctx, req.PrepareGRPCAuthorisationBody(login, password, ip))
 	if err != nil {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
@@ -93,6 +94,7 @@ func authoriseCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrAuthorisationFailed)
 	}
 	log.Println("the request may proceed")
+	cancel()
 }
 
 func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
@@ -100,7 +102,7 @@ func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
 	}
 	client := getGRPCClient()
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	ok, err := client.FlushBuckets(ctx, req.PrepareFlushBucketsGrpcRequest(login, ip))
 	if err != nil {
@@ -110,6 +112,7 @@ func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrFlushBucketsFailed)
 	}
 	log.Println("the flush request succeeded")
+	cancel()
 }
 
 func purgeBucketCmdFunc(cmd *cobra.Command, args []string) {
@@ -117,7 +120,7 @@ func purgeBucketCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
 	}
 	client := getGRPCClient()
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	ok, err := client.PurgeBucket(ctx, req.PreparePurgeBucketGrpcRequest(entity))
 	if err != nil {
@@ -126,6 +129,7 @@ func purgeBucketCmdFunc(cmd *cobra.Command, args []string) {
 	if !ok.GetOk() {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrPurgeBucketFailed)
 	}
+	cancel()
 	log.Println("the bucket was successfully removed")
 }
 
@@ -134,7 +138,7 @@ func addIPCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
 	}
 	client := getGRPCClient()
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	resp, err := client.AddIPToWhitelist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
 	if err != nil {
@@ -151,6 +155,7 @@ func addIPCmdFunc(cmd *cobra.Command, args []string) {
 	} else {
 		log.Println("ip was added to the whitelist")
 	}
+	cancel()
 }
 
 func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
@@ -158,7 +163,7 @@ func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
 	}
 	client := getGRPCClient()
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	resp, err := client.DeleteIPFromBlacklist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
 	if err != nil {
@@ -175,11 +180,12 @@ func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
 	} else {
 		log.Println("ip was deleted from the whitelist")
 	}
+	cancel()
 }
 
 func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 	client := getGRPCClient()
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	resp, err := client.GetIPList(ctx, req.PrepareIPListGrpcRequest(black))
 	if err != nil {
@@ -189,6 +195,7 @@ func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
 	}
 	log.Println(resp.GetResult())
+	cancel()
 }
 
 func getGRPCClient() api.ABFGuardClient {

@@ -5,7 +5,7 @@ import (
 	api "github.com/omerkaya1/abf-guard/internal/grpc/api"
 )
 
-// PrepareGRPCResponse .
+// PrepareGRPCResponse forms a GRPC Response object
 func PrepareGRPCResponse(ok bool, err error) *api.Response {
 	if err != nil {
 		return &api.Response{
@@ -21,7 +21,7 @@ func PrepareGRPCResponse(ok bool, err error) *api.Response {
 	}
 }
 
-// PrepareGRPCListIPResponse .
+// PrepareGRPCListIPResponse forms a GRPC ListResponse object
 func PrepareGRPCListIPResponse(IPs []string, err error) (*api.ListResponse, error) {
 	if err != nil {
 		return &api.ListResponse{

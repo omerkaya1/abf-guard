@@ -2,10 +2,11 @@ package grpc
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	abfg "github.com/omerkaya1/abf-guard/internal/grpc/api"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestPrepareGRPCListIpResponse(t *testing.T) {

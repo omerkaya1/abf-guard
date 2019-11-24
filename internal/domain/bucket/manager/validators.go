@@ -2,23 +2,20 @@ package manager
 
 import "github.com/omerkaya1/abf-guard/internal/domain/errors"
 
-// TODO: Error handling!!!
-// ValidateAuthorisationParams .
-func ValidateAuthorisationParams(login, password, ip string) error {
+func validateAuthorisationParams(login, password, ip string) error {
 	if login == "" {
 		return errors.ErrEmptyIP
 	}
 	if password == "" {
-		return errors.ErrEmptyIP
+		return errors.ErrEmptyPWD
 	}
 	if ip == "" {
-		return errors.ErrEmptyIP
+		return errors.ErrEmptyLogin
 	}
 	return nil
 }
 
-// ValidateFlashParams .
-func ValidateFlashParams(login, ip string) error {
+func validateFlashParams(login, ip string) error {
 	if login == "" {
 		return errors.ErrEmptyIP
 	}
@@ -28,7 +25,6 @@ func ValidateFlashParams(login, ip string) error {
 	return nil
 }
 
-// PrepareAuthorisationMap .
-func PrepareAuthorisationMap(login, password, ip string) map[string]int {
+func prepareAuthorisationMap(login, password, ip string) map[string]int {
 	return map[string]int{login: 0, password: 1, ip: 2}
 }

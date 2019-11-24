@@ -1,13 +1,14 @@
 package settings
 
 import (
-	"github.com/omerkaya1/abf-guard/internal/domain/config"
-	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"strings"
 	"time"
+
+	"github.com/omerkaya1/abf-guard/internal/domain/config"
+	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 )
 
-// BucketSettings .
+// Settings is an object that holds all the main settings for the Bucket Manager
 type Settings struct {
 	LoginLimit    int
 	PasswordLimit int
@@ -15,8 +16,8 @@ type Settings struct {
 	Expire        time.Duration
 }
 
-// InitBucketSettings .
-func InitBucketSettings(cfg config.Limits) (*Settings, error) {
+// InitBucketManagerSettings initiates setting for the bucket manager
+func InitBucketManagerSettings(cfg config.Limits) (*Settings, error) {
 	switch {
 	case cfg.Login <= 0:
 		return nil, errors.ErrIncorrectCfgLogin

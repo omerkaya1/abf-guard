@@ -2,14 +2,7 @@ package grpc
 
 import api "github.com/omerkaya1/abf-guard/internal/grpc/api"
 
-// Authorisation .
-type Authorisation struct {
-	Login    string `json:"login"`
-	Password string `json:"password"`
-	IP       string `json:"ip"`
-}
-
-// PrepareGRPCAuthorisationBody .
+// PrepareGRPCAuthorisationBody forms a GRPC AuthorisationRequest object
 func PrepareGRPCAuthorisationBody(login, password, ip string) *api.AuthorisationRequest {
 	if login == "" || password == "" || ip == "" {
 		return nil
@@ -21,7 +14,7 @@ func PrepareGRPCAuthorisationBody(login, password, ip string) *api.Authorisation
 	}
 }
 
-// PrepareFlushBucketGrpcRequest .
+// PrepareFlushBucketsGrpcRequest forms a GRPC FlushBucketRequest object
 func PrepareFlushBucketsGrpcRequest(login, ip string) *api.FlushBucketRequest {
 	if login == "" || ip == "" {
 		return nil
@@ -32,7 +25,7 @@ func PrepareFlushBucketsGrpcRequest(login, ip string) *api.FlushBucketRequest {
 	}
 }
 
-// PreparePurgeBucketGrpcRequest .
+// PreparePurgeBucketGrpcRequest forms a GRPC PurgeBucketRequest object
 func PreparePurgeBucketGrpcRequest(name string) *api.PurgeBucketRequest {
 	if name == "" {
 		return nil
@@ -42,7 +35,7 @@ func PreparePurgeBucketGrpcRequest(name string) *api.PurgeBucketRequest {
 	}
 }
 
-// PrepareSubnetGrpcRequest .
+// PrepareSubnetGrpcRequest forms a GRPC SubnetRequest object
 func PrepareSubnetGrpcRequest(ip string, black bool) *api.SubnetRequest {
 	if ip == "" {
 		return nil
@@ -50,7 +43,7 @@ func PrepareSubnetGrpcRequest(ip string, black bool) *api.SubnetRequest {
 	return &api.SubnetRequest{Ip: ip, List: black}
 }
 
-// PrepareIPListGrpcRequest .
+// PrepareIPListGrpcRequest forms a GRPC ListRequest object
 func PrepareIPListGrpcRequest(list bool) *api.ListRequest {
 	return &api.ListRequest{ListType: list}
 }

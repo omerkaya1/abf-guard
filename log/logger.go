@@ -1,7 +1,7 @@
 package log
 
 import (
-	"log"
+	"fmt"
 
 	"go.uber.org/zap"
 )
@@ -21,7 +21,7 @@ func InitLogger(level int) (*zap.Logger, error) {
 		l, err = zap.NewDevelopment()
 		break
 	default:
-		log.Panicf("incorrect logging level: %v", level)
+		l, err = nil, fmt.Errorf("incorrect logging level: %v", level)
 	}
 	return l, err
 }

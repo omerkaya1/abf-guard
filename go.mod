@@ -3,6 +3,7 @@ module github.com/omerkaya1/abf-guard
 go 1.12
 
 require (
+	github.com/DATA-DOG/godog v0.7.13
 	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible // indirect
@@ -18,7 +19,7 @@ require (
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
-	go.mongodb.org/mongo-driver v1.1.2
+	go.mongodb.org/mongo-driver v1.1.2 // indirect
 	go.uber.org/zap v1.12.0
 	golang.org/x/crypto v0.0.0-20191122220453-ac88ee75c92c // indirect
 	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914 // indirect

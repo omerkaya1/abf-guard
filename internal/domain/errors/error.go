@@ -24,6 +24,8 @@ const (
 
 /** Server-side errors */
 const (
+	// ErrMissingServerParameters .
+	ErrMissingServerParameters = ABFGuardError("missing mandatory parameters to the server")
 	// ErrBadDBConfiguration .
 	ErrBadDBConfiguration = ABFGuardError("incorrect configuration is received")
 	// ErrBadRequest .
@@ -40,6 +42,10 @@ const (
 const (
 	// ErrEmptyIP .
 	ErrEmptyIP = ABFGuardError("empty IP is received")
+	// ErrEmptyIP .
+	ErrEmptyLogin = ABFGuardError("empty login is received")
+	// ErrEmptyIP .
+	ErrEmptyPWD = ABFGuardError("empty password is received")
 	// ErrAlreadyStored .
 	ErrAlreadyStored = ABFGuardError("provided IP is already stored")
 	// ErrDoesNotExist .

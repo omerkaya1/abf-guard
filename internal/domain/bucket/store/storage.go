@@ -2,18 +2,19 @@ package store
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
-	"sync"
 )
 
-// ActiveBucketsStore .
+// ActiveBucketsStore is an object that provides a storage for all buckets.
 type ActiveBucketsStore struct {
 	mutex         sync.RWMutex
 	activeBuckets map[string]bucket.Bucket
 }
 
-// NewActiveBucketsStore .
+// NewActiveBucketsStore returns a new ActiveBucketsStore object to the callee
 func NewActiveBucketsStore() *ActiveBucketsStore {
 	return &ActiveBucketsStore{
 		mutex:         sync.RWMutex{},
@@ -21,7 +22,7 @@ func NewActiveBucketsStore() *ActiveBucketsStore {
 	}
 }
 
-// GetBucket .
+// GetBucket returns the requested bucket to the callee
 func (abs *ActiveBucketsStore) GetBucket(name string) (bucket.Bucket, error) {
 	if b := abs.checkPresence(name); b != nil {
 		return b, nil
@@ -29,14 +30,14 @@ func (abs *ActiveBucketsStore) GetBucket(name string) (bucket.Bucket, error) {
 	return nil, fmt.Errorf("%s: %s", errors.ErrBucketStoragePrefix, errors.ErrNoBucketFound)
 }
 
-// AddBucket .
+// AddBucket adds a new bucket to the active bucket store
 func (abs *ActiveBucketsStore) AddBucket(name string, b bucket.Bucket) {
 	abs.mutex.Lock()
 	abs.activeBuckets[name] = b
 	abs.mutex.Unlock()
 }
 
-// CheckBucket .
+// CheckBucket checks whether a requested bucket is present in the active bucket store
 func (abs *ActiveBucketsStore) CheckBucket(name string) bool {
 	if b := abs.checkPresence(name); b != nil {
 		return true
@@ -44,7 +45,7 @@ func (abs *ActiveBucketsStore) CheckBucket(name string) bool {
 	return false
 }
 
-// RemoveBucket .
+// RemoveBucket removes a specified bucket from the active bucket store
 func (abs *ActiveBucketsStore) RemoveBucket(name string) error {
 	b := abs.checkPresence(name)
 	if b == nil {
