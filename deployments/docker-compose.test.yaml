@@ -6,7 +6,7 @@ services:
     container_name: pgs_db
     environment:
       - POSTGRES_USER=abfg_user
-      - POSTGRES_PASSWORD=some_pwd
+      - POSTGRES_PASSWORD=ChangeMe
       - POSTGRES_DB=abfg_db
     ports:
       - "54321:5432"
@@ -20,13 +20,13 @@ services:
     container_name: abfg
     build:
       context: ../.
-      dockerfile: ./deployments/abfg-service/Dockerfile
+      dockerfile: ./deployments/abfg-service/Dockerfile.integration
     volumes:
       - ../configs:/opt/abf-guard/configs
     depends_on:
       - postgres
     ports:
-      - "6666:6666"
+      - "7070:6666"
     networks:
       db-net:
         aliases:
@@ -38,6 +38,11 @@ services:
     build:
       context: ../.
       dockerfile: ./deployments/abfg-integration-test/Dockerfile
+    environment:
+      - LOGIN=5
+      - PWD=10
+      - IP=20
+      - EXPIRE=20s
     depends_on:
       - postgres
       - abf-guard

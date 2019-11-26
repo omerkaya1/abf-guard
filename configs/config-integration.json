@@ -1,6 +1,6 @@
 {
   "server": {
-    "host": "localhost",
+    "host": "abf-guard",
     "port": "6666",
     "level": 2
   },
@@ -8,14 +8,14 @@
     "name": "abfg_db",
     "user": "abfg_user",
     "ssl": "disable",
-    "host": "localhost",
+    "host": "postgres",
     "password": "ChangeMe",
     "port": "5432"
   },
   "limits": {
     "login": 5,
     "password": 10,
-    "ip": 100,
-    "expire": "20s"
+    "ip": 20,
+    "expire": "30s"
   }
 }

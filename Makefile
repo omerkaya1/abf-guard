@@ -54,7 +54,11 @@ run-test: ## Runs the project
 
 .PHONY: gen
 gen: ## Triggers code generation of
-	protoc --go_out=plugins=grpc:$(CURDIR)/internal/grpc api/*.proto
+	protoc --go_out=plugins=grpc:$(CURDIR)/internal/grpc ./api/*.proto
+
+.PHONY: gen-test
+gen-test: ## Triggers code generation of
+	protoc --go_out=plugins=grpc:$(CURDIR)/test/integration-test/ ./api/*.proto
 
 .PHONY: dockerbuild
 dockerbuild: mod ## Builds a docker image with a project
@@ -76,7 +80,7 @@ docker-compose-down: ## Runs docker-compose command to remove the turn down the 
 integration: ## Runs all integration tests for the project
 	docker-compose -f ./deployments/docker-compose.test.yaml up --build -d;\
 	test_status_code=0 ;\
-	docker-compose -f ./deployments/docker-compose.test.yaml run integration_tests go test ./... || test_status_code=$$? ;
+	docker-compose -f ./deployments/docker-compose.test.yaml run integration_tests go test -v ./... || test_status_code=$$? ;
 	docker-compose -f ./deployments/docker-compose.test.yaml down --volumes;\
 	printf "Return code is $$test_status_code\n" ;\
 	exit $$test_status_code ;\
