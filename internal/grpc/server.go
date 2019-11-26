@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"net"
+	"os"
+	"os/signal"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/services"
@@ -42,9 +44,19 @@ func (s *ABFGuardServer) Run() {
 	}
 
 	api.RegisterABFGuardServer(server, s)
+
+	// Handle interrupt
+	exitChan := make(chan os.Signal, 1)
+	signal.Notify(exitChan, os.Interrupt, os.Kill)
+
 	// Log errors that occur during the work with buckets
 	go func() {
-		for err := range s.BucketService.MonitorErrors() {
+		select {
+		case <-exitChan:
+			s.Logger.Sugar().Info("Interrupt signal received")
+			server.GracefulStop()
+			return
+		case err := <-s.BucketService.MonitorErrors():
 			if err != nil {
 				s.Logger.Sugar().Errorf("%s: %s", errors.ErrBucketManagerPrefix, err)
 			}
@@ -52,5 +64,5 @@ func (s *ABFGuardServer) Run() {
 	}()
 
 	s.Logger.Sugar().Infof("Server initialisation is completed. Server address: %s:%s", s.Cfg.Host, s.Cfg.Port)
-	s.Logger.Sugar().Errorf("%s", server.Serve(l))
+	s.Logger.Sugar().Infof("%s", server.Serve(l))
 }

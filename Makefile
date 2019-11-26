@@ -44,6 +44,14 @@ checks: setup fmt lint vet ## Runs all checks for the project
 build: ## Builds the project
 	go build -o $(BUILD)/abf-guard $(CURDIR)
 
+.PHONY: run
+run: build ## Runs the project
+	$(BUILD)/abf-guard grpc-server -c ./configs/config.json
+
+.PHONY: run-test
+run-test: ## Runs the project
+	go run main.go grpc-server -c ./configs/config-test.json
+
 .PHONY: gen
 gen: ## Triggers code generation of
 	protoc --go_out=plugins=grpc:$(CURDIR)/internal/grpc api/*.proto
