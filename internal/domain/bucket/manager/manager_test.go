@@ -1,11 +1,12 @@
 package manager
 
 import (
+	"testing"
+	"time"
+
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/settings"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 )
 
 func TestNewManager(t *testing.T) {

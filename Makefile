@@ -37,7 +37,7 @@ vet: ## Runs go vet
 	go vet ./...
 
 .PHONY: checks
-checks: setup fmt lint vet ## Runs all checks for the project
+checks: fmt lint vet ## Runs all checks for the project
 	echo 'Checks done!'
 
 .PHONY: build
@@ -73,10 +73,10 @@ docker-compose-down: ## Runs docker-compose command to remove the turn down the 
 	docker-compose -f ./deployments/docker-compose.yaml down -v
 
 .PHONY: integration
-integration: ##
+integration: ## Runs all integration tests for the project
 	docker-compose -f ./deployments/docker-compose.test.yaml up --build -d;\
 	test_status_code=0 ;\
-# 	docker-compose -f ./deployments/docker-compose.test.yaml run integration_tests ./bin/integration-test || test_status_code=$$? ;
+	docker-compose -f ./deployments/docker-compose.test.yaml run integration_tests go test ./... || test_status_code=$$? ;
 	docker-compose -f ./deployments/docker-compose.test.yaml down --volumes;\
 	printf "Return code is $$test_status_code\n" ;\
 	exit $$test_status_code ;\

@@ -2,13 +2,15 @@ package entity
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBucket_Decrement(t *testing.T) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*5))
+	defer cancel()
 	finished := make(chan string)
 	count := 5
 
@@ -34,6 +36,7 @@ func TestBucket_Decrement(t *testing.T) {
 
 func TestBucket_Decrement_Prohibited(t *testing.T) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*5))
+	defer cancel()
 	finished := make(chan string)
 	count := 5
 
@@ -65,6 +68,7 @@ func TestBucket_Decrement_Prohibited(t *testing.T) {
 
 func TestBucket_Stop(t *testing.T) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*5))
+	defer cancel()
 	finished := make(chan string)
 	count := 5
 

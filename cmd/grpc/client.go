@@ -71,11 +71,11 @@ var (
 
 func init() {
 	ClientRootCmd.AddCommand(authoriseActionCmd, flashBucketCmd, addIPActionCmd, deleteIPActionCmd, getIPListActionCmd, purgeBucketCmd)
-	ClientRootCmd.PersistentFlags().StringVarP(&host, "host", "s", "127.0.0.1", "-h, --host=127.0.0.1")
-	ClientRootCmd.PersistentFlags().StringVarP(&port, "port", "p", "6666", "-p, --port=7777")
+	ClientRootCmd.PersistentFlags().StringVarP(&host, "host", "s", "127.0.0.1", "-s, --host=127.0.0.1")
+	ClientRootCmd.PersistentFlags().StringVarP(&port, "port", "p", "6666", "-p, --port=7777: server port")
 	ClientRootCmd.PersistentFlags().StringVarP(&login, "login", "l", "", "-l, --login=morty")
 	ClientRootCmd.PersistentFlags().StringVarP(&password, "password", "w", "", "-w, --password=oh_geez")
-	ClientRootCmd.PersistentFlags().StringVarP(&ip, "ip", "i", "", "-i, --ip=127.0.0.1")
+	ClientRootCmd.PersistentFlags().StringVarP(&ip, "ip", "i", "", "-i, --ip=10.0.0.1")
 	ClientRootCmd.PersistentFlags().StringVarP(&entity, "entity", "e", "", "-e, --entity=bucket_name")
 	ClientRootCmd.PersistentFlags().BoolVarP(&black, "blacklist", "b", false, "-b, --blacklist=true")
 }
@@ -109,7 +109,7 @@ func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
 	if !ok.GetOk() {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrFlushBucketsFailed)
 	}
-	log.Println("the flush request succeeded")
+	log.Printf("%s and %s buckets were flushed", login, ip)
 	cancel()
 }
 
@@ -126,8 +126,8 @@ func purgeBucketCmdFunc(cmd *cobra.Command, args []string) {
 	if !ok.GetOk() {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrPurgeBucketFailed)
 	}
+	log.Printf("%s bucket was successfully removed", entity)
 	cancel()
-	log.Println("the bucket was successfully removed")
 }
 
 func addIPCmdFunc(cmd *cobra.Command, args []string) {
@@ -147,9 +147,9 @@ func addIPCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrAddIPFailure)
 	}
 	if black {
-		log.Println("ip was added to the blacklist")
+		log.Printf("%s was added to the blacklist", ip)
 	} else {
-		log.Println("ip was added to the whitelist")
+		log.Printf("%s was added to the whitelist", ip)
 	}
 	cancel()
 }
@@ -171,9 +171,9 @@ func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrDeleteIPFailure)
 	}
 	if black {
-		log.Println("ip was deleted from the blacklist")
+		log.Printf("%s was deleted from the blacklist", ip)
 	} else {
-		log.Println("ip was deleted from the whitelist")
+		log.Printf("%s was deleted from the whitelist", ip)
 	}
 	cancel()
 }
@@ -187,7 +187,11 @@ func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 	if resp.GetError() != "" {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
 	}
-	log.Println(resp.GetResult())
+	if black {
+		log.Printf("subnet addresses in the blacklist: %v", resp.GetResult())
+	} else {
+		log.Printf("subnet addresses in the whitelist: %v", resp.GetResult())
+	}
 	cancel()
 }
 

@@ -49,7 +49,7 @@ func (s *ABFGuardServer) PurgeBucket(ctx context.Context, r *api.PurgeBucketRequ
 
 // AddIPToWhitelist is a handler for the GRPC AddIPToWhitelist request
 func (s *ABFGuardServer) AddIPToWhitelist(ctx context.Context, r *api.SubnetRequest) (*api.Response, error) {
-	if r == nil || r.GetList() {
+	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
 	if err := s.StorageService.AddIP(ctx, r.GetIp(), r.GetList()); err != nil {
@@ -60,7 +60,7 @@ func (s *ABFGuardServer) AddIPToWhitelist(ctx context.Context, r *api.SubnetRequ
 
 // DeleteIPFromWhitelist is a handler for the GRPC DeleteIPFromWhitelist request
 func (s *ABFGuardServer) DeleteIPFromWhitelist(ctx context.Context, r *api.SubnetRequest) (*api.Response, error) {
-	if r == nil || r.GetList() {
+	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
 	if err := s.StorageService.DeleteIP(ctx, r.GetIp(), r.GetList()); err != nil {
@@ -71,7 +71,7 @@ func (s *ABFGuardServer) DeleteIPFromWhitelist(ctx context.Context, r *api.Subne
 
 // AddIPToBlacklist is a handler for the GRPC AddIPToBlacklist request
 func (s *ABFGuardServer) AddIPToBlacklist(ctx context.Context, r *api.SubnetRequest) (*api.Response, error) {
-	if r == nil || !r.GetList() {
+	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
 	if err := s.StorageService.AddIP(ctx, r.GetIp(), r.GetList()); err != nil {
@@ -82,7 +82,7 @@ func (s *ABFGuardServer) AddIPToBlacklist(ctx context.Context, r *api.SubnetRequ
 
 // DeleteIPFromBlacklist is a handler for the GRPC DeleteIPFromBlacklist request
 func (s *ABFGuardServer) DeleteIPFromBlacklist(ctx context.Context, r *api.SubnetRequest) (*api.Response, error) {
-	if r == nil || !r.GetList() {
+	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
 	if err := s.StorageService.DeleteIP(ctx, r.GetIp(), r.GetList()); err != nil {

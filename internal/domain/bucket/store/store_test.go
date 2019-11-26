@@ -1,10 +1,11 @@
 package store
 
 import (
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestNewActiveBucketsStore(t *testing.T) {

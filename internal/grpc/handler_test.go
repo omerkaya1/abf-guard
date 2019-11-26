@@ -2,6 +2,8 @@ package grpc
 
 import (
 	"context"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
@@ -9,7 +11,6 @@ import (
 	"github.com/omerkaya1/abf-guard/internal/domain/services"
 	api "github.com/omerkaya1/abf-guard/internal/grpc/api"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestABFGuardServer_Authorisation(t *testing.T) {
@@ -80,12 +81,6 @@ func TestABFGuardServer_AddIPToBlacklist(t *testing.T) {
 			assert.Equal(t, false, resp.GetOk())
 		}
 	})
-	t.Run("Wrong list requested", func(t *testing.T) {
-		resp, err := s.AddIPToBlacklist(context.Background(), PrepareSubnetGrpcRequest("1.1.1.0", false))
-		if assert.Error(t, err) {
-			assert.Equal(t, false, resp.GetOk())
-		}
-	})
 	t.Run("Request failed", func(t *testing.T) {
 		resp, err := s.AddIPToBlacklist(context.Background(), PrepareSubnetGrpcRequest("1.1.1.0", true))
 		if assert.NoError(t, err) {
@@ -120,12 +115,6 @@ func TestABFGuardServer_AddIPToWhitelist(t *testing.T) {
 		}
 	})
 	t.Run("Request failed", func(t *testing.T) {
-		resp, err := s.AddIPToWhitelist(context.Background(), PrepareSubnetGrpcRequest("1.1.1.0", true))
-		if assert.Error(t, err) {
-			assert.Equal(t, false, resp.GetOk())
-		}
-	})
-	t.Run("Wrong list requested", func(t *testing.T) {
 		resp, err := s.AddIPToWhitelist(context.Background(), PrepareSubnetGrpcRequest("1.1.1.0", false))
 		if assert.NoError(t, err) {
 			assert.Equal(t, false, resp.GetOk())
@@ -155,12 +144,6 @@ func TestABFGuardServer_DeleteIPFromBlacklist(t *testing.T) {
 	}
 	t.Run("Empty request", func(t *testing.T) {
 		if resp, err := s.DeleteIPFromBlacklist(context.Background(), nil); assert.Error(t, err) {
-			assert.Equal(t, false, resp.GetOk())
-		}
-	})
-	t.Run("Wrong list requested", func(t *testing.T) {
-		resp, err := s.DeleteIPFromBlacklist(context.Background(), PrepareSubnetGrpcRequest("1.1.1.0", false))
-		if assert.Error(t, err) {
 			assert.Equal(t, false, resp.GetOk())
 		}
 	})
@@ -194,12 +177,6 @@ func TestABFGuardServer_DeleteIPFromWhitelist(t *testing.T) {
 	}
 	t.Run("Empty request", func(t *testing.T) {
 		if resp, err := s.DeleteIPFromWhitelist(context.Background(), nil); assert.Error(t, err) {
-			assert.Equal(t, false, resp.GetOk())
-		}
-	})
-	t.Run("Wrong list requested", func(t *testing.T) {
-		resp, err := s.DeleteIPFromWhitelist(context.Background(), PrepareSubnetGrpcRequest("1.1.1.0", true))
-		if assert.Error(t, err) {
 			assert.Equal(t, false, resp.GetOk())
 		}
 	})

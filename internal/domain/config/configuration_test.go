@@ -1,9 +1,10 @@
 package config
 
 import (
+	"testing"
+
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestInitConfig(t *testing.T) {

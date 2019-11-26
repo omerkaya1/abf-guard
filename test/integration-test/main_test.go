@@ -2,12 +2,13 @@ package integration_test
 
 import (
 	"fmt"
-	"github.com/DATA-DOG/godog"
-	"github.com/omerkaya1/abf-guard/test/integration-test/api"
-	"github.com/omerkaya1/abf-guard/test/integration-test/bucket"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/DATA-DOG/godog"
+	"github.com/omerkaya1/abf-guard/test/integration-test/api"
+	"github.com/omerkaya1/abf-guard/test/integration-test/bucket"
 )
 
 func TestMain(m *testing.M) {

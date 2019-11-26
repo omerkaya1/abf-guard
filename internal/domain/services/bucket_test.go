@@ -2,11 +2,12 @@ package services
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/golang/mock/gomock"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestBucket_Dispatch(t *testing.T) {
