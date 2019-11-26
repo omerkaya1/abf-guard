@@ -21,10 +21,11 @@ type PsqlStorage struct {
 
 // NewPsqlStorage returns new PsqlStorage object to the callee
 func NewPsqlStorage(cfg config.DBConf) (*PsqlStorage, error) {
-	if cfg.Name == "" || cfg.User == "" || cfg.SSL == "" || cfg.Password == "" {
+	if cfg.Name == "" || cfg.User == "" || cfg.SSL == "" || cfg.Password == "" || cfg.Host == "" || cfg.Port == "" {
 		return nil, errors.ErrBadDBConfiguration
 	}
-	dsn := fmt.Sprintf("host=%s port=%s password=%s user=%s dbname=%s sslmode=%s", cfg.Host, cfg.Port, cfg.Password, cfg.User, cfg.Name, cfg.SSL)
+	dsn := fmt.Sprintf("host=%s port=%s password=%s user=%s dbname=%s sslmode=%s",
+		cfg.Host, cfg.Port, cfg.Password, cfg.User, cfg.Name, cfg.SSL)
 	db, err := sqlx.Connect("pgx", dsn)
 	if err != nil {
 		return nil, err

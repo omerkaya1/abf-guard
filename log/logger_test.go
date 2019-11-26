@@ -21,9 +21,11 @@ func TestInitLogger(t *testing.T) {
 			}
 		})
 	}
-	t.Run("Correct log level", func(t *testing.T) {
-		if l, err := InitLogger(1); assert.NoError(t, err) {
-			assert.NotNil(t, l)
-		}
-	})
+	for i := 0; i < 3; i++ {
+		t.Run("Correct log level", func(t *testing.T) {
+			if l, err := InitLogger(i); assert.NoError(t, err) {
+				assert.NotNil(t, l)
+			}
+		})
+	}
 }

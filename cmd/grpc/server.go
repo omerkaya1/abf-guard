@@ -29,31 +29,22 @@ var ServerRootCmd = &cobra.Command{
 		}
 		// Initialise configuration
 		cfg, err := config.InitConfig(cfgPath)
-		if err != nil {
-			log.Fatalf("%s: InitConfig failed: %s", errors.ErrServiceCmdPrefix, err)
-		}
+		oops(errors.ErrServiceCmdPrefix, err)
 		// Initialise project's logger
 		l, err := logger.InitLogger(cfg.Server.Level)
-		if err != nil {
-			log.Fatalf("%s: InitLogger failed: %s", errors.ErrServiceCmdPrefix, err)
-		}
+		oops(errors.ErrServiceCmdPrefix, err)
 		// Init DB
 		mainDB, err := db.NewPsqlStorage(cfg.DB)
-		if err != nil {
-			log.Fatalf("%s: dbFromConfig failed: %s", errors.ErrServiceCmdPrefix, err)
-		}
+		oops(errors.ErrServiceCmdPrefix, err)
 		// Init settings for the bucket manager
 		mgrSettings, err := settings.InitBucketManagerSettings(cfg.Limits)
-		if err != nil {
-			log.Fatalf("%s: InitBucketSettings failed: %s", errors.ErrServiceCmdPrefix, err)
-		}
+		oops(errors.ErrServiceCmdPrefix, err)
 		// Init BucketService
-		manager := manager.NewManager(mgrSettings)
+		manager, err := manager.NewManager(mgrSettings)
+		oops(errors.ErrServiceCmdPrefix, err)
 		//Init GRPC server
 		srv, err := grpc.NewServer(&cfg.Server, l, &services.Storage{Processor: mainDB}, &services.Bucket{Manager: manager})
-		if err != nil {
-			log.Fatalf("%s: %s", errors.ErrServiceCmdPrefix, err)
-		}
+		oops(errors.ErrServiceCmdPrefix, err)
 		// Run the GRPC server
 		srv.Run()
 	},
@@ -61,4 +52,10 @@ var ServerRootCmd = &cobra.Command{
 
 func init() {
 	ServerRootCmd.Flags().StringVarP(&cfgPath, "config", "c", "", "-c, --config=/path/to/config.json")
+}
+
+func oops(prefix string, err error) {
+	if err != nil {
+		log.Fatalf("%s: %s", prefix, err)
+	}
 }

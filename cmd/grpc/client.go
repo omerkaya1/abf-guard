@@ -87,9 +87,8 @@ func authoriseCmdFunc(cmd *cobra.Command, args []string) {
 	client := getGRPCClient()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	ok, err := client.Authorisation(ctx, req.PrepareGRPCAuthorisationBody(login, password, ip))
-	if err != nil {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
-	}
+	oops(errors.ErrClientCmdPrefix, err)
+
 	if !ok.GetOk() {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrAuthorisationFailed)
 	}
@@ -105,9 +104,8 @@ func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	ok, err := client.FlushBuckets(ctx, req.PrepareFlushBucketsGrpcRequest(login, ip))
-	if err != nil {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
-	}
+	oops(errors.ErrClientCmdPrefix, err)
+
 	if !ok.GetOk() {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrFlushBucketsFailed)
 	}
@@ -123,9 +121,8 @@ func purgeBucketCmdFunc(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	ok, err := client.PurgeBucket(ctx, req.PreparePurgeBucketGrpcRequest(entity))
-	if err != nil {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
-	}
+	oops(errors.ErrClientCmdPrefix, err)
+
 	if !ok.GetOk() {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrPurgeBucketFailed)
 	}
@@ -141,9 +138,8 @@ func addIPCmdFunc(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	resp, err := client.AddIPToWhitelist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
-	if err != nil {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
-	}
+	oops(errors.ErrClientCmdPrefix, err)
+
 	if resp.GetError() != "" {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
 	}
@@ -166,9 +162,8 @@ func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	resp, err := client.DeleteIPFromBlacklist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
-	if err != nil {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
-	}
+	oops(errors.ErrClientCmdPrefix, err)
+
 	if resp.GetError() != "" {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
 	}
@@ -188,9 +183,7 @@ func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 
 	resp, err := client.GetIPList(ctx, req.PrepareIPListGrpcRequest(black))
-	if err != nil {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
-	}
+	oops(errors.ErrClientCmdPrefix, err)
 	if resp.GetError() != "" {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
 	}
@@ -200,8 +193,6 @@ func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 
 func getGRPCClient() api.ABFGuardClient {
 	conn, err := grpc.Dial(host+":"+port, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, err)
-	}
+	oops(errors.ErrClientCmdPrefix, err)
 	return api.NewABFGuardClient(conn)
 }

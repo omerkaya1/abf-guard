@@ -21,7 +21,12 @@ fmt: ## Run goimports on all go files
 
 .PHONY: test
 test: setup ## Runs all the tests
-	echo 'mode: atomic' > coverage.txt && go test -covermode=atomic -coverprofile=coverage.txt -v -race -timeout=30s ./...
+	echo 'mode: atomic' > coverage.txt && go test -covermode=atomic -coverprofile=coverage.txt -v -race \
+	-timeout=30s ./log... ./internal/...
+
+.PHONY: coverage
+coverage: test ## Runs all the tests and opens the coverage report
+	go tool cover -html=coverage.txt
 
 .PHONY: lint
 lint: ## Runs all the linters

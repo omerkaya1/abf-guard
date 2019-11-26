@@ -7,8 +7,8 @@
 4. There should be no memory leaks ```DONE```
 5. Code structure according to clean architecture style guides ```DONE```
 6. Code passes go vet, golint and race detector checks ```DONE```
-7. UTs ```In progress```
-8. Try to reach 100% of the test coverage ```In progress```
+7. UTs ```DONE```
+8. Try to reach 100% of the test coverage ```More or less DONE```
 9. Integration tests should start by docker-compose ```In progress```
 10. ```make run``` and ```make test``` presence ```DONE```
 

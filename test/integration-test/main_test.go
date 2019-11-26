@@ -7,12 +7,13 @@ import (
 	"github.com/omerkaya1/abf-guard/test/integration-test/bucket"
 	"os"
 	"testing"
+	"time"
 )
 
 func TestMain(m *testing.M) {
 	status := 1
 	fmt.Println("Waiting for all services to become available...")
-	//time.Sleep(time.Second * 30)
+	time.Sleep(time.Second * 30)
 
 	status = godog.RunWithOptions("API", func(s *godog.Suite) {
 		api.FeatureContext(s)

@@ -22,7 +22,10 @@ type Manager struct {
 }
 
 // NewManager creates a new Manager object and returns it to the callee
-func NewManager(settings *settings.Settings) *Manager {
+func NewManager(settings *settings.Settings) (*Manager, error) {
+	if settings == nil {
+		return nil, errors.ErrNilSettings
+	}
 	mgr := &Manager{
 		settings: settings,
 		store:    store.NewActiveBucketsStore(),
@@ -30,7 +33,7 @@ func NewManager(settings *settings.Settings) *Manager {
 		errChan:  make(chan error, 10),
 	}
 	go mgr.monitor()
-	return mgr
+	return mgr, nil
 }
 
 // Dispatch accepts authorisation request parameters and creates a new or decrements a counter for each bucket
@@ -70,12 +73,12 @@ func (m *Manager) FlushBuckets(login, ip string) error {
 	if m.store.CheckBucket(login) {
 		m.errChan <- m.store.RemoveBucket(login)
 	} else {
-		return fmt.Errorf("no bucket for login: %s", login)
+		return fmt.Errorf("no bucket found in store for provided login: %s", login)
 	}
 	if m.store.CheckBucket(ip) {
 		m.errChan <- m.store.RemoveBucket(ip)
 	} else {
-		return fmt.Errorf("no bucket for ip: %s", ip)
+		return fmt.Errorf("no bucket found in store for provided ip: %s", ip)
 	}
 	return nil
 }

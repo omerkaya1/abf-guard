@@ -74,8 +74,10 @@ const (
 	ErrIncorrectCfgPWD = ABFGuardError("incorrect password limit field in configuration")
 	// ErrEmptyCfgIP .
 	ErrIncorrectCfgIP = ABFGuardError("incorrect ip limit field in configuration")
-	// ErrEmptyCfgDuration
+	// ErrEmptyCfgDuration .
 	ErrEmptyCfgDuration = ABFGuardError("empty expire field in configuration")
+	// ErrNilSettings .
+	ErrNilSettings = ABFGuardError("nil settings object is received")
 )
 
 /** Manager errors */
