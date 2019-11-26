@@ -20,7 +20,7 @@ var cfgPath string
 // ServerRootCmd is the main command to start the GRPC server
 var ServerRootCmd = &cobra.Command{
 	Use:     "grpc-server",
-	Short:   "Run GRPC Server",
+	Short:   "Run GRPC Server for ABF-Guard",
 	Example: "  abf-guard grpc-server -c /path/to/config.json",
 	Run: func(cmd *cobra.Command, args []string) {
 		// Config file path check

@@ -13,8 +13,8 @@
 10. ```make run``` and ```make test``` presence ```DONE```
 
 ## TODO for the project
-* Update README.md file
-* Complete UTs
+* ~~Update README.md file~~
+* ~~Complete UTs~~
 * Complete integration tests
 
 ## TODO for the future

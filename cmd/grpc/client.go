@@ -22,8 +22,8 @@ var (
 	// ClientRootCmd .
 	ClientRootCmd = &cobra.Command{
 		Use:     "grpc-client",
-		Short:   "Run GRPC Web Service client",
-		Example: "  abf-guard grpc-client create -h",
+		Short:   "Run GRPC Web Service client for ABF-Guard",
+		Example: "  abf-guard grpc-client -h",
 	}
 
 	authoriseActionCmd = &cobra.Command{
@@ -49,21 +49,21 @@ var (
 
 	addIPActionCmd = &cobra.Command{
 		Use:     "add",
-		Short:   "Add ip to a specified list",
+		Short:   "Add an IP to a specified list",
 		Run:     addIPCmdFunc,
 		Example: "  abf-guard grpc-client add -i 10.0.0.1 -b",
 	}
 
 	deleteIPActionCmd = &cobra.Command{
 		Use:     "delete",
-		Short:   "Delete ip from a specified list",
+		Short:   "Delete an IP from a specified list",
 		Run:     deleteIPCmdFunc,
 		Example: "  abf-guard grpc-client delete -i 10.0.0.1 -b",
 	}
 
 	getIPListActionCmd = &cobra.Command{
 		Use:     "get",
-		Short:   "Get a list of ip from a specified list",
+		Short:   "Get a list of IPs from a specified list",
 		Run:     getIPListCmdFunc,
 		Example: "  abf-guard grpc-client get -b",
 	}

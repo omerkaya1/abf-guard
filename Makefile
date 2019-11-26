@@ -10,17 +10,17 @@ setup: ## Install all the build and lint dependencies
 	go get -u golang.org/x/lint/golint
 
 .PHONY: mod
-mod: ## Runs mod
+mod: ## Runs go mod on a project
 	go mod verify
 	go mod vendor
 	go mod tidy
 
 .PHONY: fmt
-fmt: ## Run goimports on all go files
+fmt: ## Runs goimports on all go files
 	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do goimports -w "$$file"; done
 
 .PHONY: test
-test: setup ## Runs all the tests
+test: ## Runs all unit tests
 	echo 'mode: atomic' > coverage.txt && go test -covermode=atomic -coverprofile=coverage.txt -v -race \
 	-timeout=30s ./log... ./internal/...
 
@@ -37,7 +37,7 @@ vet: ## Runs go vet
 	go vet ./...
 
 .PHONY: checks
-checks: fmt lint vet ## Runs all checks for the project
+checks: fmt lint vet ## Runs all checks for the project (go fmt, go lint, go vet)
 	echo 'Checks done!'
 
 .PHONY: build
@@ -45,23 +45,23 @@ build: ## Builds the project
 	go build -o $(BUILD)/abf-guard $(CURDIR)
 
 .PHONY: run
-run: build ## Runs the project
+run: build ## Runs the project in production mode
 	$(BUILD)/abf-guard grpc-server -c ./configs/config.json
 
 .PHONY: run-test
-run-test: ## Runs the project
+run-test: ## Runs the project for the local usage
 	go run main.go grpc-server -c ./configs/config-test.json
 
 .PHONY: gen
-gen: ## Triggers code generation of
+gen: ## Triggers code generation for the GRPC Server and Client API
 	protoc --go_out=plugins=grpc:$(CURDIR)/internal/grpc ./api/*.proto
 
 .PHONY: gen-test
-gen-test: ## Triggers code generation of
+gen-test: ## Triggers code generation for the GRPC Server and Client API for ITs
 	protoc --go_out=plugins=grpc:$(CURDIR)/test/integration-test/ ./api/*.proto
 
 .PHONY: dockerbuild
-dockerbuild: mod ## Builds a docker image with a project
+dockerbuild: mod ## Builds a docker image with the project
 	docker build -t omer513/abf-guard:0.${VERSION} .
 
 .PHONY: dockerpush
@@ -73,11 +73,11 @@ docker-compose-up: ## Runs docker-compose command to kick-start the infrastructu
 	docker-compose -f ./deployments/docker-compose.yaml up -d
 
 .PHONY: docker-compose-down
-docker-compose-down: ## Runs docker-compose command to remove the turn down the infrastructure
+docker-compose-down: ## Runs docker-compose command to turn down the infrastructure
 	docker-compose -f ./deployments/docker-compose.yaml down -v
 
 .PHONY: integration
-integration: ## Runs all integration tests for the project
+integration: ## Runs the integration tests for the project
 	docker-compose -f ./deployments/docker-compose.test.yaml up --build -d;\
 	test_status_code=0 ;\
 	docker-compose -f ./deployments/docker-compose.test.yaml run integration_tests go test -v ./... || test_status_code=$$? ;
