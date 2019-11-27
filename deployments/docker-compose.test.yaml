@@ -39,10 +39,12 @@ services:
       context: ../.
       dockerfile: ./deployments/abfg-integration-test/Dockerfile
     environment:
-      - LOGIN=5
-      - PWD=10
-      - IP=20
-      - EXPIRE=20s
+      - TEST_HOST=abfg
+      - TEST_PORT=6666
+      - LOGIN_LIMIT=5
+      - PASSWORD_LIMIT=10
+      - IP_LIMIT=20
+      - EXPIRE_LIMIT=10s
     depends_on:
       - postgres
       - abf-guard

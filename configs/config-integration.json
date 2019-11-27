@@ -16,6 +16,6 @@
     "login": 5,
     "password": 10,
     "ip": 20,
-    "expire": "30s"
+    "expire": "10s"
   }
 }

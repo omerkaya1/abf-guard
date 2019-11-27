@@ -17,57 +17,83 @@ Feature: Functional ABFG API
 	As a user that operates with the service through API
 	The service should allow the following
 
+	# NOTE: Checked. Ready to be used.
 	Scenario: Add an IP to the whitelist
-		When we send a request to add "10.0.0.1" ip to "white" list
+		When we send a request to add "10.0.0.1" subnet to the "white" list
 		Then the request is completed without errors
+		And the "10.0.0.1" ip is "" in the "white" list
 
+	# NOTE: Checked. Ready to be used.
 	Scenario: Add an IP to the blacklist
-		When we send a request to add "10.0.0.1" ip to "black" list
+		When we send a request to add "10.0.0.2" subnet to the "black" list
 		Then the request is completed without errors
+		And the "10.0.0.2" ip is "" in the "black" list
 
+    # NOTE: Checked. Ready to be used.
+	Scenario: Check happy path for a subnet
+		When we send "white" authorisation requests for "2" times of the allowed limits with parameters:
+			"""
+			{ "login": "Morty", "password": "1234", "ip": "10.0.0.1" }
+			"""
+		Then they all succeed
+
+	# NOTE: Checked. Ready to be used.
+	Scenario: Check blocking for a subnet
+		When we send "black" authorisation requests for "2" times of the allowed limits with parameters:
+			"""
+			{ "login": "Morty", "password": "1234", "ip": "10.0.0.2" }
+			"""
+		Then they all fail
+
+	# NOTE: Checked. Ready to be used.
+	Scenario: Normal authorisation
+		When we send "normal" authorisation requests for "2" times of the allowed limits with parameters:
+			"""
+			{ "login": "Morty", "password": "1234", "ip": "10.0.0.3" }
+			"""
+		Then half of the requests pass and half do not
+
+	# NOTE: Checked. Ready to be used.
+	Scenario: Send a flush buckets request
+		Given we send an authorisation request with parameters:
+			"""
+			{ "login": "Morty", "password": "1234", "ip": "10.0.0.3" }
+			"""
+		When sending "flush" request "2" times for the following buckets:
+			"""
+			{ "login": "Morty", "password": "", "ip": "10.0.0.3" }
+			"""
+		Then half of the requests pass and half do not
+
+	# NOTE: Checked. Ready to be used.
+	Scenario: Send a purge bucket request
+		Given we send an authorisation request with parameters:
+			"""
+			{ "login": "Morty", "password": "1234", "ip": "10.0.0.3" }
+			"""
+		When sending "purge" request "6" times for the following buckets:
+		"""
+			{ "login": "Morty", "password": "1234", "ip": "10.0.0.3" }
+			"""
+		Then half of the requests pass and half do not
+
+	# NOTE: Checked. Ready to be used.
+	Scenario: Get a list of IPs that belong to the whitelist
+		When we send a request to get a list of ips from "white" list
+		Then the "10.0.0.1" ip is "" in the "white" list
+
+	# NOTE: Checked. Ready to be used.
+	Scenario: Get a list of IPs that belong to the blacklist
+		When we send a request to get a list of ips from "black" list
+		Then the "10.0.0.2" ip is "" in the "black" list
+
+	# NOTE: Checked. Ready to be used.
 	Scenario: Delete an IP from the whitelist
 		When we send a request to delete "10.0.0.1" ip from "white" list
 		Then the request is completed without errors
 
+	# NOTE: Checked. Ready to be used.
 	Scenario: Delete an IP from the blacklist
-		When we send a request to delete "10.0.0.1" ip from "black" list
+		When we send a request to delete "10.0.0.2" ip from "black" list
 		Then the request is completed without errors
 
-	Scenario: Get a list of IPs that belong to the whitelist
-		When we send a request to get a list of ips from "white" list
-		Then the request is completed without errors
-
-	Scenario: Get a list of IPs that belong to the blacklist
-		When we send a request to get a list of ips from "black" list
-		Then the request is completed without errors
-
-	Scenario: Send an authorisation request
-		When we send an authorisation request with parameters:
-			"""
-			{ "login": "Morty", "password": "1234", "ip": "10.0.0.1" }
-			"""
-		Then the request is completed without errors
-
-	Scenario: Send a flush buckets request
-		When we send an authorisation request with parameters:
-			"""
-			{ "login": "Morty", "password": "1234", "ip": "10.0.0.1" }
-			"""
-		And send a flush request for the login "Morty" and ip "10.0.0.1" buckets
-		Then the request is completed without errors
-
-	Scenario: Send a purge bucket request
-		When we send an authorisation request with parameters:
-			"""
-			{ "login": "Morty", "password": "1234", "ip": "10.0.0.1" }
-			"""
-		And send "1" purge request for the login "Morty" bucket
-		Then the request is completed without errors
-
-	Scenario: Send a purge bucket request
-		When we send an authorisation request with parameters:
-			"""
-			{ "login": "Morty", "password": "1234", "ip": "10.0.0.1" }
-			"""
-		And send "2" purge request for the login "Morty" bucket
-		Then the request fails
