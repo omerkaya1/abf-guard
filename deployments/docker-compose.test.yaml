@@ -8,6 +8,8 @@ services:
       - POSTGRES_USER=abfg_user
       - POSTGRES_PASSWORD=ChangeMe
       - POSTGRES_DB=abfg_db
+    volumes:
+      - ../db/001.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "54321:5432"
     networks:
