@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/rand"
+	"strings"
+
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"google.golang.org/grpc"
-	"math/rand"
-	"strings"
 
 	"integration-test/api"
 	"log"

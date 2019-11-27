@@ -14,7 +14,7 @@ func TestBucket_Decrement(t *testing.T) {
 	finished := make(chan string)
 	count := 5
 
-	b := NewBucket("test", 5, time.Second*2, finished)
+	b := NewBucket(context.Background(), "test", 5, time.Second*2, finished)
 
 	for i := 1; i < count; i++ {
 		assert.Equal(t, true, b.Decrement())
@@ -40,7 +40,7 @@ func TestBucket_Decrement_Prohibited(t *testing.T) {
 	finished := make(chan string)
 	count := 5
 
-	b := NewBucket("test", 5, time.Second*2, finished)
+	b := NewBucket(context.Background(), "test", 5, time.Second*2, finished)
 
 	// These will be allowed
 	for i := 1; i < count; i++ {
@@ -72,7 +72,7 @@ func TestBucket_Stop(t *testing.T) {
 	finished := make(chan string)
 	count := 5
 
-	b := NewBucket("test", 5, time.Second*2, finished)
+	b := NewBucket(context.Background(), "test", 5, time.Second*2, finished)
 
 	for i := 1; i < count; i++ {
 		assert.Equal(t, true, b.Decrement())

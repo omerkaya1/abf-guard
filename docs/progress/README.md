@@ -9,14 +9,16 @@
 6. Code passes go vet, golint and race detector checks ```DONE```
 7. UTs ```DONE```
 8. Try to reach 100% of the test coverage ```More or less DONE```
-9. Integration tests should start by docker-compose ```In progress```
+9. Integration tests should start by docker-compose ```DONE```
 10. ```make run``` and ```make test``` presence ```DONE```
 
 ## TODO for the project
 * ~~Update README.md file~~
 * ~~Complete UTs~~
-* Complete integration tests
+* ~~Complete integration tests~~
 
 ## TODO for the future
 * Create a message queue that will send notifications for the service administrator about subnet 
-addresses that look suspicious
+addresses that look suspicious;
+* Add context to every critical section of the programme so that OS signals could be propagated 
+and properly handled;

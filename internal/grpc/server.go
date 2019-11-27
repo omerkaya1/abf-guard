@@ -4,6 +4,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"syscall"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/services"
@@ -47,18 +48,21 @@ func (s *ABFGuardServer) Run() {
 
 	// Handle interrupt
 	exitChan := make(chan os.Signal, 1)
-	signal.Notify(exitChan, os.Interrupt, os.Kill)
+	signal.Notify(exitChan, syscall.SIGINT, syscall.SIGHUP, syscall.SIGKILL, syscall.SIGTERM)
 
 	// Log errors that occur during the work with buckets
 	go func() {
-		select {
-		case <-exitChan:
-			s.Logger.Sugar().Info("Interrupt signal received")
-			server.GracefulStop()
-			return
-		case err := <-s.BucketService.MonitorErrors():
-			if err != nil {
-				s.Logger.Sugar().Errorf("%s: %s", errors.ErrBucketManagerPrefix, err)
+		for {
+			select {
+			case <-exitChan:
+				s.Logger.Sugar().Info("Interrupt signal received.")
+				server.GracefulStop()
+				s.Logger.Sugar().Info("Graceful shutdown performed. Bye!")
+				return
+			case err := <-s.BucketService.MonitorErrors():
+				if err != nil {
+					s.Logger.Sugar().Errorf("%s: %s", errors.ErrBucketManagerPrefix, err)
+				}
 			}
 		}
 	}()

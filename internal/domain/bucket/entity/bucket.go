@@ -2,6 +2,7 @@ package entity
 
 import (
 	"context"
+	"log"
 	"sync"
 	"time"
 )
@@ -16,22 +17,32 @@ type Bucket struct {
 }
 
 // NewBucket returns an new bucket object to the callee
-func NewBucket(name string, count int, expires time.Duration, finished chan<- string) *Bucket {
+func NewBucket(ctxParent context.Context, name string, count int, expires time.Duration, done chan<- string) *Bucket {
 	// We create a context for each bucket to handle the removal of buckets by calling the cancel() function
-	ctx, cancel := context.WithCancel(context.Background())
+	innerCtx, cancel := context.WithCancel(ctxParent)
 	// We make sure that the bucket gets deleted after a certain time
-	time.AfterFunc(expires, func() {
-		// The cancel function was called. No need to send a callback to remove the bucket
-		if ctx.Err() != nil {
+	go func(ctxInn context.Context, expire time.Duration) {
+		clickClick := time.NewTicker(expire)
+		select {
+		case <-ctxInn.Done():
+			if ctxInn.Err() == context.Canceled {
+				return
+			}
+			// Log unexpected error
+			log.Println(ctxInn.Err())
+			return
+		case <-clickClick.C:
+			// Boom!
+			done <- name
 			return
 		}
-		finished <- name
-	})
+	}(innerCtx, expires)
+
 	return &Bucket{
 		name:   name,
 		count:  count,
 		mutex:  sync.RWMutex{},
-		ctx:    ctx,
+		ctx:    innerCtx,
 		cancel: cancel,
 	}
 }

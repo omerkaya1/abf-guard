@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"os/signal"
@@ -19,6 +20,8 @@ type Manager struct {
 	store    bucket.Storage
 	emptied  chan string
 	errChan  chan error
+	ctx      context.Context
+	cancel   context.CancelFunc
 }
 
 // NewManager creates a new Manager object and returns it to the callee
@@ -26,11 +29,14 @@ func NewManager(settings *settings.Settings) (*Manager, error) {
 	if settings == nil {
 		return nil, errors.ErrNilSettings
 	}
+	ctx, cancel := context.WithCancel(context.Background())
 	mgr := &Manager{
 		settings: settings,
 		store:    store.NewActiveBucketsStore(),
 		emptied:  make(chan string, 3),
 		errChan:  make(chan error, 10),
+		ctx:      ctx,
+		cancel:   cancel,
 	}
 	go mgr.monitor()
 	return mgr, nil
@@ -105,13 +111,13 @@ func (m *Manager) concurrentDispatch(wg *sync.WaitGroup, name string, bucketType
 	} else {
 		switch bucketType {
 		case 0:
-			m.store.AddBucket(name, entity.NewBucket(name, m.settings.LoginLimit, m.settings.Expire, m.emptied))
+			m.store.AddBucket(name, entity.NewBucket(m.ctx, name, m.settings.LoginLimit, m.settings.Expire, m.emptied))
 			break
 		case 1:
-			m.store.AddBucket(name, entity.NewBucket(name, m.settings.PasswordLimit, m.settings.Expire, m.emptied))
+			m.store.AddBucket(name, entity.NewBucket(m.ctx, name, m.settings.PasswordLimit, m.settings.Expire, m.emptied))
 			break
 		default:
-			m.store.AddBucket(name, entity.NewBucket(name, m.settings.IPLimit, m.settings.Expire, m.emptied))
+			m.store.AddBucket(name, entity.NewBucket(m.ctx, name, m.settings.IPLimit, m.settings.Expire, m.emptied))
 			break
 		}
 		result <- true
@@ -130,6 +136,8 @@ func (m *Manager) monitor() {
 		case name := <-m.emptied:
 			m.errChan <- m.store.RemoveBucket(name)
 		case <-exitChan:
+			m.cancel()
+			close(m.errChan)
 			return
 		}
 	}
