@@ -71,13 +71,13 @@ var (
 
 func init() {
 	ClientRootCmd.AddCommand(authoriseActionCmd, flashBucketCmd, addIPActionCmd, deleteIPActionCmd, getIPListActionCmd, purgeBucketCmd)
-	ClientRootCmd.PersistentFlags().StringVarP(&host, "host", "s", "127.0.0.1", "-s, --host=127.0.0.1")
-	ClientRootCmd.PersistentFlags().StringVarP(&port, "port", "p", "6666", "-p, --port=7777: server port")
-	ClientRootCmd.PersistentFlags().StringVarP(&login, "login", "l", "", "-l, --login=morty")
-	ClientRootCmd.PersistentFlags().StringVarP(&password, "password", "w", "", "-w, --password=oh_geez")
-	ClientRootCmd.PersistentFlags().StringVarP(&ip, "ip", "i", "", "-i, --ip=10.0.0.1")
-	ClientRootCmd.PersistentFlags().StringVarP(&entity, "entity", "e", "", "-e, --entity=bucket_name")
-	ClientRootCmd.PersistentFlags().BoolVarP(&black, "blacklist", "b", false, "-b, --blacklist=true")
+	ClientRootCmd.PersistentFlags().StringVarP(&host, "host", "s", "127.0.0.1", "host address")
+	ClientRootCmd.PersistentFlags().StringVarP(&port, "port", "p", "6666", "host port")
+	ClientRootCmd.PersistentFlags().StringVarP(&login, "login", "l", "", "login parameter")
+	ClientRootCmd.PersistentFlags().StringVarP(&password, "password", "w", "", "password parameter")
+	ClientRootCmd.PersistentFlags().StringVarP(&ip, "ip", "i", "", "ip parameter")
+	ClientRootCmd.PersistentFlags().StringVarP(&entity, "entity", "e", "", "bucket name for removal")
+	ClientRootCmd.PersistentFlags().BoolVarP(&black, "blacklist", "b", false, "blacklist or whitelist specification")
 }
 
 func authoriseCmdFunc(cmd *cobra.Command, args []string) {

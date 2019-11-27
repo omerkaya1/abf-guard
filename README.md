@@ -45,14 +45,14 @@ Available Commands:
   purge       Purge single bucket
 
 Flags:
-  -b, --blacklist         -b, --blacklist=true
-  -e, --entity string     -e, --entity=bucket_name
+  -b, --blacklist         blacklist or whitelist specification
+  -e, --entity string     bucket name for removal
   -h, --help              help for grpc-client
-  -s, --host string       -s, --host=127.0.0.1 (default "127.0.0.1")
-  -i, --ip string         -i, --ip=10.0.0.1
-  -l, --login string      -l, --login=morty
-  -w, --password string   -w, --password=oh_geez
-  -p, --port string       -p, --port=7777: server port (default "6666")
+  -s, --host string       host address (default "127.0.0.1")
+  -i, --ip string         ip parameter
+  -l, --login string      login parameter
+  -w, --password string   password parameter
+  -p, --port string       host port (default "6666")
 
 Use "abf-guard grpc-client [command] --help" for more information about a command.
 ```
