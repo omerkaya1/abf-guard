@@ -80,11 +80,12 @@ docker-compose-down: ## Runs docker-compose command to turn down the infrastruct
 .PHONY: integration
 integration: ## Runs the integration tests for the project
 	docker-compose -f ./deployments/docker-compose.test.yaml up --build -d;\
-	test_status_code=0 ;\
-	docker-compose -f ./deployments/docker-compose.test.yaml run integration_tests go test -v ./... || test_status_code=$$? ;
+	exit_code=0 ;\
+	docker-compose -f ./deployments/docker-compose.test.yaml run integration_tests \
+	./abfg-integration-test || $exit_code=$$? ;
 	docker-compose -f ./deployments/docker-compose.test.yaml down --volumes;\
-	printf "Return code is $$test_status_code\n" ;\
-	exit $$test_status_code ;\
+	printf "Return code is $$exit_code\n" ;\
+	exit $$exit_code ;\
 
 .PHONY: clean
 clean: ## Remove temporary files
