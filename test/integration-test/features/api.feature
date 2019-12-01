@@ -13,6 +13,7 @@
 #  10) Delete an IP from the whitelist
 #  11) Delete an IP from the blacklist
 ########################################
+#noinspection CucumberUndefinedStep
 Feature: Functional ABFG API
 	In order to test the abf-guard application
 	As a user that operates with the service through API
@@ -21,12 +22,12 @@ Feature: Functional ABFG API
 	Scenario: Add an IP to the whitelist
 		When we send a request to add "10.0.0.1" subnet to the "white" list
 		Then the request is completed without errors
-		And the "10.0.0.1" ip is "" in the "white" list
+		And the "10.0.0.1" subnet is "" in the "white" list
 
 	Scenario: Add an IP to the blacklist
 		When we send a request to add "10.0.0.2" subnet to the "black" list
 		Then the request is completed without errors
-		And the "10.0.0.2" ip is "" in the "black" list
+		And the "10.0.0.2" subnet is "" in the "black" list
 
 	Scenario: Check happy path for a subnet
 		When we send "white" authorisation requests for "2" times of the allowed limits with parameters:
@@ -72,18 +73,18 @@ Feature: Functional ABFG API
 		Then precisely "3" of the requests should have passed and "3" should not have passed
 
 	Scenario: Get a list of IPs that belong to the whitelist
-		When we send a request to get a list of ips from "white" list
-		Then the "10.0.0.1" ip is "" in the "white" list
+		When we send a request to get a list of subnets from "white" list
+		Then the "10.0.0.1" subnet is "" in the "white" list
 
 	Scenario: Get a list of IPs that belong to the blacklist
-		When we send a request to get a list of ips from "black" list
-		Then the "10.0.0.2" ip is "" in the "black" list
+		When we send a request to get a list of subnets from "black" list
+		Then the "10.0.0.2" subnet is "" in the "black" list
 
 	Scenario: Delete an IP from the whitelist
-		When we send a request to delete "10.0.0.1" ip from "white" list
+		When we send a request to delete "10.0.0.1" subnet from "white" list
 		Then the request is completed without errors
 
 	Scenario: Delete an IP from the blacklist
-		When we send a request to delete "10.0.0.2" ip from "black" list
+		When we send a request to delete "10.0.0.2" subnet from "black" list
 		Then the request is completed without errors
 

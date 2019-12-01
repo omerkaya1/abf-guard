@@ -42,7 +42,7 @@ var ServerRootCmd = &cobra.Command{
 		// Init BucketService
 		manager, err := manager.NewManager(mgrSettings)
 		oops(errors.ErrServiceCmdPrefix, err)
-		//Init GRPC server
+		// Init GRPC server
 		srv, err := grpc.NewServer(&cfg.Server, l, &services.Storage{Processor: mainDB}, &services.Bucket{Manager: manager})
 		oops(errors.ErrServiceCmdPrefix, err)
 		// Run the GRPC server

@@ -31,6 +31,7 @@ coverage: test ## Runs all the tests and opens the coverage report
 .PHONY: lint
 lint: ## Runs all the linters
 	golint ./internal/... ./cmd/... ./log/...
+	golint ./test/integration-test/main_test.go
 
 .PHONY: vet
 vet: ## Runs go vet

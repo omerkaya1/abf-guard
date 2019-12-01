@@ -4,19 +4,19 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"math/rand"
+	"os"
+	"strconv"
 	"strings"
+	"testing"
+	"time"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"google.golang.org/grpc"
 
 	"integration-test/api"
-	"log"
-	"os"
-	"strconv"
-	"testing"
-	"time"
 )
 
 type authorise struct {
@@ -121,7 +121,7 @@ func (abfg *testABFG) theRequestIsCompletedWithoutErrors() error {
 	return nil
 }
 
-func (abfg *testABFG) theIpIsInTheList(arg1, arg2, arg3 string) error {
+func (abfg *testABFG) theSubnetIsInTheList(arg1, arg2, arg3 string) error {
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*5)
 	resp, err := abfg.c.GetIPList(ctx, &api.ListRequest{ListType: blacklistCheck(arg3)})
 	if err != nil {
@@ -136,20 +136,19 @@ func (abfg *testABFG) theIpIsInTheList(arg1, arg2, arg3 string) error {
 	if arg2 != "" {
 		for _, v := range resp.GetIps().GetList() {
 			if v == arg1 {
-				return fmt.Errorf("\033[34mthe %s address is in the %s list\033[0m\n", arg1, arg3)
+				return fmt.Errorf("\033[34mthe %s address is in the %s list\033[0m", arg1, arg3)
 			}
 		}
 		log.Printf("the %s address is %s in the %s list\n", arg1, arg2, arg3)
 		return nil
-	} else {
-		for _, v := range resp.GetIps().GetList() {
-			if v == arg1 {
-				fmt.Printf("\033[34mthe %s address is in the %s list\033[0m\n", arg1, arg3)
-				return nil
-			}
-		}
-		return fmt.Errorf("the %s address is NOT IN in the %s list", arg1, arg3)
 	}
+	for _, v := range resp.GetIps().GetList() {
+		if v == arg1 {
+			fmt.Printf("\033[34mthe %s address is in the %s list\033[0m\n", arg1, arg3)
+			return nil
+		}
+	}
+	return fmt.Errorf("the %s address is NOT IN in the %s list", arg1, arg3)
 }
 
 func (abfg *testABFG) weSendAuthorisationRequestsForTimesOfTheAllowedLimitsWithParameters(
@@ -160,9 +159,9 @@ func (abfg *testABFG) weSendAuthorisationRequestsForTimesOfTheAllowedLimitsWithP
 		return err
 	}
 	replacer := strings.NewReplacer("\n", "", "\t", "")
-	cleanJson := replacer.Replace(arg3.Content)
+	testData := replacer.Replace(arg3.Content)
 	a := &authorise{}
-	if err := json.Unmarshal([]byte(cleanJson), a); err != nil {
+	if err := json.Unmarshal([]byte(testData), a); err != nil {
 		return err
 	}
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*5)
@@ -263,9 +262,9 @@ func (abfg *testABFG) preciselyOfTheRequestsShouldHavePassedAndShouldNotHavePass
 
 func (abfg *testABFG) weSendAnAuthorisationRequestWithParameters(arg1 *gherkin.DocString) error {
 	replacer := strings.NewReplacer("\n", "", "\t", "")
-	cleanJson := replacer.Replace(arg1.Content)
+	testData := replacer.Replace(arg1.Content)
 	a := &authorise{}
-	if err := json.Unmarshal([]byte(cleanJson), a); err != nil {
+	if err := json.Unmarshal([]byte(testData), a); err != nil {
 		return err
 	}
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*5)
@@ -286,9 +285,9 @@ func (abfg *testABFG) sendingRequestTimesForTheFollowingBuckets(arg1, arg2 strin
 		return err
 	}
 	replacer := strings.NewReplacer("\n", "", "\t", "")
-	cleanJson := replacer.Replace(arg3.Content)
+	testData := replacer.Replace(arg3.Content)
 	a := &authorise{}
-	if err := json.Unmarshal([]byte(cleanJson), a); err != nil {
+	if err := json.Unmarshal([]byte(testData), a); err != nil {
 		return err
 	}
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
@@ -325,7 +324,7 @@ func (abfg *testABFG) theRequestsAreCompletedWithoutErrors() error {
 	return nil
 }
 
-func (abfg *testABFG) weSendARequestToGetAListOfIpsFromList(arg1 string) error {
+func (abfg *testABFG) weSendARequestToGetAListOfSubnetsFromList(arg1 string) error {
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*5)
 	resp, err := abfg.c.GetIPList(ctx, &api.ListRequest{ListType: blacklistCheck(arg1)})
 	if err != nil {
@@ -342,7 +341,7 @@ func (abfg *testABFG) weSendARequestToGetAListOfIpsFromList(arg1 string) error {
 	return nil
 }
 
-func (abfg *testABFG) weSendARequestToDeleteIpFromList(arg1, arg2 string) error {
+func (abfg *testABFG) weSendARequestToDeleteSubnetFromList(arg1, arg2 string) error {
 	ctx, _ := context.WithTimeout(context.Background(), time.Second*5)
 	resp := &api.Response{}
 	var err error
@@ -375,7 +374,7 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^we send a request to add "([^"]*)" subnet to the "([^"]*)" list$`,
 		test.weSendARequestToAddSubnetToTheList)
 	s.Step(`^the request is completed without errors$`, test.theRequestIsCompletedWithoutErrors)
-	s.Step(`^the "([^"]*)" ip is "([^"]*)" in the "([^"]*)" list$`, test.theIpIsInTheList)
+	s.Step(`^the "([^"]*)" subnet is "([^"]*)" in the "([^"]*)" list$`, test.theSubnetIsInTheList)
 	s.Step(`^we send "([^"]*)" authorisation requests for "([^"]*)" times of the allowed limits with parameters:$`,
 		test.weSendAuthorisationRequestsForTimesOfTheAllowedLimitsWithParameters)
 	s.Step(`^they all succeed$`, test.theyAllSucceed)
@@ -386,9 +385,10 @@ func FeatureContext(s *godog.Suite) {
 	s.Step(`^sending "([^"]*)" request "([^"]*)" times for the following buckets:$`,
 		test.sendingRequestTimesForTheFollowingBuckets)
 	s.Step(`^the requests are completed without errors$`, test.theRequestsAreCompletedWithoutErrors)
-	s.Step(`^we send a request to get a list of ips from "([^"]*)" list$`,
-		test.weSendARequestToGetAListOfIpsFromList)
-	s.Step(`^we send a request to delete "([^"]*)" ip from "([^"]*)" list$`, test.weSendARequestToDeleteIpFromList)
+	s.Step(`^we send a request to get a list of subnets from "([^"]*)" list$`,
+		test.weSendARequestToGetAListOfSubnetsFromList)
+	s.Step(`^we send a request to delete "([^"]*)" subnet from "([^"]*)" list$`,
+		test.weSendARequestToDeleteSubnetFromList)
 }
 
 func TestMain(m *testing.M) {
