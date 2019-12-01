@@ -1,11 +1,11 @@
-# The first stage: compile abf-guard
+# The first stage: download project's dependencies
 FROM golang:1.13-alpine as dependency-builder
 ENV APP_NAME abf-guard
 WORKDIR /opt/${APP_NAME}
 COPY . .
 RUN go mod download
 
-# The second stage: 
+# The second stage: compile abf-guard binary
 FROM dependency-builder as app-builder
 ENV APP_NAME abf-guard
 WORKDIR /opt/${APP_NAME}

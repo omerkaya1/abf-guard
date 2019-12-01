@@ -402,6 +402,7 @@ func TestMain(m *testing.M) {
 		Paths:               []string{"./features"},
 		Randomize:           0,
 		ShowStepDefinitions: false,
+		Output:              os.Stdout,
 	})
 
 	os.Exit(status)
