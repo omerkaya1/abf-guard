@@ -1,6 +1,7 @@
 package manager
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -13,10 +14,11 @@ func TestNewManager(t *testing.T) {
 	testCases := []struct {
 		header   string
 		err      error
+		ctx      context.Context
 		settings *settings.Settings
 	}{
-		{"Nil settings passed", errors.ErrNilSettings, nil},
-		{"Correct settings passed", nil, &settings.Settings{
+		{"Nil settings passed", errors.ErrNilSettings, context.Background(), nil},
+		{"Correct settings passed", nil, context.Background(), &settings.Settings{
 			LoginLimit:    2,
 			PasswordLimit: 5,
 			IPLimit:       10,
@@ -25,12 +27,12 @@ func TestNewManager(t *testing.T) {
 	}
 
 	t.Run(testCases[0].header, func(t *testing.T) {
-		if bm, err := NewManager(testCases[0].settings); assert.Equal(t, testCases[0].err, err) {
+		if bm, err := NewManager(testCases[0].ctx, testCases[0].settings); assert.Equal(t, testCases[0].err, err) {
 			assert.Nil(t, bm)
 		}
 	})
 	t.Run(testCases[1].header, func(t *testing.T) {
-		if bm, err := NewManager(testCases[1].settings); assert.Equal(t, testCases[1].err, err) {
+		if bm, err := NewManager(testCases[1].ctx, testCases[1].settings); assert.Equal(t, testCases[1].err, err) {
 			assert.NotNil(t, bm)
 		}
 	})
@@ -50,7 +52,7 @@ func TestManager_Dispatch(t *testing.T) {
 		{"Third request", false, errors.ErrBucketFull, "morty", "123", "10.0.0.1"},
 	}
 
-	pr, err := NewManager(&settings.Settings{
+	pr, err := NewManager(context.Background(), &settings.Settings{
 		LoginLimit:    2,
 		PasswordLimit: 5,
 		IPLimit:       10,
@@ -87,7 +89,8 @@ func TestManager_Dispatch(t *testing.T) {
 }
 
 func TestManager_FlushBuckets(t *testing.T) {
-	pr, err := NewManager(&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
+	pr, err := NewManager(context.Background(),
+		&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
 	assert.NoError(t, err)
 
 	requests := []struct {
@@ -132,7 +135,8 @@ func TestManager_FlushBuckets(t *testing.T) {
 }
 
 func TestManager_PurgeBucket(t *testing.T) {
-	pr, err := NewManager(&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
+	pr, err := NewManager(context.Background(),
+		&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
 	assert.NoError(t, err)
 
 	successRequests := []struct {
@@ -186,7 +190,9 @@ func TestManager_PurgeBucket(t *testing.T) {
 }
 
 func TestManager_GetErrChan(t *testing.T) {
-	pr, err := NewManager(&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
+	pr, err := NewManager(
+		context.Background(),
+		&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
 	assert.NoError(t, err)
 
 	go func() {

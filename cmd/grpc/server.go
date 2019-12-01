@@ -1,7 +1,11 @@
 package grpc
 
 import (
+	"context"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/omerkaya1/abf-guard/internal/db"
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/manager"
@@ -27,6 +31,10 @@ var ServerRootCmd = &cobra.Command{
 		if cfgPath == "" {
 			log.Fatalf("%s: %s", errors.ErrServiceCmdPrefix, errors.ErrCLIFlagsAreNotSet)
 		}
+		// Create the root context for the app
+		ctx, cancel := context.WithCancel(context.Background())
+		// Start a routine that will monitor OS signals
+		go monitorSignalChan(cancel)
 		// Initialise configuration
 		cfg, err := config.InitConfig(cfgPath)
 		oops(errors.ErrServiceCmdPrefix, err)
@@ -40,10 +48,11 @@ var ServerRootCmd = &cobra.Command{
 		mgrSettings, err := settings.InitBucketManagerSettings(cfg.Limits)
 		oops(errors.ErrServiceCmdPrefix, err)
 		// Init BucketService
-		manager, err := manager.NewManager(mgrSettings)
+		manager, err := manager.NewManager(ctx, mgrSettings)
 		oops(errors.ErrServiceCmdPrefix, err)
 		// Init GRPC server
-		srv, err := grpc.NewServer(&cfg.Server, l, &services.Storage{Processor: mainDB}, &services.Bucket{Manager: manager})
+		srv, err := grpc.NewServer(
+			ctx, &cfg.Server, l, &services.Storage{Processor: mainDB}, &services.Bucket{Manager: manager})
 		oops(errors.ErrServiceCmdPrefix, err)
 		// Run the GRPC server
 		srv.Run()
@@ -57,5 +66,17 @@ func init() {
 func oops(prefix string, err error) {
 	if err != nil {
 		log.Fatalf("%s: %s", prefix, err)
+	}
+}
+
+func monitorSignalChan(cancel context.CancelFunc) {
+	// Handle interrupt
+	exitChan := make(chan os.Signal, 1)
+	signal.Notify(exitChan, syscall.SIGINT, syscall.SIGHUP, syscall.SIGKILL, syscall.SIGTERM)
+	defer close(exitChan)
+	// Listen for OS signals
+	for range exitChan {
+		cancel()
+		return
 	}
 }

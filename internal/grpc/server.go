@@ -1,10 +1,8 @@
 package grpc
 
 import (
+	"context"
 	"net"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/services"
@@ -21,14 +19,16 @@ type ABFGuardServer struct {
 	Logger         *zap.Logger
 	StorageService *services.Storage
 	BucketService  *services.Bucket
+	ctx            context.Context
 }
 
 // NewServer creates a new ABFGuardServer object and returns it to the callee
-func NewServer(cfg *config.Server, l *zap.Logger, ss *services.Storage, bs *services.Bucket) (*ABFGuardServer, error) {
+func NewServer(ctx context.Context, cfg *config.Server, l *zap.Logger, ss *services.Storage, bs *services.Bucket) (*ABFGuardServer, error) {
 	if cfg == nil || l == nil || ss == nil || bs == nil {
 		return nil, errors.ErrMissingServerParameters
 	}
 	return &ABFGuardServer{
+		ctx:            ctx,
 		Cfg:            cfg,
 		Logger:         l,
 		StorageService: ss,
@@ -46,16 +46,15 @@ func (s *ABFGuardServer) Run() {
 
 	api.RegisterABFGuardServer(server, s)
 
-	// Handle interrupt
-	exitChan := make(chan os.Signal, 1)
-	signal.Notify(exitChan, syscall.SIGINT, syscall.SIGHUP, syscall.SIGKILL, syscall.SIGTERM)
-
 	// Log errors that occur during the work with buckets
 	go func() {
 		for {
 			select {
-			case <-exitChan:
-				s.Logger.Sugar().Info("Interrupt signal received.")
+			case <-s.ctx.Done():
+				s.Logger.Sugar().Info("Context interrupt received")
+				if s.ctx.Err() != nil && s.ctx.Err() != context.Canceled {
+					s.Logger.Sugar().Infof("Context error: %s", s.ctx.Err())
+				}
 				server.GracefulStop()
 				s.Logger.Sugar().Info("Graceful shutdown performed. Bye!")
 				return
@@ -68,5 +67,7 @@ func (s *ABFGuardServer) Run() {
 	}()
 
 	s.Logger.Sugar().Infof("Server initialisation is completed. Server address: %s:%s", s.Cfg.Host, s.Cfg.Port)
-	s.Logger.Sugar().Infof("%s", server.Serve(l))
+	if err := server.Serve(l); err != nil {
+		s.Logger.Sugar().Fatal(err)
+	}
 }

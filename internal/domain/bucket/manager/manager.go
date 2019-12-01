@@ -3,8 +3,6 @@ package manager
 import (
 	"context"
 	"fmt"
-	"os"
-	"os/signal"
 	"sync"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/entity"
@@ -21,22 +19,19 @@ type Manager struct {
 	emptied  chan string
 	errChan  chan error
 	ctx      context.Context
-	cancel   context.CancelFunc
 }
 
 // NewManager creates a new Manager object and returns it to the callee
-func NewManager(settings *settings.Settings) (*Manager, error) {
+func NewManager(ctx context.Context, settings *settings.Settings) (*Manager, error) {
 	if settings == nil {
 		return nil, errors.ErrNilSettings
 	}
-	ctx, cancel := context.WithCancel(context.Background())
 	mgr := &Manager{
 		settings: settings,
 		store:    store.NewActiveBucketsStore(),
 		emptied:  make(chan string, 3),
 		errChan:  make(chan error, 10),
 		ctx:      ctx,
-		cancel:   cancel,
 	}
 	go mgr.monitor()
 	return mgr, nil
@@ -127,16 +122,13 @@ func (m *Manager) concurrentDispatch(wg *sync.WaitGroup, name string, bucketType
 }
 
 func (m *Manager) monitor() {
-	// Handle interrupt
-	exitChan := make(chan os.Signal, 1)
-	signal.Notify(exitChan, os.Interrupt)
 	for {
 		select {
 		// This case handles buckets that reported their removal
 		case name := <-m.emptied:
 			m.errChan <- m.store.RemoveBucket(name)
-		case <-exitChan:
-			m.cancel()
+		// Handle context interrupt
+		case <-m.ctx.Done():
 			close(m.errChan)
 			return
 		}
