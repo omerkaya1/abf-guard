@@ -35,7 +35,7 @@ lint: ## Runs all the linters
 
 .PHONY: vet
 vet: ## Runs go vet
-	go vet ./...
+	go vet -atomic -bools -assign -copylocks -cgocall -asmdecl  ./...
 
 .PHONY: checks
 checks: fmt lint vet ## Runs all checks for the project (go fmt, go lint, go vet)
