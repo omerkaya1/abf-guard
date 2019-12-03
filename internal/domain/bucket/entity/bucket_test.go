@@ -14,7 +14,7 @@ func TestBucket_Decrement(t *testing.T) {
 	finished := make(chan string)
 	count := 5
 
-	b := NewBucket(context.Background(), "test", 5, time.Second*2, finished)
+	b := NewBucket(context.Background(), "test", 5, finished)
 
 	for i := 1; i < count; i++ {
 		assert.Equal(t, true, b.Decrement())
@@ -40,7 +40,7 @@ func TestBucket_Decrement_Prohibited(t *testing.T) {
 	finished := make(chan string)
 	count := 5
 
-	b := NewBucket(context.Background(), "test", 5, time.Second*2, finished)
+	b := NewBucket(context.Background(), "test", 5, finished)
 
 	// These will be allowed
 	for i := 1; i < count; i++ {
@@ -67,12 +67,11 @@ func TestBucket_Decrement_Prohibited(t *testing.T) {
 }
 
 func TestBucket_Decrement_Ctx_Error(t *testing.T) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*1))
-	defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	finished := make(chan string)
 	count := 5
 
-	b := NewBucket(ctx, "test", 5, time.Second*2, finished)
+	b := NewBucket(ctx, "test", 5, finished)
 
 	// These will be allowed
 	for i := 1; i < count; i++ {
@@ -85,27 +84,52 @@ func TestBucket_Decrement_Ctx_Error(t *testing.T) {
 		assert.Equal(t, false, b.Decrement())
 	}
 
-	tick := time.NewTicker(6 * time.Second)
+	time.AfterFunc(time.Second*2, cancel)
 
 	select {
 	case <-ctx.Done():
-		cancel()
 		assert.Error(t, ctx.Err())
-		assert.Equal(t, context.DeadlineExceeded, ctx.Err())
+		assert.Equal(t, context.Canceled, ctx.Err())
 	case v := <-finished:
 		assert.Equal(t, "test", v)
-	case <-tick.C:
-		t.Fail()
 	}
 }
 
-func TestBucket_Stop(t *testing.T) {
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*5))
+func TestBucket_Decrement_Ctx_Deadline(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	finished := make(chan string)
 	count := 5
 
-	b := NewBucket(context.Background(), "test", 5, time.Second*2, finished)
+	b := NewBucket(ctx, "test", 5, finished)
+
+	// These will be allowed
+	for i := 1; i < count; i++ {
+		assert.Equal(t, true, b.Decrement())
+		assert.Equal(t, count-i, b.count)
+	}
+
+	// These will be disallowed
+	for i := 0; i < 3; i++ {
+		assert.Equal(t, false, b.Decrement())
+	}
+
+	select {
+	case <-ctx.Done():
+		assert.Error(t, ctx.Err())
+		assert.Equal(t, context.DeadlineExceeded, ctx.Err())
+	case v := <-finished:
+		assert.Equal(t, "test", v)
+	}
+}
+
+func TestBucket_Stop(t *testing.T) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+	finished := make(chan string)
+	count := 5
+
+	b := NewBucket(ctx, "test", 5, finished)
 
 	for i := 1; i < count; i++ {
 		assert.Equal(t, true, b.Decrement())

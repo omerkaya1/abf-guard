@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/entity"
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/settings"
@@ -18,7 +19,6 @@ type Manager struct {
 	store    bucket.Storage
 	emptied  chan string
 	errChan  chan error
-	ctx      context.Context
 }
 
 // NewManager creates a new Manager object and returns it to the callee
@@ -31,9 +31,8 @@ func NewManager(ctx context.Context, settings *settings.Settings) (*Manager, err
 		store:    store.NewActiveBucketsStore(),
 		emptied:  make(chan string, 3),
 		errChan:  make(chan error, 10),
-		ctx:      ctx,
 	}
-	go mgr.monitor()
+	go mgr.monitor(ctx)
 	return mgr, nil
 }
 
@@ -101,18 +100,21 @@ func (m *Manager) GetErrChan() chan error {
 }
 
 func (m *Manager) concurrentDispatch(wg *sync.WaitGroup, name string, bucketType int, result chan bool) {
+	ctx, cancel := context.WithTimeout(context.Background(), m.settings.Expire)
+	// Call cancel() to release the resources of the bucket
+	time.AfterFunc(m.settings.Expire, cancel)
 	if b, _ := m.store.GetBucket(name); b != nil {
 		result <- b.Decrement()
 	} else {
 		switch bucketType {
 		case 0:
-			m.store.AddBucket(name, entity.NewBucket(m.ctx, name, m.settings.LoginLimit, m.settings.Expire, m.emptied))
+			m.store.AddBucket(name, entity.NewBucket(ctx, name, m.settings.LoginLimit, m.emptied))
 			break
 		case 1:
-			m.store.AddBucket(name, entity.NewBucket(m.ctx, name, m.settings.PasswordLimit, m.settings.Expire, m.emptied))
+			m.store.AddBucket(name, entity.NewBucket(ctx, name, m.settings.PasswordLimit, m.emptied))
 			break
 		default:
-			m.store.AddBucket(name, entity.NewBucket(m.ctx, name, m.settings.IPLimit, m.settings.Expire, m.emptied))
+			m.store.AddBucket(name, entity.NewBucket(ctx, name, m.settings.IPLimit, m.emptied))
 			break
 		}
 		result <- true
@@ -121,14 +123,14 @@ func (m *Manager) concurrentDispatch(wg *sync.WaitGroup, name string, bucketType
 	return
 }
 
-func (m *Manager) monitor() {
+func (m *Manager) monitor(ctx context.Context) {
 	for {
 		select {
 		// This case handles buckets that reported their removal
 		case name := <-m.emptied:
 			m.errChan <- m.store.RemoveBucket(name)
 		// Handle context interrupt
-		case <-m.ctx.Done():
+		case <-ctx.Done():
 			close(m.errChan)
 			return
 		}

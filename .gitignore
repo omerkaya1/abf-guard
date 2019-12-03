@@ -17,3 +17,4 @@ vendor
 go.sum
 .idea
 configs/config-test.json
+coverage.txt
