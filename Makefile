@@ -1,6 +1,6 @@
 BUILD?= $(CURDIR)/bin
 $(shell mkdir -p $(BUILD))
-VERSION?= $(shell git rev-list HEAD --count)
+VERSION?= v$(shell git rev-list HEAD --count)
 export GO111MODULE=on
 export GOPATH=$(go env GOPATH)
 
@@ -39,7 +39,6 @@ vet: ## Runs go vet
 
 .PHONY: checks
 checks: fmt lint vet ## Runs all checks for the project (go fmt, go lint, go vet)
-	echo 'Checks done!'
 
 .PHONY: build
 build: ## Builds the project
@@ -62,12 +61,12 @@ gen-test: ## Triggers code generation for the GRPC Server and Client API for ITs
 	protoc --go_out=plugins=grpc:$(CURDIR)/test/integration-test/ ./api/*.proto
 
 .PHONY: dockerbuild
-dockerbuild: mod ## Builds a docker image with the project
-	docker build -t omer513/abf-guard:0.${VERSION} .
+dockerbuild: ## Builds a docker image with the project
+	docker build -t omer513/abf-guard:${VERSION} ./deployments/abfg-service/.
 
 .PHONY: dockerpush
 dockerpush: dockerbuild ## Publishes the docker image to the registry
-	docker push omer513/abf-guard:0.${VERSION}
+	docker push omer513/abf-guard:${VERSION}
 
 .PHONY: docker-compose-up
 docker-compose-up: ## Runs docker-compose command to kick-start the infrastructure
