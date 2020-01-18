@@ -12,7 +12,7 @@ COPY --from=dependency-builder /opt/abfg .
 RUN CGO_ENABLED=0 go test -c -o ./${APP_NAME} .
 
 # The third stage: copy the abfg-integration-test binary to another container
-FROM alpine:3.9
+FROM scratch
 ENV APP_NAME abfg-integration-test
 LABEL name=${APP_NAME} maintainer="o.kaya" version="0.1"
 WORKDIR /opt/${APP_NAME}

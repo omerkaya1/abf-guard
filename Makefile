@@ -1,6 +1,11 @@
 BUILD?= $(CURDIR)/bin
 $(shell mkdir -p $(BUILD))
 VERSION?= v$(shell git rev-list HEAD --count)
+ARCH?= $(shell uname -m)
+BRANCH_NAME ?= $(shell git rev-parse --abbrev-ref HEAD)
+ifneq ($(BRANCH_NAME), master)
+	BRANCH_NAME = dev
+endif
 export GO111MODULE=on
 export GOPATH=$(go env GOPATH)
 
@@ -62,11 +67,11 @@ gen-test: ## Triggers code generation for the GRPC Server and Client API for ITs
 
 .PHONY: dockerbuild
 dockerbuild: ## Builds a docker image with the project
-	docker build -t omer513/abf-guard:${VERSION} ./deployments/abfg-service/.
+	docker build -t omer513/abf-guard-${BRANCH_NAME}-${ARCH}:${VERSION} ./deployments/abfg-service/.
 
 .PHONY: dockerpush
 dockerpush: dockerbuild ## Publishes the docker image to the registry
-	docker push omer513/abf-guard:${VERSION}
+	docker push omer513/abf-guard-${BRANCH_NAME}-${ARCH}:${VERSION}
 
 .PHONY: docker-compose-up
 docker-compose-up: ## Runs docker-compose command to kick-start the infrastructure
