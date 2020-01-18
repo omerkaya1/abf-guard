@@ -13,7 +13,7 @@ COPY --from=dependency-builder /opt/abf-guard .
 RUN CGO_ENABLED=0 go build -o ./bin/abf-guard .
 
 # The third stage: copy the abf-guard binary to another container
-FROM alpine:3.9
+FROM scratch
 LABEL name="abf-guard" maintainer="o.kaya" version="0.1"
 WORKDIR /opt/abf-guard
 COPY --from=app-builder /opt/abf-guard/bin/abf-guard ./bin/
