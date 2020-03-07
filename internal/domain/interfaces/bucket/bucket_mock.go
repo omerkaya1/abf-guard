@@ -5,9 +5,8 @@
 package bucket
 
 import (
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
 // MockBucket is a mock of Bucket interface
@@ -35,6 +34,7 @@ func (m *MockBucket) EXPECT() *MockBucketMockRecorder {
 
 // Decrement mocks base method
 func (m *MockBucket) Decrement() bool {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Decrement")
 	ret0, _ := ret[0].(bool)
 	return ret0
@@ -42,15 +42,32 @@ func (m *MockBucket) Decrement() bool {
 
 // Decrement indicates an expected call of Decrement
 func (mr *MockBucketMockRecorder) Decrement() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Decrement", reflect.TypeOf((*MockBucket)(nil).Decrement))
+}
+
+// GetCount mocks base method
+func (m *MockBucket) GetCount() int {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCount")
+	ret0, _ := ret[0].(int)
+	return ret0
+}
+
+// GetCount indicates an expected call of GetCount
+func (mr *MockBucketMockRecorder) GetCount() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCount", reflect.TypeOf((*MockBucket)(nil).GetCount))
 }
 
 // Stop mocks base method
 func (m *MockBucket) Stop() {
+	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "Stop")
 }
 
 // Stop indicates an expected call of Stop
 func (mr *MockBucketMockRecorder) Stop() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Stop", reflect.TypeOf((*MockBucket)(nil).Stop))
 }

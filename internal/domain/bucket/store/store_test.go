@@ -31,9 +31,8 @@ func TestActiveBucketsStore_AddBucket(t *testing.T) {
 
 	for _, c := range cases {
 		bs.AddBucket(c.name, b)
-		assert.NotNil(t, bs.checkPresence(c.name))
+		assert.NotNil(t, bs.CheckBucket(c.name))
 	}
-	assert.Equal(t, len(cases), len(bs.activeBuckets))
 }
 
 func TestActiveBucketsStore_RemoveBucket(t *testing.T) {
@@ -48,7 +47,7 @@ func TestActiveBucketsStore_RemoveBucket(t *testing.T) {
 
 	for _, c := range cases {
 		bs.AddBucket(c, b)
-		assert.NotNil(t, bs.checkPresence(c))
+		assert.NotNil(t, bs.CheckBucket(c))
 	}
 
 	b.EXPECT().Stop().AnyTimes()
@@ -56,7 +55,7 @@ func TestActiveBucketsStore_RemoveBucket(t *testing.T) {
 	for _, c := range cases {
 		t.Run("Remove succeeds", func(t *testing.T) {
 			if err := bs.RemoveBucket(c); assert.NoError(t, err) {
-				assert.Nil(t, bs.checkPresence(c))
+				assert.Equal(t, false, bs.CheckBucket(c))
 			}
 		})
 	}
@@ -80,7 +79,7 @@ func TestActiveBucketsStore_CheckBucket(t *testing.T) {
 
 	for _, c := range cases {
 		bs.AddBucket(c, b)
-		assert.NotNil(t, bs.checkPresence(c))
+		assert.NotNil(t, bs.CheckBucket(c))
 	}
 
 	b.EXPECT().Stop().AnyTimes()
@@ -94,7 +93,7 @@ func TestActiveBucketsStore_CheckBucket(t *testing.T) {
 	for _, c := range cases {
 		t.Run("Remove succeeds", func(t *testing.T) {
 			if err := bs.RemoveBucket(c); assert.NoError(t, err) {
-				assert.Nil(t, bs.checkPresence(c))
+				assert.Equal(t, false, bs.CheckBucket(c))
 			}
 		})
 	}
@@ -126,7 +125,7 @@ func TestActiveBucketsStore_GetBucket(t *testing.T) {
 
 	for _, c := range cases {
 		bs.AddBucket(c, b)
-		assert.NotNil(t, bs.checkPresence(c))
+		assert.NotNil(t, bs.CheckBucket(c))
 	}
 
 	for _, c := range cases {

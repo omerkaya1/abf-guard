@@ -6,60 +6,64 @@ package db
 
 import (
 	context "context"
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
-// MockStorageProcessor is a mock of StorageProcessor interface
-type MockStorageProcessor struct {
+// MockStorage is a mock of Storage interface
+type MockStorage struct {
 	ctrl     *gomock.Controller
-	recorder *MockStorageProcessorMockRecorder
+	recorder *MockStorageMockRecorder
 }
 
-// MockStorageProcessorMockRecorder is the mock recorder for MockStorageProcessor
-type MockStorageProcessorMockRecorder struct {
-	mock *MockStorageProcessor
+// MockStorageMockRecorder is the mock recorder for MockStorage
+type MockStorageMockRecorder struct {
+	mock *MockStorage
 }
 
-// NewMockStorageProcessor creates a new mock instance
-func NewMockStorageProcessor(ctrl *gomock.Controller) *MockStorageProcessor {
-	mock := &MockStorageProcessor{ctrl: ctrl}
-	mock.recorder = &MockStorageProcessorMockRecorder{mock}
+// NewMockStorage creates a new mock instance
+func NewMockStorage(ctrl *gomock.Controller) *MockStorage {
+	mock := &MockStorage{ctrl: ctrl}
+	mock.recorder = &MockStorageMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (m *MockStorageProcessor) EXPECT() *MockStorageProcessorMockRecorder {
+func (m *MockStorage) EXPECT() *MockStorageMockRecorder {
 	return m.recorder
 }
 
 // Add mocks base method
-func (m *MockStorageProcessor) Add(arg0 context.Context, arg1 string, arg2 bool) error {
+func (m *MockStorage) Add(arg0 context.Context, arg1 string, arg2 bool) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Add", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Add indicates an expected call of Add
-func (mr *MockStorageProcessorMockRecorder) Add(arg0, arg1, arg2 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Add", reflect.TypeOf((*MockStorageProcessor)(nil).Add), arg0, arg1, arg2)
+func (mr *MockStorageMockRecorder) Add(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Add", reflect.TypeOf((*MockStorage)(nil).Add), arg0, arg1, arg2)
 }
 
 // Delete mocks base method
-func (m *MockStorageProcessor) Delete(arg0 context.Context, arg1 string, arg2 bool) error {
+func (m *MockStorage) Delete(arg0 context.Context, arg1 string, arg2 bool) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Delete indicates an expected call of Delete
-func (mr *MockStorageProcessorMockRecorder) Delete(arg0, arg1, arg2 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockStorageProcessor)(nil).Delete), arg0, arg1, arg2)
+func (mr *MockStorageMockRecorder) Delete(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Delete", reflect.TypeOf((*MockStorage)(nil).Delete), arg0, arg1, arg2)
 }
 
 // GetIPList mocks base method
-func (m *MockStorageProcessor) GetIPList(arg0 context.Context, arg1 bool) ([]string, error) {
+func (m *MockStorage) GetIPList(arg0 context.Context, arg1 bool) ([]string, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetIPList", arg0, arg1)
 	ret0, _ := ret[0].([]string)
 	ret1, _ := ret[1].(error)
@@ -67,18 +71,21 @@ func (m *MockStorageProcessor) GetIPList(arg0 context.Context, arg1 bool) ([]str
 }
 
 // GetIPList indicates an expected call of GetIPList
-func (mr *MockStorageProcessorMockRecorder) GetIPList(arg0, arg1 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIPList", reflect.TypeOf((*MockStorageProcessor)(nil).GetIPList), arg0, arg1)
+func (mr *MockStorageMockRecorder) GetIPList(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIPList", reflect.TypeOf((*MockStorage)(nil).GetIPList), arg0, arg1)
 }
 
 // GreenLightPass mocks base method
-func (m *MockStorageProcessor) GreenLightPass(arg0 context.Context, arg1 string) error {
+func (m *MockStorage) GreenLightPass(arg0 context.Context, arg1 string) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GreenLightPass", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // GreenLightPass indicates an expected call of GreenLightPass
-func (mr *MockStorageProcessorMockRecorder) GreenLightPass(arg0, arg1 interface{}) *gomock.Call {
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GreenLightPass", reflect.TypeOf((*MockStorageProcessor)(nil).GreenLightPass), arg0, arg1)
+func (mr *MockStorageMockRecorder) GreenLightPass(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GreenLightPass", reflect.TypeOf((*MockStorage)(nil).GreenLightPass), arg0, arg1)
 }

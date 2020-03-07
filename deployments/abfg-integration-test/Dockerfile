@@ -1,7 +1,7 @@
 # The first stage: compile integration-test binary
 FROM golang:1.13-alpine as dependency-builder
 WORKDIR /opt/abfg
-COPY ./test/integration-test .
+COPY ./test/integration .
 RUN go mod download
 
 # The second stage: compile abfg-integration-test binary

@@ -28,12 +28,12 @@ func TestNewManager(t *testing.T) {
 	}
 
 	t.Run(testCases[0].header, func(t *testing.T) {
-		if bm, err := NewManager(testCases[0].ctx, testCases[0].settings); assert.Equal(t, testCases[0].err, err) {
+		if bm, err := NewBucketManager(testCases[0].ctx, testCases[0].settings); assert.Equal(t, testCases[0].err, err) {
 			assert.Nil(t, bm)
 		}
 	})
 	t.Run(testCases[1].header, func(t *testing.T) {
-		if bm, err := NewManager(testCases[1].ctx, testCases[1].settings); assert.Equal(t, testCases[1].err, err) {
+		if bm, err := NewBucketManager(testCases[1].ctx, testCases[1].settings); assert.Equal(t, testCases[1].err, err) {
 			assert.NotNil(t, bm)
 		}
 	})
@@ -53,7 +53,7 @@ func TestManager_Dispatch(t *testing.T) {
 		{"Third request", false, errors.ErrBucketFull, "morty", "123", "10.0.0.1"},
 	}
 
-	pr, err := NewManager(context.Background(), &settings.Settings{
+	pr, err := NewBucketManager(context.Background(), &settings.Settings{
 		LoginLimit:    2,
 		PasswordLimit: 5,
 		IPLimit:       10,
@@ -90,7 +90,7 @@ func TestManager_Dispatch(t *testing.T) {
 }
 
 func TestManager_FlushBuckets(t *testing.T) {
-	pr, err := NewManager(context.Background(),
+	pr, err := NewBucketManager(context.Background(),
 		&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
 	assert.NoError(t, err)
 
@@ -153,7 +153,7 @@ func TestManager_FlushBuckets(t *testing.T) {
 }
 
 func TestManager_PurgeBucket(t *testing.T) {
-	pr, err := NewManager(context.Background(),
+	pr, err := NewBucketManager(context.Background(),
 		&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
 	assert.NoError(t, err)
 
@@ -210,7 +210,7 @@ func TestManager_PurgeBucket(t *testing.T) {
 func TestManager_PurgeBucket_Ctx(t *testing.T) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second))
 	defer cancel()
-	pr, err := NewManager(ctx,
+	pr, err := NewBucketManager(ctx,
 		&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
 	assert.NoError(t, err)
 
@@ -265,15 +265,15 @@ func TestManager_PurgeBucket_Ctx(t *testing.T) {
 }
 
 func TestManager_GetErrChan(t *testing.T) {
-	pr, err := NewManager(
+	pr, err := NewBucketManager(
 		context.Background(),
 		&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
 	assert.NoError(t, err)
 
 	go func() {
 		var err error
-		pr.errChan <- err
-		close(pr.errChan)
+		pr.GetErrChan() <- err
+		close(pr.GetErrChan())
 	}()
 
 	for v := range pr.GetErrChan() {

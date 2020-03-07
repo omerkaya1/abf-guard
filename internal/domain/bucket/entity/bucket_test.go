@@ -18,7 +18,7 @@ func TestBucket_Decrement(t *testing.T) {
 
 	for i := 1; i < count; i++ {
 		assert.Equal(t, true, b.Decrement())
-		assert.Equal(t, count-i, b.count)
+		assert.Equal(t, count-i, b.GetCount())
 	}
 
 	tick := time.NewTicker(6 * time.Second)
@@ -45,7 +45,7 @@ func TestBucket_Decrement_Prohibited(t *testing.T) {
 	// These will be allowed
 	for i := 1; i < count; i++ {
 		assert.Equal(t, true, b.Decrement())
-		assert.Equal(t, count-i, b.count)
+		assert.Equal(t, count-i, b.GetCount())
 	}
 
 	// These will be disallowed
@@ -76,7 +76,7 @@ func TestBucket_Decrement_Ctx_Error(t *testing.T) {
 	// These will be allowed
 	for i := 1; i < count; i++ {
 		assert.Equal(t, true, b.Decrement())
-		assert.Equal(t, count-i, b.count)
+		assert.Equal(t, count-i, b.GetCount())
 	}
 
 	// These will be disallowed
@@ -106,7 +106,7 @@ func TestBucket_Decrement_Ctx_Deadline(t *testing.T) {
 	// These will be allowed
 	for i := 1; i < count; i++ {
 		assert.Equal(t, true, b.Decrement())
-		assert.Equal(t, count-i, b.count)
+		assert.Equal(t, count-i, b.GetCount())
 	}
 
 	// These will be disallowed
@@ -133,7 +133,7 @@ func TestBucket_Stop(t *testing.T) {
 
 	for i := 1; i < count; i++ {
 		assert.Equal(t, true, b.Decrement())
-		assert.Equal(t, count-i, b.count)
+		assert.Equal(t, count-i, b.GetCount())
 	}
 
 	go func() {
