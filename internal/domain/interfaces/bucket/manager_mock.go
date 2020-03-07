@@ -5,9 +5,8 @@
 package bucket
 
 import (
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
 // MockManager is a mock of Manager interface
@@ -35,6 +34,7 @@ func (m *MockManager) EXPECT() *MockManagerMockRecorder {
 
 // Dispatch mocks base method
 func (m *MockManager) Dispatch(login, pwd, ip string) (bool, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Dispatch", login, pwd, ip)
 	ret0, _ := ret[0].(bool)
 	ret1, _ := ret[1].(error)
@@ -43,11 +43,13 @@ func (m *MockManager) Dispatch(login, pwd, ip string) (bool, error) {
 
 // Dispatch indicates an expected call of Dispatch
 func (mr *MockManagerMockRecorder) Dispatch(login, pwd, ip interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Dispatch", reflect.TypeOf((*MockManager)(nil).Dispatch), login, pwd, ip)
 }
 
 // FlushBuckets mocks base method
 func (m *MockManager) FlushBuckets(login, ip string) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FlushBuckets", login, ip)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -55,11 +57,13 @@ func (m *MockManager) FlushBuckets(login, ip string) error {
 
 // FlushBuckets indicates an expected call of FlushBuckets
 func (mr *MockManagerMockRecorder) FlushBuckets(login, ip interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FlushBuckets", reflect.TypeOf((*MockManager)(nil).FlushBuckets), login, ip)
 }
 
 // PurgeBucket mocks base method
 func (m *MockManager) PurgeBucket(name string) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "PurgeBucket", name)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -67,11 +71,13 @@ func (m *MockManager) PurgeBucket(name string) error {
 
 // PurgeBucket indicates an expected call of PurgeBucket
 func (mr *MockManagerMockRecorder) PurgeBucket(name interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "PurgeBucket", reflect.TypeOf((*MockManager)(nil).PurgeBucket), name)
 }
 
 // GetErrChan mocks base method
 func (m *MockManager) GetErrChan() chan error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetErrChan")
 	ret0, _ := ret[0].(chan error)
 	return ret0
@@ -79,5 +85,6 @@ func (m *MockManager) GetErrChan() chan error {
 
 // GetErrChan indicates an expected call of GetErrChan
 func (mr *MockManagerMockRecorder) GetErrChan() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetErrChan", reflect.TypeOf((*MockManager)(nil).GetErrChan))
 }

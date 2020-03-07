@@ -12,10 +12,10 @@ func (s *ABFGuardServer) Authorisation(ctx context.Context, r *api.Authorisation
 	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
-	err := s.StorageService.GreenLightPass(ctx, r.GetIp())
+	err := s.Storage.GreenLightPass(ctx, r.GetIp())
 	switch err {
 	case errors.ErrDoesNotExist:
-		return PrepareGRPCResponse(s.BucketService.Dispatch(r.GetLogin(), r.GetPassword(), r.GetIp())), nil
+		return PrepareGRPCResponse(s.BucketManager.Dispatch(r.GetLogin(), r.GetPassword(), r.GetIp())), nil
 	case errors.ErrIsInTheBlacklist:
 		return PrepareGRPCResponse(false, nil), nil
 	case nil:
@@ -30,7 +30,7 @@ func (s *ABFGuardServer) FlushBuckets(ctx context.Context, r *api.FlushBucketReq
 	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
-	if err := s.BucketService.FlushBuckets(r.GetLogin(), r.GetIp()); err != nil {
+	if err := s.BucketManager.FlushBuckets(r.GetLogin(), r.GetIp()); err != nil {
 		return PrepareGRPCResponse(false, errors.ErrFlushBucketsFailed), nil
 	}
 	return PrepareGRPCResponse(true, nil), nil
@@ -41,7 +41,7 @@ func (s *ABFGuardServer) PurgeBucket(ctx context.Context, r *api.PurgeBucketRequ
 	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
-	if err := s.BucketService.PurgeBucket(r.GetName()); err != nil {
+	if err := s.BucketManager.PurgeBucket(r.GetName()); err != nil {
 		return PrepareGRPCResponse(true, err), nil
 	}
 	return PrepareGRPCResponse(true, nil), nil
@@ -52,7 +52,7 @@ func (s *ABFGuardServer) AddIPToWhitelist(ctx context.Context, r *api.SubnetRequ
 	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
-	if err := s.StorageService.AddIP(ctx, r.GetIp(), r.GetList()); err != nil {
+	if err := s.Storage.Add(ctx, r.GetIp(), r.GetList()); err != nil {
 		return PrepareGRPCResponse(false, nil), nil
 	}
 	return PrepareGRPCResponse(true, nil), nil
@@ -63,7 +63,7 @@ func (s *ABFGuardServer) DeleteIPFromWhitelist(ctx context.Context, r *api.Subne
 	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
-	if err := s.StorageService.DeleteIP(ctx, r.GetIp(), r.GetList()); err != nil {
+	if err := s.Storage.Delete(ctx, r.GetIp(), r.GetList()); err != nil {
 		return PrepareGRPCResponse(false, nil), nil
 	}
 	return PrepareGRPCResponse(true, nil), nil
@@ -74,7 +74,7 @@ func (s *ABFGuardServer) AddIPToBlacklist(ctx context.Context, r *api.SubnetRequ
 	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
-	if err := s.StorageService.AddIP(ctx, r.GetIp(), r.GetList()); err != nil {
+	if err := s.Storage.Add(ctx, r.GetIp(), r.GetList()); err != nil {
 		return PrepareGRPCResponse(false, nil), nil
 	}
 	return PrepareGRPCResponse(true, nil), nil
@@ -85,7 +85,7 @@ func (s *ABFGuardServer) DeleteIPFromBlacklist(ctx context.Context, r *api.Subne
 	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
-	if err := s.StorageService.DeleteIP(ctx, r.GetIp(), r.GetList()); err != nil {
+	if err := s.Storage.Delete(ctx, r.GetIp(), r.GetList()); err != nil {
 		return PrepareGRPCResponse(false, nil), nil
 	}
 	return PrepareGRPCResponse(true, nil), nil
@@ -96,5 +96,5 @@ func (s *ABFGuardServer) GetIPList(ctx context.Context, r *api.ListRequest) (*ap
 	if r == nil {
 		return nil, errors.ErrBadRequest
 	}
-	return PrepareGRPCListIPResponse(s.StorageService.GetIPList(ctx, r.GetListType()))
+	return PrepareGRPCListIPResponse(s.Storage.GetIPList(ctx, r.GetListType()))
 }

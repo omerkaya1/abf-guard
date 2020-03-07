@@ -4,6 +4,8 @@ package bucket
 type Bucket interface {
 	// Decrement reduces the bucket request counter; it return true if the request can pass and false otherwise
 	Decrement() bool
+	// GetCount returns the current count value of the bucket
+	GetCount() int
 	// Stop releases all the resources associated with the bucket
 	Stop()
 }

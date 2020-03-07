@@ -15,7 +15,7 @@ type ActiveBucketsStore struct {
 }
 
 // NewActiveBucketsStore returns a new ActiveBucketsStore object to the callee
-func NewActiveBucketsStore() *ActiveBucketsStore {
+func NewActiveBucketsStore() bucket.Storage {
 	return &ActiveBucketsStore{
 		mutex:         sync.RWMutex{},
 		activeBuckets: make(map[string]bucket.Bucket),

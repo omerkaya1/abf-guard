@@ -8,7 +8,6 @@ import (
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/db"
-	"github.com/omerkaya1/abf-guard/internal/domain/services"
 	api "github.com/omerkaya1/abf-guard/internal/grpc/api"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,7 +15,7 @@ import (
 func TestABFGuardServer_Authorisation(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	sp := db.NewMockStorageProcessor(ctrl)
+	sp := db.NewMockStorage(ctrl)
 	bm := bucket.NewMockManager(ctrl)
 
 	c1 := sp.EXPECT().GreenLightPass(context.Background(), "1.1.1.0").Times(1).Return(errors.ErrDoesNotExist)
@@ -26,10 +25,10 @@ func TestABFGuardServer_Authorisation(t *testing.T) {
 	sp.EXPECT().GreenLightPass(context.Background(), "1.1.1.1").After(c3).Times(1).Return(assert.AnError)
 
 	s := ABFGuardServer{
-		Cfg:            nil,
-		Logger:         nil,
-		StorageService: &services.Storage{Processor: sp},
-		BucketService:  &services.Bucket{Manager: bm},
+		Cfg:           nil,
+		Logger:        nil,
+		Storage:       sp,
+		BucketManager: bm,
 	}
 	t.Run("Empty request", func(t *testing.T) {
 		if resp, err := s.Authorisation(context.Background(), nil); assert.Error(t, err) {
@@ -65,16 +64,16 @@ func TestABFGuardServer_Authorisation(t *testing.T) {
 func TestABFGuardServer_AddIPToBlacklist(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	sp := db.NewMockStorageProcessor(ctrl)
+	sp := db.NewMockStorage(ctrl)
 
 	sp.EXPECT().Add(context.Background(), "1.1.1.0", true).Times(1).Return(assert.AnError)
 	sp.EXPECT().Add(context.Background(), "1.1.1.0", true).Times(1).Return(nil)
 
 	s := ABFGuardServer{
-		Cfg:            nil,
-		Logger:         nil,
-		StorageService: &services.Storage{Processor: sp},
-		BucketService:  nil,
+		Cfg:           nil,
+		Logger:        nil,
+		Storage:       sp,
+		BucketManager: nil,
 	}
 	t.Run("Empty request", func(t *testing.T) {
 		if resp, err := s.AddIPToBlacklist(context.Background(), nil); assert.Error(t, err) {
@@ -98,16 +97,16 @@ func TestABFGuardServer_AddIPToBlacklist(t *testing.T) {
 func TestABFGuardServer_AddIPToWhitelist(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	sp := db.NewMockStorageProcessor(ctrl)
+	sp := db.NewMockStorage(ctrl)
 
 	sp.EXPECT().Add(context.Background(), "1.1.1.0", false).Times(1).Return(assert.AnError)
 	sp.EXPECT().Add(context.Background(), "1.1.1.0", false).Times(1).Return(nil)
 
 	s := ABFGuardServer{
-		Cfg:            nil,
-		Logger:         nil,
-		StorageService: &services.Storage{Processor: sp},
-		BucketService:  nil,
+		Cfg:           nil,
+		Logger:        nil,
+		Storage:       sp,
+		BucketManager: nil,
 	}
 	t.Run("Empty request", func(t *testing.T) {
 		if resp, err := s.AddIPToWhitelist(context.Background(), nil); assert.Error(t, err) {
@@ -131,16 +130,16 @@ func TestABFGuardServer_AddIPToWhitelist(t *testing.T) {
 func TestABFGuardServer_DeleteIPFromBlacklist(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	sp := db.NewMockStorageProcessor(ctrl)
+	sp := db.NewMockStorage(ctrl)
 
 	sp.EXPECT().Delete(context.Background(), "1.1.1.0", true).Times(1).Return(assert.AnError)
 	sp.EXPECT().Delete(context.Background(), "1.1.1.0", true).Times(1).Return(nil)
 
 	s := ABFGuardServer{
-		Cfg:            nil,
-		Logger:         nil,
-		StorageService: &services.Storage{Processor: sp},
-		BucketService:  nil,
+		Cfg:           nil,
+		Logger:        nil,
+		Storage:       sp,
+		BucketManager: nil,
 	}
 	t.Run("Empty request", func(t *testing.T) {
 		if resp, err := s.DeleteIPFromBlacklist(context.Background(), nil); assert.Error(t, err) {
@@ -164,16 +163,16 @@ func TestABFGuardServer_DeleteIPFromBlacklist(t *testing.T) {
 func TestABFGuardServer_DeleteIPFromWhitelist(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	sp := db.NewMockStorageProcessor(ctrl)
+	sp := db.NewMockStorage(ctrl)
 
 	sp.EXPECT().Delete(context.Background(), "1.1.1.0", false).Times(1).Return(assert.AnError)
 	sp.EXPECT().Delete(context.Background(), "1.1.1.0", false).Times(1).Return(nil)
 
 	s := ABFGuardServer{
-		Cfg:            nil,
-		Logger:         nil,
-		StorageService: &services.Storage{Processor: sp},
-		BucketService:  nil,
+		Cfg:           nil,
+		Logger:        nil,
+		Storage:       sp,
+		BucketManager: nil,
 	}
 	t.Run("Empty request", func(t *testing.T) {
 		if resp, err := s.DeleteIPFromWhitelist(context.Background(), nil); assert.Error(t, err) {
@@ -203,10 +202,10 @@ func TestABFGuardServer_FlushBuckets(t *testing.T) {
 	bm.EXPECT().FlushBuckets("", "").Times(1).Return(assert.AnError)
 
 	s := ABFGuardServer{
-		Cfg:            nil,
-		Logger:         nil,
-		StorageService: nil,
-		BucketService:  &services.Bucket{Manager: bm},
+		Cfg:           nil,
+		Logger:        nil,
+		Storage:       nil,
+		BucketManager: bm,
 	}
 	t.Run("Empty request", func(t *testing.T) {
 		if resp, err := s.FlushBuckets(context.Background(), nil); assert.Error(t, err) {
@@ -230,7 +229,7 @@ func TestABFGuardServer_FlushBuckets(t *testing.T) {
 func TestABFGuardServer_GetIPList(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	sp := db.NewMockStorageProcessor(ctrl)
+	sp := db.NewMockStorage(ctrl)
 
 	wl := []string{"1.1.1.0", "1.1.1.1"}
 	bl := []string{"1.1.1.2", "1.1.1.3"}
@@ -239,10 +238,10 @@ func TestABFGuardServer_GetIPList(t *testing.T) {
 	sp.EXPECT().GetIPList(context.Background(), false).Times(1).Return(wl, nil)
 
 	s := ABFGuardServer{
-		Cfg:            nil,
-		Logger:         nil,
-		StorageService: &services.Storage{Processor: sp},
-		BucketService:  nil,
+		Cfg:           nil,
+		Logger:        nil,
+		Storage:       sp,
+		BucketManager: nil,
 	}
 	t.Run("Empty request", func(t *testing.T) {
 		if resp, err := s.GetIPList(context.Background(), nil); assert.Error(t, err) {
@@ -274,10 +273,10 @@ func TestABFGuardServer_PurgeBucket(t *testing.T) {
 	bm.EXPECT().PurgeBucket("n").Times(1).Return(assert.AnError)
 
 	s := ABFGuardServer{
-		Cfg:            nil,
-		Logger:         nil,
-		StorageService: nil,
-		BucketService:  &services.Bucket{Manager: bm},
+		Cfg:           nil,
+		Logger:        nil,
+		Storage:       nil,
+		BucketManager: bm,
 	}
 	t.Run("Empty request", func(t *testing.T) {
 		if resp, err := s.PurgeBucket(context.Background(), nil); assert.Error(t, err) {

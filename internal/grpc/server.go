@@ -5,7 +5,8 @@ import (
 	"net"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	"github.com/omerkaya1/abf-guard/internal/domain/services"
+	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
+	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/db"
 	api "github.com/omerkaya1/abf-guard/internal/grpc/api"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/config"
@@ -15,24 +16,26 @@ import (
 
 // ABFGuardServer is the object that represents a server for the ABFGuard service
 type ABFGuardServer struct {
-	Cfg            *config.Server
-	Logger         *zap.Logger
-	StorageService *services.Storage
-	BucketService  *services.Bucket
-	ctx            context.Context
+	// TODO: come up with a way of hiding the configuration behind the interface so that we don't need to pass
+	// 		 the configuration by address
+	Cfg           *config.Server
+	Logger        *zap.Logger
+	Storage       db.Storage
+	BucketManager bucket.Manager
+	ctx           context.Context
 }
 
 // NewServer creates a new ABFGuardServer object and returns it to the callee
-func NewServer(ctx context.Context, cfg *config.Server, l *zap.Logger, ss *services.Storage, bs *services.Bucket) (*ABFGuardServer, error) {
-	if cfg == nil || l == nil || ss == nil || bs == nil {
+func NewServer(ctx context.Context, cfg *config.Server, l *zap.Logger, sp db.Storage, bm bucket.Manager) (*ABFGuardServer, error) {
+	if cfg == nil || l == nil || sp == nil || bm == nil {
 		return nil, errors.ErrMissingServerParameters
 	}
 	return &ABFGuardServer{
-		ctx:            ctx,
-		Cfg:            cfg,
-		Logger:         l,
-		StorageService: ss,
-		BucketService:  bs,
+		ctx:           ctx,
+		Cfg:           cfg,
+		Logger:        l,
+		Storage:       sp,
+		BucketManager: bm,
 	}, nil
 }
 
@@ -58,7 +61,7 @@ func (s *ABFGuardServer) Run() {
 				server.GracefulStop()
 				s.Logger.Sugar().Info("Graceful shutdown performed. Bye!")
 				return
-			case err := <-s.BucketService.MonitorErrors():
+			case err := <-s.BucketManager.GetErrChan():
 				if err != nil {
 					s.Logger.Sugar().Errorf("%s: %s", errors.ErrBucketManagerPrefix, err)
 				}

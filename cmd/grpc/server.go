@@ -10,7 +10,6 @@ import (
 	"github.com/omerkaya1/abf-guard/internal/db"
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/manager"
 	"github.com/omerkaya1/abf-guard/internal/domain/bucket/settings"
-	"github.com/omerkaya1/abf-guard/internal/domain/services"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/config"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
@@ -47,12 +46,11 @@ var ServerRootCmd = &cobra.Command{
 		// Init settings for the bucket manager
 		mgrSettings, err := settings.InitBucketManagerSettings(cfg.Limits)
 		oops(errors.ErrServiceCmdPrefix, err)
-		// Init BucketService
-		manager, err := manager.NewManager(ctx, mgrSettings)
+		// Get bucket manager
+		manager, err := manager.NewBucketManager(ctx, mgrSettings)
 		oops(errors.ErrServiceCmdPrefix, err)
 		// Init GRPC server
-		srv, err := grpc.NewServer(
-			ctx, &cfg.Server, l, &services.Storage{Processor: mainDB}, &services.Bucket{Manager: manager})
+		srv, err := grpc.NewServer(ctx, &cfg.Server, l, mainDB, manager)
 		oops(errors.ErrServiceCmdPrefix, err)
 		// Run the GRPC server
 		srv.Run()

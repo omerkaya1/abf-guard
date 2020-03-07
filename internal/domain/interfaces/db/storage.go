@@ -2,8 +2,8 @@ package db
 
 import "context"
 
-// StorageProcessor is an interface to communicate with the DB
-type StorageProcessor interface {
+// Storage is an interface to communicate with the DB
+type Storage interface {
 	// Add adds the IP to either the whitelist or the blacklist of the app
 	Add(context.Context, string, bool) error
 	// Delete removes the IP from either the whitelist or the blacklist

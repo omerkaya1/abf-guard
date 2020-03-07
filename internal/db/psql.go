@@ -8,6 +8,7 @@ import (
 
 	"github.com/omerkaya1/abf-guard/internal/domain/config"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
+	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/db"
 
 	// We absolutely need this import and this comment.
 	_ "github.com/jackc/pgx/stdlib"
@@ -20,7 +21,7 @@ type PsqlStorage struct {
 }
 
 // NewPsqlStorage returns new PsqlStorage object to the callee
-func NewPsqlStorage(cfg config.DBConf) (*PsqlStorage, error) {
+func NewPsqlStorage(cfg config.DBConf) (db.Storage, error) {
 	if cfg.Name == "" || cfg.User == "" || cfg.SSL == "" || cfg.Password == "" || cfg.Host == "" || cfg.Port == "" {
 		return nil, errors.ErrBadDBConfiguration
 	}
