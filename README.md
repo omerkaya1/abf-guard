@@ -78,4 +78,4 @@ Settings for all the limitations for the bucket creation are also defined in thi
 Feel free to change them.
 
 ## Licence
-This project is licenced under the MIT licence.
+This project is licenced under the GPL licence.
