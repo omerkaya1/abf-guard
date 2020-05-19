@@ -13,8 +13,9 @@ export GOPATH=$(go env GOPATH)
 .PHONY: dockerbuild dockerpush docker-compose-up docker-compose-down integration
 
 setup: ## Install all the build and lint dependencies
-	go get -u golang.org/x/tools
-	go get -u golang.org/x/lint/golint
+	go get golang.org/x/tools
+	go get golang.org/x/tools/cmd/goimports
+	go get golang.org/x/lint/golint
 
 mod: ## Runs go mod on a project
 	go mod verify
