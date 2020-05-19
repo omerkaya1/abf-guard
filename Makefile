@@ -25,7 +25,7 @@ fmt: ## Runs goimports on all go files
 	find . -name '*.go' -not -wholename './vendor/*' | while read -r file; do goimports -w "$$file"; done
 
 test: ## Runs all unit tests
-	echo 'mode: atomic' > coverage.txt && go test -covermode=atomic -coverprofile=coverage.txt -v -race \
+	echo 'mode: atomic' > coverage.txt && go test --count=1 -covermode=atomic -coverprofile=coverage.txt -v -race \
 	-timeout=30s ./log... ./internal/...
 
 coverage: test ## Runs all the tests and opens the coverage report
@@ -38,7 +38,7 @@ lint: ## Runs all the linters
 vet: ## Runs go vet
 	go vet -atomic -bools -assign -copylocks -cgocall -asmdecl  ./...
 
-checks: fmt lint vet ## Runs all checks for the project (go fmt, go lint, go vet)
+checks: setup fmt lint vet ## Runs all checks for the project (go fmt, go lint, go vet)
 
 build: ## Builds the project
 	go build -o $(BUILD)/abf-guard $(CURDIR)
