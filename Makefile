@@ -33,7 +33,7 @@ coverage: test ## Runs all the tests and opens the coverage report
 
 lint: ## Runs all the linters
 	golint ./internal/... ./cmd/... ./log/...
-	golint ./test/integration-test/main_test.go
+	golint ./test/integration/main_test.go
 
 vet: ## Runs go vet
 	go vet -atomic -bools -assign -copylocks -cgocall -asmdecl  ./...

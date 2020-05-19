@@ -16,10 +16,9 @@ require (
 	github.com/stretchr/testify v1.4.0
 	go.uber.org/zap v1.12.0
 	golang.org/x/crypto v0.0.0-20191122220453-ac88ee75c92c // indirect
-	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f // indirect
-	golang.org/x/net v0.0.0-20191125084936-ffdde1057850 // indirect
+	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
 	golang.org/x/sys v0.0.0-20191126131656-8a8471f7e56d // indirect
 	golang.org/x/text v0.3.2 // indirect
-	golang.org/x/tools v0.0.0-20191126055441-b0650ceb63d9 // indirect
+	golang.org/x/tools v0.0.0-20200519204825-e64124511800 // indirect
 	google.golang.org/grpc v1.24.0
 )
