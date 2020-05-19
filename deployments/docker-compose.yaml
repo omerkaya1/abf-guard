@@ -22,7 +22,7 @@ services:
     container_name: abfg
     build:
       context: ../.
-      dockerfile: ./deployments/abfg-service/Dockerfile
+      dockerfile: abfg-service/abfg-service.Dockerfile
     volumes:
       - ../configs:/opt/abf-guard/configs
     depends_on:
