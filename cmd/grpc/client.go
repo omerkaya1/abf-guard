@@ -7,7 +7,7 @@ import (
 
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	req "github.com/omerkaya1/abf-guard/internal/grpc"
-	api "github.com/omerkaya1/abf-guard/internal/grpc/api"
+	"github.com/omerkaya1/abf-guard/internal/grpc/api"
 	"google.golang.org/grpc"
 
 	"github.com/spf13/cobra"

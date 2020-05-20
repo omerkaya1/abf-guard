@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option go_package = "api";
+
 // AuthorisationRequest is a message that is being send while trying to log in to a resource
 message AuthorisationRequest {
     string login = 1;

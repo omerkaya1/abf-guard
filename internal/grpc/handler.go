@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	api "github.com/omerkaya1/abf-guard/internal/grpc/api"
+	"github.com/omerkaya1/abf-guard/internal/grpc/api"
 )
 
 // Authorisation is a handler for the GRPC Authorisation request
