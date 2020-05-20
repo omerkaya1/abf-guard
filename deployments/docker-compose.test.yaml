@@ -22,7 +22,7 @@ services:
     container_name: abfg
     build:
       context: ../.
-      dockerfile: ./deployments/abfg-service/Dockerfile.integration
+      dockerfile: ./deployments/integration.Dockerfile
     volumes:
       - ../configs:/opt/abf-guard/configs
     depends_on:
@@ -39,7 +39,7 @@ services:
   integration_tests:
     build:
       context: ../.
-      dockerfile: ./deployments/abfg-integration-test/Dockerfile
+      dockerfile: ./deployments/abfg-integration-test.Dockerfile
     environment:
       - TEST_HOST=abfg
       - TEST_PORT=6666
