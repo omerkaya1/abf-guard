@@ -1,0 +1,21 @@
+# Deployments
+deploy: deployments/**/*
+
+# API
+api:
+  - api/**/*
+  - internal/grpc/**/*
+
+# DB
+pkg: db/**/*
+
+# Integration tests
+integration-tests: test/**/*
+
+# Documentation
+docs: docs/**/*
+
+# Internal
+internal:
+  - internal/db/**/*
+  - internal/domain/**/*
