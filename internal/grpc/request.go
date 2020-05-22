@@ -1,6 +1,6 @@
 package grpc
 
-import api "github.com/omerkaya1/abf-guard/internal/grpc/api"
+import "github.com/omerkaya1/abf-guard/internal/grpc/api"
 
 // PrepareGRPCAuthorisationBody forms a GRPC AuthorisationRequest object
 func PrepareGRPCAuthorisationBody(login, password, ip string) *api.AuthorisationRequest {

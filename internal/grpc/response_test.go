@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	abfg "github.com/omerkaya1/abf-guard/internal/grpc/api"
+	"github.com/omerkaya1/abf-guard/internal/grpc/api"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,19 +14,19 @@ func TestPrepareGRPCListIpResponse(t *testing.T) {
 		header   string
 		ips      []string
 		err      error
-		response *abfg.ListResponse
+		response *api.ListResponse
 		err1     error
 	}{
-		{"Error", nil, fmt.Errorf("some error"), &abfg.ListResponse{
-			Result: &abfg.ListResponse_Error{Error: "some error"},
+		{"Error", nil, fmt.Errorf("some error"), &api.ListResponse{
+			Result: &api.ListResponse_Error{Error: "some error"},
 		}, nil},
 		{"Empty ips slice", nil, nil, nil, errors.ErrEmptyIPList},
 		{
 			"Error is present, some ips retrieved",
 			[]string{"111.111.111.111", "111.111.111.112"},
 			fmt.Errorf("some error"),
-			&abfg.ListResponse{
-				Result: &abfg.ListResponse_Error{
+			&api.ListResponse{
+				Result: &api.ListResponse_Error{
 					Error: "some error",
 				},
 			}, nil},
@@ -34,9 +34,9 @@ func TestPrepareGRPCListIpResponse(t *testing.T) {
 			"Response with a list of ips",
 			[]string{"111.111.111.111", "111.111.111.112"},
 			nil,
-			&abfg.ListResponse{
-				Result: &abfg.ListResponse_Ips{
-					Ips: &abfg.IPList{List: []string{"111.111.111.111", "111.111.111.112"}},
+			&api.ListResponse{
+				Result: &api.ListResponse_Ips{
+					Ips: &api.IPList{List: []string{"111.111.111.111", "111.111.111.112"}},
 				},
 			}, nil},
 	}
@@ -59,10 +59,10 @@ func TestPrepareGRPCResponse(t *testing.T) {
 		header   string
 		ok       bool
 		err      error
-		response *abfg.Response
+		response *api.Response
 	}{
-		{"No error", true, nil, &abfg.Response{Result: &abfg.Response_Ok{Ok: true}}},
-		{"Error", false, fmt.Errorf("some error"), &abfg.Response{Result: &abfg.Response_Error{Error: "some error"}}},
+		{"No error", true, nil, &api.Response{Result: &api.Response_Ok{Ok: true}}},
+		{"Error", false, fmt.Errorf("some error"), &api.Response{Result: &api.Response_Error{Error: "some error"}}},
 	}
 	for _, c := range testCases {
 		t.Run(c.header, func(t *testing.T) {

@@ -2,7 +2,7 @@ package grpc
 
 import (
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	api "github.com/omerkaya1/abf-guard/internal/grpc/api"
+	"github.com/omerkaya1/abf-guard/internal/grpc/api"
 )
 
 // PrepareGRPCResponse forms a GRPC Response object

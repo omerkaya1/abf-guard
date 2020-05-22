@@ -8,7 +8,7 @@ import (
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/db"
-	api "github.com/omerkaya1/abf-guard/internal/grpc/api"
+	"github.com/omerkaya1/abf-guard/internal/grpc/api"
 	"github.com/stretchr/testify/assert"
 )
 
