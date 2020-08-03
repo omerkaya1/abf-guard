@@ -1,4 +1,4 @@
-package manager
+package bucket
 
 import "github.com/omerkaya1/abf-guard/internal/domain/errors"
 

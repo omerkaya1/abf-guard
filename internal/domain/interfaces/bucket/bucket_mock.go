@@ -5,8 +5,9 @@
 package bucket
 
 import (
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockBucket is a mock of Bucket interface

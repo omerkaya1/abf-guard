@@ -1,10 +1,9 @@
 package config
 
 import (
-	"path/filepath"
-
-	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	"github.com/spf13/viper"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 )
 
 // Config is a structure that holds all the configuration
@@ -41,21 +40,10 @@ type DBConf struct {
 
 // InitConfig is the main method to initialise Config
 func InitConfig(cfgPath string) (*Config, error) {
-	viper.SetConfigFile(cfgPath)
-
-	cfgFileExt := filepath.Ext(cfgPath)
-	if cfgFileExt == "" {
-		return nil, errors.ErrCorruptConfigFileExtension
+	b, err := ioutil.ReadFile(cfgPath)
+	if err != nil {
+		return nil, fmt.Errorf("init config: %s", err)
 	}
-	viper.SetConfigType(cfgFileExt[1:])
-
-	if err := viper.ReadInConfig(); err != nil {
-		return nil, err
-	}
-
-	cfg := &Config{}
-	if err := viper.Unmarshal(cfg); err != nil {
-		return nil, err
-	}
-	return cfg, nil
+	cfg := new(Config)
+	return cfg, json.Unmarshal(b, cfg)
 }

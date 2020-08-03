@@ -1,4 +1,4 @@
-package manager
+package bucket
 
 import (
 	"context"
@@ -6,9 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/omerkaya1/abf-guard/internal/domain/bucket/entity"
-	"github.com/omerkaya1/abf-guard/internal/domain/bucket/settings"
-	"github.com/omerkaya1/abf-guard/internal/domain/bucket/store"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
 )
@@ -16,20 +13,20 @@ import (
 // BucketManager is an object that controls all the functionality to manage buckets
 type BucketManager struct {
 	// TODO: same thing for the configuration struct (what we need here is the Validate method!)
-	settings *settings.Settings
+	settings *Settings
 	store    bucket.Storage
 	emptied  chan string
 	errChan  chan error
 }
 
 // NewBucketManager creates a new Manager object and returns it to the callee
-func NewBucketManager(ctx context.Context, settings *settings.Settings) (bucket.Manager, error) {
+func NewBucketManager(ctx context.Context, settings *Settings) (*BucketManager, error) {
 	if settings == nil {
 		return nil, errors.ErrNilSettings
 	}
 	mgr := &BucketManager{
 		settings: settings,
-		store:    store.NewActiveBucketsStore(),
+		store:    NewActiveBucketsStore(),
 		emptied:  make(chan string, 3),
 		errChan:  make(chan error, 10),
 	}
@@ -43,7 +40,7 @@ func (m *BucketManager) Dispatch(login, pwd, ip string) (bool, error) {
 		return false, err
 	}
 	resultChan := make(chan bool, 3)
-	wg := &sync.WaitGroup{}
+	wg := new(sync.WaitGroup)
 	// Concurrently dispatch buckets
 	for bucketName, bucketType := range prepareAuthorisationMap(login, pwd, ip) {
 		wg.Add(1)
@@ -109,13 +106,13 @@ func (m *BucketManager) concurrentDispatch(wg *sync.WaitGroup, name string, buck
 	} else {
 		switch bucketType {
 		case 0:
-			m.store.AddBucket(name, entity.NewBucket(ctx, name, m.settings.LoginLimit, m.emptied))
+			m.store.AddBucket(name, NewBucket(ctx, name, m.settings.LoginLimit, m.emptied))
 			break
 		case 1:
-			m.store.AddBucket(name, entity.NewBucket(ctx, name, m.settings.PasswordLimit, m.emptied))
+			m.store.AddBucket(name, NewBucket(ctx, name, m.settings.PasswordLimit, m.emptied))
 			break
 		default:
-			m.store.AddBucket(name, entity.NewBucket(ctx, name, m.settings.IPLimit, m.emptied))
+			m.store.AddBucket(name, NewBucket(ctx, name, m.settings.IPLimit, m.emptied))
 			break
 		}
 		result <- true

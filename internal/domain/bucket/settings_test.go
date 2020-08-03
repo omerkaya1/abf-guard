@@ -1,13 +1,12 @@
-package settings
+package bucket
 
 import (
+	"testing"
 	"time"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/config"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/stretchr/testify/assert"
-
-	"testing"
 )
 
 func TestInitBucketManagerSettings(t *testing.T) {

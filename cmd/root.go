@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"github.com/omerkaya1/abf-guard/cmd/grpc"
 	"github.com/spf13/cobra"
 )
 
@@ -12,5 +11,5 @@ var RootCmd = &cobra.Command{
 }
 
 func init() {
-	RootCmd.AddCommand(grpc.ClientRootCmd, grpc.ServerRootCmd)
+	RootCmd.AddCommand(ClientRootCmd, ServerRootCmd)
 }

@@ -1,6 +1,7 @@
 # abf-guard
 
 ![Go](https://github.com/omerkaya1/abf-guard/workflows/Go/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/omerkaya1/abf-guard)](https://goreportcard.com/report/github.com/omerkaya1/abf-guard)
 
 ABF-Guard is a small service that prevents brute force login attacks.
 

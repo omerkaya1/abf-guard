@@ -3,9 +3,9 @@ package errors
 // ABFGuardError .
 type ABFGuardError string
 
-// Error .
-func (abfg ABFGuardError) Error() string {
-	return string(abfg)
+// Error satisfies error interface
+func (e ABFGuardError) Error() string {
+	return string(e)
 }
 
 /** Client-side errors */
@@ -91,5 +91,5 @@ const (
 	// ErrBucketManagerPrefix .
 	ErrBucketManagerPrefix = "bucket manager error"
 	// ErrBucketStoragePrefix .
-	ErrBucketStoragePrefix = "bucket manager error"
+	ErrBucketStoragePrefix = "bucket storage error"
 )

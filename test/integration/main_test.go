@@ -212,7 +212,7 @@ func (abfg *testABFG) theyAllSucceed() error {
 	for i := range abfg.respOkMap {
 		delete(abfg.respOkMap, i)
 	}
-	fmt.Printf("\033[34m successfuly cleaned the respOkMap: %v\033[0m\n", abfg.respOkMap)
+	fmt.Printf("\033[34m successfully cleaned the respOkMap: %v\033[0m\n", abfg.respOkMap)
 	return nil
 }
 
@@ -225,7 +225,7 @@ func (abfg *testABFG) theyAllFail() error {
 	for i := range abfg.respOkMap {
 		delete(abfg.respOkMap, i)
 	}
-	fmt.Printf("\033[34m successfuly cleaned the respOkMap: %v\033[0m\n", abfg.respOkMap)
+	fmt.Printf("\033[34m successfully cleaned the respOkMap: %v\033[0m\n", abfg.respOkMap)
 	return nil
 }
 

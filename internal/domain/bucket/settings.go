@@ -1,4 +1,4 @@
-package settings
+package bucket
 
 import (
 	"strings"

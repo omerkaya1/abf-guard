@@ -1,4 +1,4 @@
-package grpc
+package cmd
 
 import (
 	"context"
@@ -86,6 +86,8 @@ func authoriseCmdFunc(cmd *cobra.Command, args []string) {
 	}
 	client := getGRPCClient()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
 	ok, err := client.Authorisation(ctx, req.PrepareGRPCAuthorisationBody(login, password, ip))
 	oops(errors.ErrClientCmdPrefix, err)
 
@@ -93,7 +95,6 @@ func authoriseCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrAuthorisationFailed)
 	}
 	log.Println("the request may proceed")
-	cancel()
 }
 
 func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
@@ -102,6 +103,7 @@ func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
 	}
 	client := getGRPCClient()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
 
 	ok, err := client.FlushBuckets(ctx, req.PrepareFlushBucketsGrpcRequest(login, ip))
 	oops(errors.ErrClientCmdPrefix, err)
@@ -110,7 +112,6 @@ func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrFlushBucketsFailed)
 	}
 	log.Printf("%s and %s buckets were flushed", login, ip)
-	cancel()
 }
 
 func purgeBucketCmdFunc(cmd *cobra.Command, args []string) {
@@ -119,6 +120,7 @@ func purgeBucketCmdFunc(cmd *cobra.Command, args []string) {
 	}
 	client := getGRPCClient()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
 
 	ok, err := client.PurgeBucket(ctx, req.PreparePurgeBucketGrpcRequest(entity))
 	oops(errors.ErrClientCmdPrefix, err)
@@ -127,7 +129,6 @@ func purgeBucketCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrPurgeBucketFailed)
 	}
 	log.Printf("%s bucket was successfully removed", entity)
-	cancel()
 }
 
 func addIPCmdFunc(cmd *cobra.Command, args []string) {
@@ -136,6 +137,7 @@ func addIPCmdFunc(cmd *cobra.Command, args []string) {
 	}
 	client := getGRPCClient()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
 
 	resp, err := client.AddIPToWhitelist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
 	oops(errors.ErrClientCmdPrefix, err)
@@ -151,7 +153,6 @@ func addIPCmdFunc(cmd *cobra.Command, args []string) {
 	} else {
 		log.Printf("%s was added to the whitelist", ip)
 	}
-	cancel()
 }
 
 func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
@@ -160,6 +161,7 @@ func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
 	}
 	client := getGRPCClient()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
 
 	resp, err := client.DeleteIPFromBlacklist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
 	oops(errors.ErrClientCmdPrefix, err)
@@ -175,12 +177,12 @@ func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
 	} else {
 		log.Printf("%s was deleted from the whitelist", ip)
 	}
-	cancel()
 }
 
 func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 	client := getGRPCClient()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
 
 	resp, err := client.GetIPList(ctx, req.PrepareIPListGrpcRequest(black))
 	oops(errors.ErrClientCmdPrefix, err)
@@ -192,7 +194,6 @@ func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 	} else {
 		log.Printf("subnet addresses in the whitelist: %v", resp.GetResult())
 	}
-	cancel()
 }
 
 func getGRPCClient() api.ABFGuardClient {
