@@ -8,20 +8,14 @@ import (
 
 // InitLogger method sets up a server logger according to the specified log level
 func InitLogger(level int) (*zap.Logger, error) {
-	l := new(zap.Logger)
-	var err error
 	switch level {
 	case 0:
-		l = zap.NewExample()
-		break
+		return zap.NewExample(), nil
 	case 1:
-		l, err = zap.NewProduction()
-		break
+		return zap.NewProduction()
 	case 2:
-		l, err = zap.NewDevelopment()
-		break
+		return zap.NewDevelopment()
 	default:
-		l, err = nil, fmt.Errorf("incorrect logging level: %v", level)
+		return nil, fmt.Errorf("incorrect logging level: %v", level)
 	}
-	return l, err
 }
