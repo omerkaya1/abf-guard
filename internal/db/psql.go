@@ -52,10 +52,7 @@ func (ps *PsqlStorage) Add(ctx context.Context, ip string, blacklist bool) error
 	query := "insert into ip_list(id, ip, bl) values(default, $1, $2)"
 	// Make a DB request
 	_, err := ps.db.ExecContext(ctx, query, ip, blacklist)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // Delete method is used to delete an IP address from a specified list (black or white)
@@ -74,10 +71,7 @@ func (ps *PsqlStorage) Delete(ctx context.Context, ip string, blacklist bool) er
 	query := "delete from ip_list where ip=$1"
 	// Make a DB request
 	_, err := ps.db.ExecContext(ctx, query, ip)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 // GetIPList returns an IP list requested by the callee (black or white)
@@ -105,10 +99,7 @@ func (ps *PsqlStorage) GetIPList(ctx context.Context, blacklist bool) ([]string,
 		}
 	}
 	// Always check the rows' error
-	if err := rows.Err(); err != nil {
-		return ips, err
-	}
-	return ips, nil
+	return ips, rows.Err()
 }
 
 // GreenLightPass .
@@ -135,10 +126,6 @@ func (ps *PsqlStorage) checkIPIsPresent(ctx context.Context, blacklist bool, ip 
 }
 
 func (ps *PsqlStorage) checkIPIsList(ctx context.Context, ip string) (bool, error) {
-	query, result := "select bl from ip_list where ip=$1", false
-	err := ps.db.GetContext(ctx, &result, query, ip)
-	if err != nil {
-		return false, err
-	}
-	return result, err
+	query, result := "select bl from ip_list where ip=$1", new(bool)
+	return *result, ps.db.GetContext(ctx, result, query, ip)
 }

@@ -1,4 +1,4 @@
-package manager
+package bucket
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/omerkaya1/abf-guard/internal/domain/bucket/settings"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,10 +15,10 @@ func TestNewManager(t *testing.T) {
 		header   string
 		err      error
 		ctx      context.Context
-		settings *settings.Settings
+		settings *Settings
 	}{
 		{"Nil settings passed", errors.ErrNilSettings, context.Background(), nil},
-		{"Correct settings passed", nil, context.Background(), &settings.Settings{
+		{"Correct settings passed", nil, context.Background(), &Settings{
 			LoginLimit:    2,
 			PasswordLimit: 5,
 			IPLimit:       10,
@@ -53,7 +52,7 @@ func TestManager_Dispatch(t *testing.T) {
 		{"Third request", false, errors.ErrBucketFull, "morty", "123", "10.0.0.1"},
 	}
 
-	pr, err := NewBucketManager(context.Background(), &settings.Settings{
+	pr, err := NewBucketManager(context.Background(), &Settings{
 		LoginLimit:    2,
 		PasswordLimit: 5,
 		IPLimit:       10,
@@ -91,7 +90,7 @@ func TestManager_Dispatch(t *testing.T) {
 
 func TestManager_FlushBuckets(t *testing.T) {
 	pr, err := NewBucketManager(context.Background(),
-		&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
+		&Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
 	assert.NoError(t, err)
 
 	requests := []struct {
@@ -154,7 +153,7 @@ func TestManager_FlushBuckets(t *testing.T) {
 
 func TestManager_PurgeBucket(t *testing.T) {
 	pr, err := NewBucketManager(context.Background(),
-		&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
+		&Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
 	assert.NoError(t, err)
 
 	successRequests := []struct {
@@ -211,7 +210,7 @@ func TestManager_PurgeBucket_Ctx(t *testing.T) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second))
 	defer cancel()
 	pr, err := NewBucketManager(ctx,
-		&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
+		&Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
 	assert.NoError(t, err)
 
 	successRequests := []struct {
@@ -267,7 +266,7 @@ func TestManager_PurgeBucket_Ctx(t *testing.T) {
 func TestManager_GetErrChan(t *testing.T) {
 	pr, err := NewBucketManager(
 		context.Background(),
-		&settings.Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
+		&Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
 	assert.NoError(t, err)
 
 	go func() {

@@ -3,7 +3,6 @@ package config
 import (
 	"testing"
 
-	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,8 +13,8 @@ func TestInitConfig(t *testing.T) {
 			assert.Nil(t, cfg)
 		}
 	})
-	t.Run("Incorrect file extension", func(t *testing.T) {
-		if cfg, err := InitConfig(""); assert.Equal(t, errors.ErrCorruptConfigFileExtension, err) {
+	t.Run("Path not found", func(t *testing.T) {
+		if cfg, err := InitConfig("some/path/config.json"); assert.Error(t, err) {
 			assert.Nil(t, cfg)
 		}
 	})

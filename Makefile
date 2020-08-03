@@ -59,7 +59,7 @@ gen-test: ## Triggers code generation for the GRPC Server and Client API for ITs
 	protoc --go_out=plugins=grpc:$(CURDIR)/test/integration-test/ ./api/*.proto
 
 dockerbuild: ## Builds a docker image with the project
-	docker build -t omer513/abf-guard-${BRANCH_NAME}-${ARCH}:${VERSION} ./deployments/abfg-service/.
+	docker build -t omer513/abf-guard-${BRANCH_NAME}-${ARCH}:${VERSION} -f ./deployments/abfg-service.Dockerfile .
 
 dockerpush: dockerbuild ## Publishes the docker image to the registry
 	docker push omer513/abf-guard-${BRANCH_NAME}-${ARCH}:${VERSION}

@@ -1,11 +1,9 @@
-package entity
+package bucket
 
 import (
 	"context"
 	"log"
 	"sync"
-
-	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
 )
 
 // Bucket is a structure that represents a bucket object
@@ -17,7 +15,7 @@ type Bucket struct {
 }
 
 // NewBucket returns an new bucket object to the callee
-func NewBucket(ctx context.Context, name string, count int, done chan<- string) bucket.Bucket {
+func NewBucket(ctx context.Context, name string, count int, done chan<- string) *Bucket {
 	stopChan := make(chan struct{})
 	// We make sure that the bucket gets deleted after a certain time
 	go func(ctx context.Context, stopCh <-chan struct{}) {
@@ -69,8 +67,5 @@ func (b *Bucket) Stop() {
 func (b *Bucket) checkAvailable() bool {
 	b.mutex.RLock()
 	defer b.mutex.RUnlock()
-	if b.count > 1 {
-		return true
-	}
-	return false
+	return b.count > 1
 }

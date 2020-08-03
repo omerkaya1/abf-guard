@@ -4,12 +4,11 @@ import (
 	"context"
 	"net"
 
+	"github.com/omerkaya1/abf-guard/internal/domain/config"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/db"
 	"github.com/omerkaya1/abf-guard/internal/grpc/api"
-
-	"github.com/omerkaya1/abf-guard/internal/domain/config"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
@@ -44,13 +43,13 @@ func (s *ABFGuardServer) Run() {
 	server := grpc.NewServer()
 	l, err := net.Listen("tcp", s.Cfg.Host+":"+s.Cfg.Port)
 	if err != nil {
-		s.Logger.Sugar().Fatalf("%s", err)
+		s.Logger.Sugar().Fatal(err)
 	}
 
 	api.RegisterABFGuardServer(server, s)
 
 	// Log errors that occur during the work with buckets
-	go func() {
+	go func(errChan chan error) {
 		for {
 			select {
 			case <-s.ctx.Done():
@@ -61,16 +60,16 @@ func (s *ABFGuardServer) Run() {
 				server.GracefulStop()
 				s.Logger.Sugar().Info("Graceful shutdown performed. Bye!")
 				return
-			case err := <-s.BucketManager.GetErrChan():
+			case err := <-errChan:
 				if err != nil {
 					s.Logger.Sugar().Errorf("%s: %s", errors.ErrBucketManagerPrefix, err)
 				}
 			}
 		}
-	}()
+	}(s.BucketManager.GetErrChan())
 
 	s.Logger.Sugar().Infof("Server initialisation is completed. Server address: %s:%s", s.Cfg.Host, s.Cfg.Port)
-	if err := server.Serve(l); err != nil {
+	if err = server.Serve(l); err != nil {
 		s.Logger.Sugar().Fatal(err)
 	}
 }

@@ -1,4 +1,4 @@
-package grpc
+package cmd
 
 import (
 	"context"
@@ -8,9 +8,7 @@ import (
 	"syscall"
 
 	"github.com/omerkaya1/abf-guard/internal/db"
-	"github.com/omerkaya1/abf-guard/internal/domain/bucket/manager"
-	"github.com/omerkaya1/abf-guard/internal/domain/bucket/settings"
-
+	"github.com/omerkaya1/abf-guard/internal/domain/bucket"
 	"github.com/omerkaya1/abf-guard/internal/domain/config"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/grpc"
@@ -44,10 +42,10 @@ var ServerRootCmd = &cobra.Command{
 		mainDB, err := db.NewPsqlStorage(cfg.DB)
 		oops(errors.ErrServiceCmdPrefix, err)
 		// Init settings for the bucket manager
-		mgrSettings, err := settings.InitBucketManagerSettings(cfg.Limits)
+		mgrSettings, err := bucket.InitBucketManagerSettings(cfg.Limits)
 		oops(errors.ErrServiceCmdPrefix, err)
 		// Get bucket manager
-		manager, err := manager.NewBucketManager(ctx, mgrSettings)
+		manager, err := bucket.NewBucketManager(ctx, mgrSettings)
 		oops(errors.ErrServiceCmdPrefix, err)
 		// Init GRPC server
 		srv, err := grpc.NewServer(ctx, &cfg.Server, l, mainDB, manager)

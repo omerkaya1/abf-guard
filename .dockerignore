@@ -1,0 +1,20 @@
+## Disallowed
+# Shadowed
+.idea
+.vscode
+.gitignore
+.github
+.git
+.dockerignore
+.DS_Store
+## Directories
+deployments
+api
+docs
+#Files
+Makefile
+LICENCE
+**/*.md
+**/*.txt
+## Allowed
+!**/*.feature

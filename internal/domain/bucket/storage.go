@@ -1,4 +1,4 @@
-package store
+package bucket
 
 import (
 	"fmt"
@@ -39,10 +39,7 @@ func (abs *ActiveBucketsStore) AddBucket(name string, b bucket.Bucket) {
 
 // CheckBucket checks whether a requested bucket is present in the active bucket store
 func (abs *ActiveBucketsStore) CheckBucket(name string) bool {
-	if b := abs.checkPresence(name); b != nil {
-		return true
-	}
-	return false
+	return abs.checkPresence(name) != nil
 }
 
 // RemoveBucket removes a specified bucket from the active bucket store
