@@ -10,21 +10,17 @@ import (
 	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
 )
 
-// BucketManager is an object that controls all the functionality to manage buckets
-type BucketManager struct {
-	// TODO: same thing for the configuration struct (what we need here is the Validate method!)
+// Manager is an object that controls all the functionality to manage buckets
+type Manager struct {
 	settings *Settings
 	store    bucket.Storage
 	emptied  chan string
 	errChan  chan error
 }
 
-// NewBucketManager creates a new Manager object and returns it to the callee
-func NewBucketManager(ctx context.Context, settings *Settings) (*BucketManager, error) {
-	if settings == nil {
-		return nil, errors.ErrNilSettings
-	}
-	mgr := &BucketManager{
+// NewManager creates a new Manager object and returns it to the callee
+func NewManager(ctx context.Context, settings *Settings) (*Manager, error) {
+	mgr := &Manager{
 		settings: settings,
 		store:    NewActiveBucketsStore(),
 		emptied:  make(chan string, 3),
@@ -35,7 +31,7 @@ func NewBucketManager(ctx context.Context, settings *Settings) (*BucketManager, 
 }
 
 // Dispatch accepts authorisation request parameters and creates a new or decrements a counter for each bucket
-func (m *BucketManager) Dispatch(login, pwd, ip string) (bool, error) {
+func (m *Manager) Dispatch(login, pwd, ip string) (bool, error) {
 	if err := validateAuthorisationParams(login, pwd, ip); err != nil {
 		return false, err
 	}
@@ -64,7 +60,7 @@ func (m *BucketManager) Dispatch(login, pwd, ip string) (bool, error) {
 }
 
 // FlushBuckets removes all buckets with the specified login and ip
-func (m *BucketManager) FlushBuckets(login, ip string) error {
+func (m *Manager) FlushBuckets(login, ip string) error {
 	if err := validateFlashParams(login, ip); err != nil {
 		return err
 	}
@@ -82,7 +78,7 @@ func (m *BucketManager) FlushBuckets(login, ip string) error {
 }
 
 // PurgeBucket removes a bucket which name was specified as an argument
-func (m *BucketManager) PurgeBucket(name string) error {
+func (m *Manager) PurgeBucket(name string) error {
 	if name == "" {
 		return errors.ErrEmptyBucketName
 	}
@@ -93,35 +89,31 @@ func (m *BucketManager) PurgeBucket(name string) error {
 }
 
 // GetErrChan returns an error channel to monitor the Manager's activity
-func (m *BucketManager) GetErrChan() chan error {
+func (m *Manager) GetErrChan() chan error {
 	return m.errChan
 }
 
-func (m *BucketManager) concurrentDispatch(wg *sync.WaitGroup, name string, bucketType int, result chan bool) {
+func (m *Manager) concurrentDispatch(wg *sync.WaitGroup, name string, bucketType int, result chan bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), m.settings.Expire)
 	// Call cancel() to release the resources of the bucket
 	time.AfterFunc(m.settings.Expire, cancel)
+	defer wg.Done()
 	if b, _ := m.store.GetBucket(name); b != nil {
 		result <- b.Decrement()
 	} else {
 		switch bucketType {
 		case 0:
 			m.store.AddBucket(name, NewBucket(ctx, name, m.settings.LoginLimit, m.emptied))
-			break
 		case 1:
 			m.store.AddBucket(name, NewBucket(ctx, name, m.settings.PasswordLimit, m.emptied))
-			break
 		default:
 			m.store.AddBucket(name, NewBucket(ctx, name, m.settings.IPLimit, m.emptied))
-			break
 		}
 		result <- true
 	}
-	wg.Done()
-	return
 }
 
-func (m *BucketManager) monitor(ctx context.Context) {
+func (m Manager) monitor(ctx context.Context) {
 	for {
 		select {
 		// This case handles buckets that reported their removal

@@ -6,9 +6,11 @@
 ABF-Guard is a small service that prevents brute force login attacks.
 
 ## Usage
+
 Full control of the project is available through the Makefile.
 
 ### Makefile targets and their description
+
 - `setup`               - Install all the build and lint dependencies
 - `mod`                 - Runs go mod on a project
 - `fmt`                 - Runs goimports on all go files
@@ -30,7 +32,8 @@ Full control of the project is available through the Makefile.
 - `clean`               - Remove temporary files
 
 ## Client API
-Service administration can be performed through the ABF-Guard CLI 
+
+Service administration can be performed through the ABF-Guard CLI
 ```
 Run GRPC Web Service client for ABF-Guard
 
@@ -62,6 +65,7 @@ Use "abf-guard grpc-client [command] --help" for more information about a comman
 ```
 
 ## ABF Guard server
+
 ```
 Run GRPC Server for ABF-Guard
 
@@ -77,9 +81,11 @@ Flags:
 ```
 
 ## Settings
+
 The app is primarily configured through a config.json file.
 Settings for all the limitations for the bucket creation are also defined in this file.
 Feel free to change them.
 
 ## Licence
+
 This project is licenced under the GPL licence.

@@ -4,11 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/config"
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/db"
 
 	// We absolutely need this import and this comment.
 	_ "github.com/jackc/pgx/stdlib"
@@ -21,10 +19,7 @@ type PsqlStorage struct {
 }
 
 // NewPsqlStorage returns new PsqlStorage object to the callee
-func NewPsqlStorage(cfg config.DBConf) (db.Storage, error) {
-	if cfg.Name == "" || cfg.User == "" || cfg.SSL == "" || cfg.Password == "" || cfg.Host == "" || cfg.Port == "" {
-		return nil, errors.ErrBadDBConfiguration
-	}
+func NewPsqlStorage(cfg *config.DBConf) (*PsqlStorage, error) {
 	dsn := fmt.Sprintf("host=%s port=%s password=%s user=%s dbname=%s sslmode=%s",
 		cfg.Host, cfg.Port, cfg.Password, cfg.User, cfg.Name, cfg.SSL)
 	db, err := sqlx.Connect("pgx", dsn)
@@ -49,7 +44,7 @@ func (ps *PsqlStorage) Add(ctx context.Context, ip string, blacklist bool) error
 		return errors.ErrAlreadyStored
 	}
 	// Prepare a query
-	query := "insert into ip_list(id, ip, bl) values(default, $1, $2)"
+	query := "INSERT INTO ip_list(id, ip, bl) VALUES(default, $1, $2)"
 	// Make a DB request
 	_, err := ps.db.ExecContext(ctx, query, ip, blacklist)
 	return err
@@ -68,7 +63,7 @@ func (ps *PsqlStorage) Delete(ctx context.Context, ip string, blacklist bool) er
 		return errors.ErrDoesNotExist
 	}
 	// Prepare a query
-	query := "delete from ip_list where ip=$1"
+	query := "DELETE FROM ip_list WHERE ip=$1"
 	// Make a DB request
 	_, err := ps.db.ExecContext(ctx, query, ip)
 	return err
@@ -77,7 +72,7 @@ func (ps *PsqlStorage) Delete(ctx context.Context, ip string, blacklist bool) er
 // GetIPList returns an IP list requested by the callee (black or white)
 func (ps *PsqlStorage) GetIPList(ctx context.Context, blacklist bool) ([]string, error) {
 	// Prepare a query
-	query := "select * from ip_list where bl=$1"
+	query := "SELECT * FROM ip_list WHERE bl=$1"
 	// Make a DB request
 	rows, err := ps.db.QueryxContext(ctx, query, blacklist)
 	if err != nil {
@@ -98,11 +93,10 @@ func (ps *PsqlStorage) GetIPList(ctx context.Context, blacklist bool) ([]string,
 			ips = append(ips, ip)
 		}
 	}
-	// Always check the rows' error
 	return ips, rows.Err()
 }
 
-// GreenLightPass .
+// GreenLightPass is a method that checks whether an ip is not in the black list
 func (ps *PsqlStorage) GreenLightPass(ctx context.Context, ip string) error {
 	if ok, err := ps.checkIPIsList(ctx, ip); err != nil && err == sql.ErrNoRows {
 		// Does not exist, - needs a bucket
@@ -116,16 +110,15 @@ func (ps *PsqlStorage) GreenLightPass(ctx context.Context, ip string) error {
 }
 
 func (ps *PsqlStorage) checkIPIsPresent(ctx context.Context, blacklist bool, ip string) (bool, error) {
-	query, result := "select ip from ip_list where ip=$1", ""
+	query, result := "SELECT ip FROM ip_list WHERE ip=$1", ""
 	err := ps.db.GetContext(ctx, &result, query, ip)
 	if err != nil && err == sql.ErrNoRows {
 		return false, nil
 	}
-	log.Println(result)
-	return true, err
+	return result != "", err
 }
 
 func (ps *PsqlStorage) checkIPIsList(ctx context.Context, ip string) (bool, error) {
-	query, result := "select bl from ip_list where ip=$1", new(bool)
+	query, result := "SELECT bl FROM ip_list WHERE ip=$1", new(bool)
 	return *result, ps.db.GetContext(ctx, result, query, ip)
 }

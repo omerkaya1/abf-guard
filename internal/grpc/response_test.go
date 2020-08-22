@@ -6,7 +6,7 @@ import (
 
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/omerkaya1/abf-guard/internal/grpc/api"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPrepareGRPCListIpResponse(t *testing.T) {
@@ -44,12 +44,11 @@ func TestPrepareGRPCListIpResponse(t *testing.T) {
 		t.Run(c.header, func(t *testing.T) {
 			r, err := PrepareGRPCListIPResponse(c.ips, c.err)
 			if err == errors.ErrEmptyIPList {
-				assert.Equal(t, c.response, r)
+				require.Equal(t, c.response, r)
 				return
 			}
-			if assert.NoError(t, err) {
-				assert.Equal(t, c.response, r)
-			}
+			require.NoError(t, err)
+			require.Equal(t, c.response, r)
 		})
 	}
 }
@@ -66,7 +65,7 @@ func TestPrepareGRPCResponse(t *testing.T) {
 	}
 	for _, c := range testCases {
 		t.Run(c.header, func(t *testing.T) {
-			assert.Equal(t, c.response, PrepareGRPCResponse(c.ok, c.err))
+			require.Equal(t, c.response, PrepareGRPCResponse(c.ok, c.err))
 		})
 	}
 }

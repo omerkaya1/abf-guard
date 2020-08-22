@@ -33,7 +33,7 @@ coverage: test ## Runs all the tests and opens the coverage report
 	go tool cover -html=coverage.txt
 
 lint: ## Runs all the linters
-	golint ./internal/... ./cmd/... ./log/...
+	golint ./internal/... ./cmd/...
 	golint ./test/integration/main_test.go
 
 vet: ## Runs go vet
