@@ -1,4 +1,4 @@
-package bucket
+package domain
 
 import (
 	"context"
@@ -6,13 +6,24 @@ import (
 	"sync"
 )
 
-// Bucket is a structure that represents a bucket object
-type Bucket struct {
-	count int
-	name  string
-	mutex sync.RWMutex
-	stop  chan struct{}
-}
+type (
+	// Bucketer allows for the communication with any created bucket
+	Bucketer interface {
+		// Decrement reduces the bucket request counter; it return true if the request can pass and false otherwise
+		Decrement() bool
+		// GetCount returns the current count value of the bucket
+		GetCount() int
+		// Stop releases all the resources associated with the bucket
+		Stop()
+	}
+	// Bucket is a structure that represents a bucket object
+	Bucket struct {
+		count int
+		name  string
+		mutex sync.RWMutex
+		stop  chan struct{}
+	}
+)
 
 // NewBucket returns an new bucket object to the callee
 func NewBucket(ctx context.Context, name string, count int, done chan<- string) *Bucket {

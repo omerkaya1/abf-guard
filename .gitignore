@@ -16,5 +16,6 @@ bin
 vendor
 go.sum
 .idea
+.vscode
 configs/config-test.json
 coverage.txt

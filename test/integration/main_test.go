@@ -65,14 +65,11 @@ func randomIfEmpty(arg string) string {
 
 func getNameByIndex(index int, auth authorise) string {
 	switch index {
-	case 0:
-	case 3:
+	case 0, 3:
 		return auth.Login
-	case 1:
-	case 4:
+	case 1, 4:
 		return auth.Pwd
-	case 2:
-	case 5:
+	case 2, 5:
 		return auth.IP
 	}
 	return ""

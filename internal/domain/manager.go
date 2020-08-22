@@ -1,22 +1,43 @@
-package bucket
+package domain
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
-
-	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
 )
 
-// Manager is an object that controls all the functionality to manage buckets
-type Manager struct {
-	settings *Settings
-	store    bucket.Storage
-	emptied  chan string
-	errChan  chan error
-}
+type (
+	// TODO(omerkaya1): integrate context into these methods
+	// ManageController is a representation of a Bucket Manager interface
+	ManageController interface {
+		// Dispatch accepts authorisation request parameters and creates a new or decrements a counter for each bucket
+		Dispatch(login string, pwd string, ip string) (bool, error)
+		// FlushBuckets removes all buckets with the specified login and ip
+		FlushBuckets(login string, ip string) error
+		// PurgeBucket removes a bucket which name was specified as an argument
+		PurgeBucket(name string) error
+		// GetErrChan returns an error channel to monitor the Manager's activity
+		GetErrChan() chan error
+	}
+	// Manager is an object that controls all the functionality to manage buckets
+	Manager struct {
+		settings *Settings
+		store    Storer
+		emptied  chan string
+		errChan  chan error
+	}
+)
+
+var (
+	// ErrBucketFull reports faulty attempts to dispatch buckets
+	ErrBucketFull = errors.New("some of the buckets returned false")
+	// ErrEmptyBucketName missing bucket name error
+	ErrEmptyBucketName = errors.New("empty bucket name received")
+	// ErrNoBucketFound missing bucket error
+	ErrNoBucketFound = errors.New("no bucket found in store")
+)
 
 // NewManager creates a new Manager object and returns it to the callee
 func NewManager(ctx context.Context, settings *Settings) (*Manager, error) {
@@ -52,7 +73,7 @@ func (m *Manager) Dispatch(login, pwd, ip string) (bool, error) {
 	for v := range resultChan {
 		// The first false result reports that the request cannot proceed
 		if !v {
-			return v, errors.ErrBucketFull
+			return v, ErrBucketFull
 		}
 	}
 	// Everything is ok
@@ -80,10 +101,10 @@ func (m *Manager) FlushBuckets(login, ip string) error {
 // PurgeBucket removes a bucket which name was specified as an argument
 func (m *Manager) PurgeBucket(name string) error {
 	if name == "" {
-		return errors.ErrEmptyBucketName
+		return ErrEmptyBucketName
 	}
 	if !m.store.CheckBucket(name) {
-		return errors.ErrNoBucketFound
+		return ErrNoBucketFound
 	}
 	return m.store.RemoveBucket(name)
 }
@@ -98,7 +119,11 @@ func (m *Manager) concurrentDispatch(wg *sync.WaitGroup, name string, bucketType
 	// Call cancel() to release the resources of the bucket
 	time.AfterFunc(m.settings.Expire, cancel)
 	defer wg.Done()
-	if b, _ := m.store.GetBucket(name); b != nil {
+	if b, err := m.store.GetBucket(name); b != nil {
+		if err != nil {
+			m.errChan <- err
+			return
+		}
 		result <- b.Decrement()
 	} else {
 		switch bucketType {

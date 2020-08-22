@@ -1,11 +1,10 @@
-package grpc
+package server
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	"github.com/omerkaya1/abf-guard/internal/grpc/api"
+	"github.com/omerkaya1/abf-guard/internal/server/api"
 	"github.com/stretchr/testify/require"
 )
 
@@ -20,7 +19,7 @@ func TestPrepareGRPCListIpResponse(t *testing.T) {
 		{"Error", nil, fmt.Errorf("some error"), &api.ListResponse{
 			Result: &api.ListResponse_Error{Error: "some error"},
 		}, nil},
-		{"Empty ips slice", nil, nil, nil, errors.ErrEmptyIPList},
+		{"Empty ips slice", nil, nil, nil, errEmptyIPList},
 		{
 			"Error is present, some ips retrieved",
 			[]string{"111.111.111.111", "111.111.111.112"},
@@ -43,7 +42,7 @@ func TestPrepareGRPCListIpResponse(t *testing.T) {
 	for _, c := range testCases {
 		t.Run(c.header, func(t *testing.T) {
 			r, err := PrepareGRPCListIPResponse(c.ips, c.err)
-			if err == errors.ErrEmptyIPList {
+			if err == errEmptyIPList {
 				require.Equal(t, c.response, r)
 				return
 			}

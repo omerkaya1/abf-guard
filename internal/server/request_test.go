@@ -1,9 +1,9 @@
-package grpc
+package server
 
 import (
 	"testing"
 
-	"github.com/omerkaya1/abf-guard/internal/grpc/api"
+	"github.com/omerkaya1/abf-guard/internal/server/api"
 	"github.com/stretchr/testify/require"
 )
 

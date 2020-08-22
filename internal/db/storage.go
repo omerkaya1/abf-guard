@@ -2,8 +2,8 @@ package db
 
 import "context"
 
-// Storage is an interface to communicate with the DB
-type Storage interface {
+// StorageManager is an interface to communicate with the DB
+type StorageManager interface {
 	// Add adds the IP to either the whitelist or the blacklist of the app
 	Add(ctx context.Context, ip string, blacklist bool) error
 	// Delete removes the IP from either the whitelist or the blacklist

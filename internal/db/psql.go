@@ -3,10 +3,10 @@ package db
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
-	"github.com/omerkaya1/abf-guard/internal/domain/config"
-	"github.com/omerkaya1/abf-guard/internal/domain/errors"
+	"github.com/omerkaya1/abf-guard/internal/config"
 
 	// We absolutely need this import and this comment.
 	_ "github.com/jackc/pgx/stdlib"
@@ -17,6 +17,15 @@ import (
 type PsqlStorage struct {
 	db *sqlx.DB
 }
+
+var (
+	// ErrAlreadyStored reports IP duplication errors
+	ErrAlreadyStored = errors.New("provided IP is already stored")
+	// ErrDoesNotExist reports unknown IP querying errors
+	ErrDoesNotExist = errors.New("provided IP does not exist in the DB")
+	// ErrIsInTheBlacklist reports querying blacklisted IP from the whitelist
+	ErrIsInTheBlacklist = errors.New("the ip is in the blacklist")
+)
 
 // NewPsqlStorage returns new PsqlStorage object to the callee
 func NewPsqlStorage(cfg *config.DBConf) (*PsqlStorage, error) {
@@ -33,15 +42,11 @@ func NewPsqlStorage(cfg *config.DBConf) (*PsqlStorage, error) {
 
 // Add method is used to add an IP address to a specified list (black or white)
 func (ps *PsqlStorage) Add(ctx context.Context, ip string, blacklist bool) error {
-	// Check IP
-	if ip == "" {
-		return errors.ErrEmptyIP
-	}
 	// Check whether an IP is present in the DB
 	if ok, err := ps.checkIPIsPresent(ctx, blacklist, ip); err != nil {
 		return err
 	} else if ok {
-		return errors.ErrAlreadyStored
+		return ErrAlreadyStored
 	}
 	// Prepare a query
 	query := "INSERT INTO ip_list(id, ip, bl) VALUES(default, $1, $2)"
@@ -52,15 +57,11 @@ func (ps *PsqlStorage) Add(ctx context.Context, ip string, blacklist bool) error
 
 // Delete method is used to delete an IP address from a specified list (black or white)
 func (ps *PsqlStorage) Delete(ctx context.Context, ip string, blacklist bool) error {
-	// Check IP
-	if ip == "" {
-		return errors.ErrEmptyIP
-	}
 	// Check whether an IP is present in the DB
 	if ok, err := ps.checkIPIsPresent(ctx, blacklist, ip); err != nil {
 		return err
 	} else if !ok {
-		return errors.ErrDoesNotExist
+		return ErrDoesNotExist
 	}
 	// Prepare a query
 	query := "DELETE FROM ip_list WHERE ip=$1"
@@ -100,10 +101,9 @@ func (ps *PsqlStorage) GetIPList(ctx context.Context, blacklist bool) ([]string,
 func (ps *PsqlStorage) GreenLightPass(ctx context.Context, ip string) error {
 	if ok, err := ps.checkIPIsList(ctx, ip); err != nil && err == sql.ErrNoRows {
 		// Does not exist, - needs a bucket
-		return errors.ErrDoesNotExist
+		return ErrDoesNotExist
 	} else if ok {
-		//
-		return errors.ErrIsInTheBlacklist
+		return ErrIsInTheBlacklist
 	} else {
 		return nil
 	}

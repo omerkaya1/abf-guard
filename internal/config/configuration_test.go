@@ -30,9 +30,9 @@ func TestDBConf_Valid(t *testing.T) {
 		cfg  DBConf
 		want bool
 	}{
-		{name: "Empty config", cfg:  DBConf{}, want: false},
-		{name: "Partially empty config", cfg:  DBConf{Host: "fsadf", Port: "sdfsd"}, want: false},
-		{name: "Correct config", cfg:  DBConf{
+		{name: "Empty config", cfg: DBConf{}, want: false},
+		{name: "Partially empty config", cfg: DBConf{Host: "fsadf", Port: "sdfsd"}, want: false},
+		{name: "Correct config", cfg: DBConf{
 			Host:     "localhost",
 			Port:     "5432",
 			Password: "some_pwd",
@@ -54,9 +54,9 @@ func TestLimits_Valid(t *testing.T) {
 		cfg  Limits
 		want bool
 	}{
-		{ name: "Empty config", cfg:  Limits{}, want: false},
-		{ name: "Partially empty config", cfg:  Limits{IP: 3, Login: 3}, want: false},
-		{ name: "Correct config", cfg:  Limits{
+		{name: "Empty config", cfg: Limits{}, want: false},
+		{name: "Partially empty config", cfg: Limits{IP: 3, Login: 3}, want: false},
+		{name: "Correct config", cfg: Limits{
 			Login:    5,
 			Password: 4,
 			IP:       3,
@@ -76,9 +76,9 @@ func TestServer_Valid(t *testing.T) {
 		cfg  Server
 		want bool
 	}{
-		{ name: "Empty config", cfg:  Server{}, want: false},
-		{ name: "Partially empty config", cfg:  Server{Host: "localhost"}, want: false},
-		{ name: "Correct config", cfg:  Server{
+		{name: "Empty config", cfg: Server{}, want: false},
+		{name: "Partially empty config", cfg: Server{Host: "localhost"}, want: false},
+		{name: "Correct config", cfg: Server{
 			Host:  "localhost",
 			Port:  "8080",
 			Level: 1,
