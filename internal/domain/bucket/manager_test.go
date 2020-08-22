@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestNewManager(t *testing.T) {
@@ -17,25 +17,27 @@ func TestNewManager(t *testing.T) {
 		ctx      context.Context
 		settings *Settings
 	}{
-		{"Nil settings passed", errors.ErrNilSettings, context.Background(), nil},
-		{"Correct settings passed", nil, context.Background(), &Settings{
+		{"Correct settings seconds", nil, context.Background(), &Settings{
 			LoginLimit:    2,
 			PasswordLimit: 5,
 			IPLimit:       10,
 			Expire:        2 * time.Second,
 		}},
+		{"Correct settings minutes", nil, context.Background(), &Settings{
+			LoginLimit:    2,
+			PasswordLimit: 5,
+			IPLimit:       10,
+			Expire:        2 * time.Minute,
+		}},
 	}
 
-	t.Run(testCases[0].header, func(t *testing.T) {
-		if bm, err := NewBucketManager(testCases[0].ctx, testCases[0].settings); assert.Equal(t, testCases[0].err, err) {
-			assert.Nil(t, bm)
-		}
-	})
-	t.Run(testCases[1].header, func(t *testing.T) {
-		if bm, err := NewBucketManager(testCases[1].ctx, testCases[1].settings); assert.Equal(t, testCases[1].err, err) {
-			assert.NotNil(t, bm)
-		}
-	})
+	for _, tc := range testCases {
+		t.Run(tc.header, func(t *testing.T) {
+			bm, err := NewManager(tc.ctx, tc.settings)
+			require.Equal(t, tc.err, err)
+			require.NotNil(t, bm)
+		})
+	}
 }
 
 func TestManager_Dispatch(t *testing.T) {
@@ -52,46 +54,46 @@ func TestManager_Dispatch(t *testing.T) {
 		{"Third request", false, errors.ErrBucketFull, "morty", "123", "10.0.0.1"},
 	}
 
-	pr, err := NewBucketManager(context.Background(), &Settings{
+	pr, err := NewManager(context.Background(), &Settings{
 		LoginLimit:    2,
 		PasswordLimit: 5,
 		IPLimit:       10,
 		Expire:        2 * time.Second,
 	})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	for i := 0; i < 3; i++ {
 		t.Run("Zero request", func(t *testing.T) {
 			switch i {
 			case 0:
-				if s, err := pr.Dispatch("", "qwre", "1.1.1.1"); assert.Error(t, err) {
-					assert.Equal(t, false, s)
-				}
+				s, err := pr.Dispatch("", "qwre", "1.1.1.1")
+				require.Error(t, err)
+				require.Equal(t, false, s)
 			case 1:
-				if s, err := pr.Dispatch("ad", "", "1.1.1.1"); assert.Error(t, err) {
-					assert.Equal(t, false, s)
-				}
+				s, err := pr.Dispatch("ad", "", "1.1.1.1")
+				require.Error(t, err)
+				require.Equal(t, false, s)
 			default:
-				if s, err := pr.Dispatch("qewr", "qwr", ""); assert.Error(t, err) {
-					assert.Equal(t, false, s)
-				}
+				s, err := pr.Dispatch("qewr", "qwr", "")
+				require.Error(t, err)
+				require.Equal(t, false, s)
 			}
 		})
 	}
 
 	for i := 0; i < len(testCases); i++ {
 		t.Run(testCases[i].header, func(t *testing.T) {
-			if s, err := pr.Dispatch(testCases[i].login, testCases[i].pwd, testCases[i].ip); assert.Equal(t, testCases[i].err, err) {
-				assert.Equal(t, testCases[i].response, s)
-			}
+			s, err := pr.Dispatch(testCases[i].login, testCases[i].pwd, testCases[i].ip)
+			require.Equal(t, testCases[i].err, err)
+			require.Equal(t, testCases[i].response, s)
 		})
 	}
 }
 
 func TestManager_FlushBuckets(t *testing.T) {
-	pr, err := NewBucketManager(context.Background(),
+	pr, err := NewManager(context.Background(),
 		&Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	requests := []struct {
 		login string
@@ -104,17 +106,17 @@ func TestManager_FlushBuckets(t *testing.T) {
 	}
 
 	for _, r := range requests {
-		if s, err := pr.Dispatch(r.login, r.pwd, r.ip); assert.NoError(t, err) {
-			assert.Equal(t, true, s)
-		}
+		s, err := pr.Dispatch(r.login, r.pwd, r.ip)
+		require.NoError(t, err)
+		require.Equal(t, true, s)
 	}
 	wg := sync.WaitGroup{}
 	wg.Add(1)
 	time.AfterFunc(time.Second*2, func() {
-		if s, err := pr.Dispatch(requests[0].login, requests[0].pwd, requests[0].ip); assert.NoError(t, err) {
-			assert.Equal(t, true, s)
-		}
-		wg.Done()
+		defer wg.Done()
+		s, err := pr.Dispatch(requests[0].login, requests[0].pwd, requests[0].ip)
+		require.NoError(t, err)
+		require.Equal(t, true, s)
 	})
 
 	req := struct {
@@ -125,36 +127,36 @@ func TestManager_FlushBuckets(t *testing.T) {
 	}{"Third request", "no bucket found in store for provided login: morty", "morty", "10.0.0.1"}
 
 	t.Run("Zero request", func(t *testing.T) {
-		assert.Error(t, pr.FlushBuckets("", "1.1.1.1"))
+		require.Error(t, pr.FlushBuckets("", "1.1.1.1"))
 	})
 	t.Run("First request", func(t *testing.T) {
-		assert.Error(t, pr.FlushBuckets("test", ""))
+		require.Error(t, pr.FlushBuckets("test", ""))
 	})
 
 	t.Run("Second request", func(t *testing.T) {
-		assert.NoError(t, pr.FlushBuckets("morty", "10.0.0.1"))
+		require.NoError(t, pr.FlushBuckets("morty", "10.0.0.1"))
 	})
 
 	t.Run(req.header, func(t *testing.T) {
-		if err := pr.FlushBuckets(req.login, req.ip); assert.Error(t, err) {
-			assert.Equal(t, req.errStr, err.Error())
-		}
+		err := pr.FlushBuckets(req.login, req.ip)
+		require.Error(t, err)
+		require.Equal(t, req.errStr, err.Error())
 	})
 	wg.Wait()
 	t.Run("Purge ip bucket", func(t *testing.T) {
-		assert.NoError(t, pr.PurgeBucket("10.0.0.1"))
+		require.NoError(t, pr.PurgeBucket("10.0.0.1"))
 	})
 	t.Run("Err check", func(t *testing.T) {
-		if err := pr.FlushBuckets(req.login, req.ip); assert.Error(t, err) {
-			assert.Equal(t, "no bucket found in store for provided ip: 10.0.0.1", err.Error())
-		}
+		err := pr.FlushBuckets(req.login, req.ip)
+		require.Error(t, err)
+		require.Equal(t, "no bucket found in store for provided ip: 10.0.0.1", err.Error())
 	})
 }
 
 func TestManager_PurgeBucket(t *testing.T) {
-	pr, err := NewBucketManager(context.Background(),
+	pr, err := NewManager(context.Background(),
 		&Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	successRequests := []struct {
 		header string
@@ -168,9 +170,9 @@ func TestManager_PurgeBucket(t *testing.T) {
 	}
 
 	for _, r := range successRequests {
-		if s, err := pr.Dispatch(r.login, r.pwd, r.ip); assert.NoError(t, err) {
-			assert.Equal(t, true, s)
-		}
+		s, err := pr.Dispatch(r.login, r.pwd, r.ip)
+		require.NoError(t, err)
+		require.Equal(t, true, s)
 	}
 
 	failureRequests := []struct {
@@ -184,24 +186,24 @@ func TestManager_PurgeBucket(t *testing.T) {
 	}
 
 	t.Run("Zero purge request", func(t *testing.T) {
-		assert.Error(t, pr.PurgeBucket(""))
+		require.Error(t, pr.PurgeBucket(""))
 	})
 
 	for i, r := range successRequests {
 		t.Run(r.header, func(t *testing.T) {
 			switch i {
 			case 0:
-				assert.NoError(t, pr.PurgeBucket(r.login))
+				require.NoError(t, pr.PurgeBucket(r.login))
 			case 1:
-				assert.NoError(t, pr.PurgeBucket(r.pwd))
+				require.NoError(t, pr.PurgeBucket(r.pwd))
 			case 2:
-				assert.NoError(t, pr.PurgeBucket(r.ip))
+				require.NoError(t, pr.PurgeBucket(r.ip))
 			}
 		})
 	}
 	for _, r := range failureRequests {
 		t.Run(r.header, func(t *testing.T) {
-			assert.Equal(t, r.errStr, pr.PurgeBucket(r.bucket).Error())
+			require.Equal(t, r.errStr, pr.PurgeBucket(r.bucket).Error())
 		})
 	}
 }
@@ -209,9 +211,9 @@ func TestManager_PurgeBucket(t *testing.T) {
 func TestManager_PurgeBucket_Ctx(t *testing.T) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second))
 	defer cancel()
-	pr, err := NewBucketManager(ctx,
+	pr, err := NewManager(ctx,
 		&Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	successRequests := []struct {
 		header string
@@ -225,9 +227,9 @@ func TestManager_PurgeBucket_Ctx(t *testing.T) {
 	}
 
 	for _, r := range successRequests {
-		if s, err := pr.Dispatch(r.login, r.pwd, r.ip); assert.NoError(t, err) {
-			assert.Equal(t, true, s)
-		}
+		s, err := pr.Dispatch(r.login, r.pwd, r.ip)
+		require.NoError(t, err)
+		require.Equal(t, true, s)
 	}
 
 	failureRequests := []struct {
@@ -241,33 +243,33 @@ func TestManager_PurgeBucket_Ctx(t *testing.T) {
 	}
 
 	t.Run("Zero purge request", func(t *testing.T) {
-		assert.Error(t, pr.PurgeBucket(""))
+		require.Error(t, pr.PurgeBucket(""))
 	})
 
 	for i, r := range successRequests {
 		t.Run(r.header, func(t *testing.T) {
 			switch i {
 			case 0:
-				assert.NoError(t, pr.PurgeBucket(r.login))
+				require.NoError(t, pr.PurgeBucket(r.login))
 			case 1:
-				assert.NoError(t, pr.PurgeBucket(r.pwd))
+				require.NoError(t, pr.PurgeBucket(r.pwd))
 			case 2:
-				assert.NoError(t, pr.PurgeBucket(r.ip))
+				require.NoError(t, pr.PurgeBucket(r.ip))
 			}
 		})
 	}
 	for _, r := range failureRequests {
 		t.Run(r.header, func(t *testing.T) {
-			assert.Equal(t, r.errStr, pr.PurgeBucket(r.bucket).Error())
+			require.Equal(t, r.errStr, pr.PurgeBucket(r.bucket).Error())
 		})
 	}
 }
 
 func TestManager_GetErrChan(t *testing.T) {
-	pr, err := NewBucketManager(
+	pr, err := NewManager(
 		context.Background(),
 		&Settings{LoginLimit: 3, PasswordLimit: 5, IPLimit: 10, Expire: 2 * time.Second})
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	go func() {
 		var err error
@@ -276,6 +278,6 @@ func TestManager_GetErrChan(t *testing.T) {
 	}()
 
 	for v := range pr.GetErrChan() {
-		assert.NoError(t, v)
+		require.NoError(t, v)
 	}
 }

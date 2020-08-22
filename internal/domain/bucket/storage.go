@@ -48,7 +48,7 @@ func (abs *ActiveBucketsStore) RemoveBucket(name string) error {
 	if b == nil {
 		return fmt.Errorf("%s: %s", errors.ErrBucketStoragePrefix, errors.ErrDeleteMissingBucket)
 	}
-	// Just ot be extra sure, we release all the resources
+	// Just to be extra sure, we release all the resources
 	b.Stop()
 	abs.mutex.Lock()
 	delete(abs.activeBuckets, name)

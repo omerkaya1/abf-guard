@@ -12,8 +12,6 @@ func (e ABFGuardError) Error() string {
 const (
 	// ErrCLIFlagsAreNotSet .
 	ErrCLIFlagsAreNotSet = ABFGuardError("CLI flags are not set")
-	// ErrCorruptConfigFileExtension .
-	ErrCorruptConfigFileExtension = ABFGuardError("configuration file's extension is not supported")
 	// ErrAuthorisationFailed .
 	ErrAuthorisationFailed = ABFGuardError("the authorisation request was declined")
 	// ErrFlushBucketsFailed .
@@ -24,10 +22,6 @@ const (
 
 /** Server-side errors */
 const (
-	// ErrMissingServerParameters .
-	ErrMissingServerParameters = ABFGuardError("missing mandatory parameters to the server")
-	// ErrBadDBConfiguration .
-	ErrBadDBConfiguration = ABFGuardError("incorrect configuration is received")
 	// ErrBadRequest .
 	ErrBadRequest = ABFGuardError("bad request")
 	// ErrEmptyIPList .
@@ -65,23 +59,6 @@ const (
 	// ErrEmptyBucketName .
 	ErrEmptyBucketName = ABFGuardError("empty bucket name received")
 )
-
-/** Configuration errors */
-const (
-	// ErrEmptyCfgLogin .
-	ErrIncorrectCfgLogin = ABFGuardError("incorrect login limit field in configuration")
-	// ErrEmptyCfgPWD .
-	ErrIncorrectCfgPWD = ABFGuardError("incorrect password limit field in configuration")
-	// ErrEmptyCfgIP .
-	ErrIncorrectCfgIP = ABFGuardError("incorrect ip limit field in configuration")
-	// ErrEmptyCfgDuration .
-	ErrEmptyCfgDuration = ABFGuardError("empty expire field in configuration")
-	// ErrNilSettings .
-	ErrNilSettings = ABFGuardError("nil settings object is received")
-)
-
-/** Manager errors */
-const ()
 
 const (
 	// ErrServiceCmdPrefix .

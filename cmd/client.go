@@ -89,7 +89,7 @@ func authoriseCmdFunc(cmd *cobra.Command, args []string) {
 	defer cancel()
 
 	ok, err := client.Authorisation(ctx, req.PrepareGRPCAuthorisationBody(login, password, ip))
-	oops(errors.ErrClientCmdPrefix, err)
+	assertError(errors.ErrClientCmdPrefix, err)
 
 	if !ok.GetOk() {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrAuthorisationFailed)
@@ -106,7 +106,7 @@ func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
 	defer cancel()
 
 	ok, err := client.FlushBuckets(ctx, req.PrepareFlushBucketsGrpcRequest(login, ip))
-	oops(errors.ErrClientCmdPrefix, err)
+	assertError(errors.ErrClientCmdPrefix, err)
 
 	if !ok.GetOk() {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrFlushBucketsFailed)
@@ -123,7 +123,7 @@ func purgeBucketCmdFunc(cmd *cobra.Command, args []string) {
 	defer cancel()
 
 	ok, err := client.PurgeBucket(ctx, req.PreparePurgeBucketGrpcRequest(entity))
-	oops(errors.ErrClientCmdPrefix, err)
+	assertError(errors.ErrClientCmdPrefix, err)
 
 	if !ok.GetOk() {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrPurgeBucketFailed)
@@ -140,7 +140,7 @@ func addIPCmdFunc(cmd *cobra.Command, args []string) {
 	defer cancel()
 
 	resp, err := client.AddIPToWhitelist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
-	oops(errors.ErrClientCmdPrefix, err)
+	assertError(errors.ErrClientCmdPrefix, err)
 
 	if resp.GetError() != "" {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
@@ -164,7 +164,7 @@ func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
 	defer cancel()
 
 	resp, err := client.DeleteIPFromBlacklist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
-	oops(errors.ErrClientCmdPrefix, err)
+	assertError(errors.ErrClientCmdPrefix, err)
 
 	if resp.GetError() != "" {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
@@ -185,7 +185,7 @@ func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 	defer cancel()
 
 	resp, err := client.GetIPList(ctx, req.PrepareIPListGrpcRequest(black))
-	oops(errors.ErrClientCmdPrefix, err)
+	assertError(errors.ErrClientCmdPrefix, err)
 	if resp.GetError() != "" {
 		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
 	}
@@ -198,6 +198,6 @@ func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 
 func getGRPCClient() api.ABFGuardClient {
 	conn, err := grpc.Dial(host+":"+port, grpc.WithInsecure())
-	oops(errors.ErrClientCmdPrefix, err)
+	assertError(errors.ErrClientCmdPrefix, err)
 	return api.NewABFGuardClient(conn)
 }

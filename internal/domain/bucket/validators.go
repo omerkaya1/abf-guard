@@ -4,20 +4,20 @@ import "github.com/omerkaya1/abf-guard/internal/domain/errors"
 
 func validateAuthorisationParams(login, password, ip string) error {
 	if login == "" {
-		return errors.ErrEmptyIP
+		return errors.ErrEmptyLogin
 	}
 	if password == "" {
 		return errors.ErrEmptyPWD
 	}
 	if ip == "" {
-		return errors.ErrEmptyLogin
+		return errors.ErrEmptyIP
 	}
 	return nil
 }
 
 func validateFlashParams(login, ip string) error {
 	if login == "" {
-		return errors.ErrEmptyIP
+		return errors.ErrEmptyLogin
 	}
 	if ip == "" {
 		return errors.ErrEmptyIP

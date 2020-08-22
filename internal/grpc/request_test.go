@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/omerkaya1/abf-guard/internal/grpc/api"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPrepareGRPCAuthorisationBody(t *testing.T) {
@@ -27,7 +27,7 @@ func TestPrepareGRPCAuthorisationBody(t *testing.T) {
 	}
 	for _, c := range testCases {
 		t.Run(c.header, func(t *testing.T) {
-			assert.Equal(t, c.response, PrepareGRPCAuthorisationBody(c.login, c.pwd, c.ip))
+			require.Equal(t, c.response, PrepareGRPCAuthorisationBody(c.login, c.pwd, c.ip))
 		})
 	}
 }
@@ -49,7 +49,7 @@ func TestPrepareFlushBucketGrpcRequest(t *testing.T) {
 	}
 	for _, c := range testCases {
 		t.Run(c.header, func(t *testing.T) {
-			assert.Equal(t, c.response, PrepareFlushBucketsGrpcRequest(c.login, c.ip))
+			require.Equal(t, c.response, PrepareFlushBucketsGrpcRequest(c.login, c.ip))
 		})
 	}
 }
@@ -69,7 +69,7 @@ func TestPrepareSubnetGrpcRequest(t *testing.T) {
 	}
 	for _, c := range testCases {
 		t.Run(c.header, func(t *testing.T) {
-			assert.Equal(t, c.response, PrepareSubnetGrpcRequest(c.ip, c.result))
+			require.Equal(t, c.response, PrepareSubnetGrpcRequest(c.ip, c.result))
 		})
 	}
 }
@@ -87,7 +87,7 @@ func TestPreparePurgeBucketGrpcRequest(t *testing.T) {
 	}
 	for _, c := range testCases {
 		t.Run(c.header, func(t *testing.T) {
-			assert.Equal(t, c.response, PreparePurgeBucketGrpcRequest(c.name))
+			require.Equal(t, c.response, PreparePurgeBucketGrpcRequest(c.name))
 		})
 	}
 }
