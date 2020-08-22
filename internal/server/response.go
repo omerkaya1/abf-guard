@@ -1,9 +1,12 @@
-package grpc
+package server
 
 import (
-	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	"github.com/omerkaya1/abf-guard/internal/grpc/api"
+	"errors"
+
+	"github.com/omerkaya1/abf-guard/internal/server/api"
 )
+
+var errEmptyIPList = errors.New("empty ip list received")
 
 // PrepareGRPCResponse forms a GRPC Response object
 func PrepareGRPCResponse(ok bool, err error) *api.Response {
@@ -31,7 +34,7 @@ func PrepareGRPCListIPResponse(IPs []string, err error) (*api.ListResponse, erro
 		}, nil
 	}
 	if IPs == nil {
-		return nil, errors.ErrEmptyIPList
+		return nil, errEmptyIPList
 	}
 	return &api.ListResponse{
 		Result: &api.ListResponse_Ips{

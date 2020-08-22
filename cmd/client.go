@@ -2,20 +2,27 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
-	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	req "github.com/omerkaya1/abf-guard/internal/grpc"
-	"github.com/omerkaya1/abf-guard/internal/grpc/api"
+	"github.com/omerkaya1/abf-guard/internal/server"
+	"github.com/omerkaya1/abf-guard/internal/server/api"
 	"google.golang.org/grpc"
 
 	"github.com/spf13/cobra"
 )
 
+const clientErrPrefix = "client error"
+
 var (
 	host, port, login, password, ip, entity string
 	black                                   bool
+)
+
+var (
+	errFlagsNotSet = errors.New("cli flags are not set")
+	errNotOK       = errors.New("ip was not added to the list")
 )
 
 var (
@@ -82,71 +89,71 @@ func init() {
 
 func authoriseCmdFunc(cmd *cobra.Command, args []string) {
 	if login == "" || password == "" || ip == "" {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
+		log.Fatalf("%s: %s", clientErrPrefix, errFlagsNotSet)
 	}
 	client := getGRPCClient()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	ok, err := client.Authorisation(ctx, req.PrepareGRPCAuthorisationBody(login, password, ip))
-	assertError(errors.ErrClientCmdPrefix, err)
+	ok, err := client.Authorisation(ctx, server.PrepareGRPCAuthorisationBody(login, password, ip))
+	assertError(clientErrPrefix, err)
 
 	if !ok.GetOk() {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrAuthorisationFailed)
+		log.Fatalf("%s: %s", clientErrPrefix, errors.New("the authorisation request was declined"))
 	}
 	log.Println("the request may proceed")
 }
 
 func flashBucketCmdFunc(cmd *cobra.Command, args []string) {
 	if login == "" || ip == "" {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
+		log.Fatalf("%s: %s", clientErrPrefix, errFlagsNotSet)
 	}
 	client := getGRPCClient()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	ok, err := client.FlushBuckets(ctx, req.PrepareFlushBucketsGrpcRequest(login, ip))
-	assertError(errors.ErrClientCmdPrefix, err)
+	ok, err := client.FlushBuckets(ctx, server.PrepareFlushBucketsGrpcRequest(login, ip))
+	assertError(clientErrPrefix, err)
 
 	if !ok.GetOk() {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrFlushBucketsFailed)
+		log.Fatalf("%s: %s", clientErrPrefix, errors.New("flush buckets request failed"))
 	}
 	log.Printf("%s and %s buckets were flushed", login, ip)
 }
 
 func purgeBucketCmdFunc(cmd *cobra.Command, args []string) {
 	if entity == "" {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
+		log.Fatalf("%s: %s", clientErrPrefix, errFlagsNotSet)
 	}
 	client := getGRPCClient()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	ok, err := client.PurgeBucket(ctx, req.PreparePurgeBucketGrpcRequest(entity))
-	assertError(errors.ErrClientCmdPrefix, err)
+	ok, err := client.PurgeBucket(ctx, server.PreparePurgeBucketGrpcRequest(entity))
+	assertError(clientErrPrefix, err)
 
 	if !ok.GetOk() {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrPurgeBucketFailed)
+		log.Fatalf("%s: %s", clientErrPrefix, errors.New("the requested bucket was not removed"))
 	}
 	log.Printf("%s bucket was successfully removed", entity)
 }
 
 func addIPCmdFunc(cmd *cobra.Command, args []string) {
 	if ip == "" {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
+		log.Fatalf("%s: %s", clientErrPrefix, errFlagsNotSet)
 	}
 	client := getGRPCClient()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	resp, err := client.AddIPToWhitelist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
-	assertError(errors.ErrClientCmdPrefix, err)
+	resp, err := client.AddIPToWhitelist(ctx, server.PrepareSubnetGrpcRequest(ip, black))
+	assertError(clientErrPrefix, err)
 
 	if resp.GetError() != "" {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
+		log.Fatalf("%s: %s", clientErrPrefix, resp.GetError())
 	}
 	if !resp.GetOk() {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrAddIPFailure)
+		log.Fatalf("%s: %s", clientErrPrefix, errNotOK)
 	}
 	if black {
 		log.Printf("%s was added to the blacklist", ip)
@@ -157,20 +164,20 @@ func addIPCmdFunc(cmd *cobra.Command, args []string) {
 
 func deleteIPCmdFunc(cmd *cobra.Command, args []string) {
 	if ip == "" {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrCLIFlagsAreNotSet)
+		log.Fatalf("%s: %s", clientErrPrefix, errFlagsNotSet)
 	}
 	client := getGRPCClient()
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	resp, err := client.DeleteIPFromBlacklist(ctx, req.PrepareSubnetGrpcRequest(ip, black))
-	assertError(errors.ErrClientCmdPrefix, err)
+	resp, err := client.DeleteIPFromBlacklist(ctx, server.PrepareSubnetGrpcRequest(ip, black))
+	assertError(clientErrPrefix, err)
 
 	if resp.GetError() != "" {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
+		log.Fatalf("%s: %s", clientErrPrefix, resp.GetError())
 	}
 	if !resp.GetOk() {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, errors.ErrDeleteIPFailure)
+		log.Fatalf("%s: %s", clientErrPrefix, errNotOK)
 	}
 	if black {
 		log.Printf("%s was deleted from the blacklist", ip)
@@ -184,10 +191,10 @@ func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	resp, err := client.GetIPList(ctx, req.PrepareIPListGrpcRequest(black))
-	assertError(errors.ErrClientCmdPrefix, err)
+	resp, err := client.GetIPList(ctx, server.PrepareIPListGrpcRequest(black))
+	assertError(clientErrPrefix, err)
 	if resp.GetError() != "" {
-		log.Fatalf("%s: %s", errors.ErrClientCmdPrefix, resp.GetError())
+		log.Fatalf("%s: %s", clientErrPrefix, resp.GetError())
 	}
 	if black {
 		log.Printf("subnet addresses in the blacklist: %v", resp.GetResult())
@@ -198,6 +205,6 @@ func getIPListCmdFunc(cmd *cobra.Command, args []string) {
 
 func getGRPCClient() api.ABFGuardClient {
 	conn, err := grpc.Dial(host+":"+port, grpc.WithInsecure())
-	assertError(errors.ErrClientCmdPrefix, err)
+	assertError(clientErrPrefix, err)
 	return api.NewABFGuardClient(conn)
 }

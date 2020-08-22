@@ -20,8 +20,6 @@ type (
 	}
 )
 
-
-
 // Server is a structure that holds settings for the server
 type Server struct {
 	Host  string `json:"host" yaml:"host" toml:"host"`

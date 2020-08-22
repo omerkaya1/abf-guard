@@ -1,15 +1,14 @@
-package grpc
+package server
 
 import (
 	"context"
 	"net"
 
-	"github.com/omerkaya1/abf-guard/internal/domain/config"
-	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
-	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/db"
-	"github.com/omerkaya1/abf-guard/internal/grpc/api"
+	"github.com/omerkaya1/abf-guard/internal/config"
+	"github.com/omerkaya1/abf-guard/internal/db"
+	"github.com/omerkaya1/abf-guard/internal/domain"
 	"github.com/omerkaya1/abf-guard/internal/log"
+	"github.com/omerkaya1/abf-guard/internal/server/api"
 	"google.golang.org/grpc"
 )
 
@@ -18,15 +17,15 @@ type ABFGuardServer struct {
 	// TODO: come up with a way of hiding the configuration behind the interface so that we don't need to pass
 	// 		 the configuration by address
 	Cfg           *config.Server
-	Storage       db.Storage
-	BucketManager bucket.Manager
+	Storage       db.StorageManager
+	BucketManager domain.ManageController
 }
 
 // NewServer creates a new ABFGuardServer object and returns it to the callee
-func NewServer(cfg *config.Server, sp db.Storage, bm bucket.Manager) (*ABFGuardServer, error) {
+func NewServer(cfg *config.Server, sm db.StorageManager, bm domain.ManageController) (*ABFGuardServer, error) {
 	return &ABFGuardServer{
 		Cfg:           cfg,
-		Storage:       sp,
+		Storage:       sm,
 		BucketManager: bm,
 	}, nil
 }
@@ -55,7 +54,7 @@ func (s *ABFGuardServer) Run(ctx context.Context, logger log.Logger) {
 				return
 			case err := <-errChan:
 				if err != nil {
-					logger.Errorf("%s: %s", errors.ErrBucketManagerPrefix, err)
+					logger.Errorf("bucket manager error: %s", err)
 				}
 			}
 		}

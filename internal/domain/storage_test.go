@@ -1,10 +1,9 @@
-package bucket
+package domain
 
 import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -28,7 +27,7 @@ func TestActiveBucketsStore_AddBucket(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	b := bucket.NewMockBucket(ctrl)
+	b := NewMockBucketer(ctrl)
 
 	for _, c := range cases {
 		bs.AddBucket(c.name, b)
@@ -44,7 +43,7 @@ func TestActiveBucketsStore_RemoveBucket(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	b := bucket.NewMockBucket(ctrl)
+	b := NewMockBucketer(ctrl)
 
 	for _, c := range cases {
 		bs.AddBucket(c, b)
@@ -76,7 +75,7 @@ func TestActiveBucketsStore_CheckBucket(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	b := bucket.NewMockBucket(ctrl)
+	b := NewMockBucketer(ctrl)
 
 	for _, c := range cases {
 		bs.AddBucket(c, b)
@@ -114,7 +113,7 @@ func TestActiveBucketsStore_GetBucket(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	b := bucket.NewMockBucket(ctrl)
+	b := NewMockBucketer(ctrl)
 
 	for _, c := range cases {
 		t.Run("Get bucket fails", func(t *testing.T) {

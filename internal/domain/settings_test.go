@@ -1,10 +1,10 @@
-package bucket
+package domain
 
 import (
 	"testing"
 	"time"
 
-	"github.com/omerkaya1/abf-guard/internal/domain/config"
+	"github.com/omerkaya1/abf-guard/internal/config"
 	"github.com/stretchr/testify/require"
 )
 

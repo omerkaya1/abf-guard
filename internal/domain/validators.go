@@ -1,26 +1,35 @@
-package bucket
+package domain
 
-import "github.com/omerkaya1/abf-guard/internal/domain/errors"
+import "errors"
+
+var (
+	// ErrEmptyIP .
+	ErrEmptyIP = errors.New("empty IP is received")
+	// ErrEmptyIP .
+	ErrEmptyLogin = errors.New("empty login is received")
+	// ErrEmptyIP .
+	ErrEmptyPWD = errors.New("empty password is received")
+)
 
 func validateAuthorisationParams(login, password, ip string) error {
 	if login == "" {
-		return errors.ErrEmptyLogin
+		return ErrEmptyLogin
 	}
 	if password == "" {
-		return errors.ErrEmptyPWD
+		return ErrEmptyPWD
 	}
 	if ip == "" {
-		return errors.ErrEmptyIP
+		return ErrEmptyIP
 	}
 	return nil
 }
 
 func validateFlashParams(login, ip string) error {
 	if login == "" {
-		return errors.ErrEmptyLogin
+		return ErrEmptyLogin
 	}
 	if ip == "" {
-		return errors.ErrEmptyIP
+		return ErrEmptyIP
 	}
 	return nil
 }

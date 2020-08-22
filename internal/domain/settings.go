@@ -1,9 +1,9 @@
-package bucket
+package domain
 
 import (
 	"time"
 
-	"github.com/omerkaya1/abf-guard/internal/domain/config"
+	"github.com/omerkaya1/abf-guard/internal/config"
 )
 
 // Settings is an object that holds all the main settings for the Bucket Manager

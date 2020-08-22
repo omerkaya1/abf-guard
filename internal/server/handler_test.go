@@ -1,4 +1,4 @@
-package grpc
+package server
 
 import (
 	"context"
@@ -6,22 +6,21 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/bucket"
-	"github.com/omerkaya1/abf-guard/internal/domain/interfaces/db"
-	"github.com/omerkaya1/abf-guard/internal/grpc/api"
+	"github.com/omerkaya1/abf-guard/internal/db"
+	"github.com/omerkaya1/abf-guard/internal/domain"
+	"github.com/omerkaya1/abf-guard/internal/server/api"
 	"github.com/stretchr/testify/require"
 )
 
 func TestABFGuardServer_Authorisation(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	sp := db.NewMockStorage(ctrl)
-	bm := bucket.NewMockManager(ctrl)
+	sp := db.NewMockStorageManager(ctrl)
+	bm := domain.NewMockManageController(ctrl)
 
-	c1 := sp.EXPECT().GreenLightPass(context.Background(), "1.1.1.0").Times(1).Return(errors.ErrDoesNotExist)
+	c1 := sp.EXPECT().GreenLightPass(context.Background(), "1.1.1.0").Times(1).Return(db.ErrDoesNotExist)
 	c2 := bm.EXPECT().Dispatch("n", "1", "1.1.1.0").After(c1).Times(1).Return(true, nil)
-	c3 := sp.EXPECT().GreenLightPass(context.Background(), "1.1.1.1").After(c2).Times(1).Return(errors.ErrIsInTheBlacklist)
+	c3 := sp.EXPECT().GreenLightPass(context.Background(), "1.1.1.1").After(c2).Times(1).Return(db.ErrIsInTheBlacklist)
 	sp.EXPECT().GreenLightPass(context.Background(), "1.1.1.1").After(c3).Times(1).Return(nil)
 	sp.EXPECT().GreenLightPass(context.Background(), "1.1.1.1").After(c3).Times(1).Return(fmt.Errorf(""))
 
@@ -60,7 +59,7 @@ func TestABFGuardServer_Authorisation(t *testing.T) {
 func TestABFGuardServer_AddIPToBlacklist(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	sp := db.NewMockStorage(ctrl)
+	sp := db.NewMockStorageManager(ctrl)
 
 	sp.EXPECT().Add(context.Background(), "1.1.1.0", true).Times(1).Return(fmt.Errorf(""))
 	sp.EXPECT().Add(context.Background(), "1.1.1.0", true).Times(1).Return(nil)
@@ -90,7 +89,7 @@ func TestABFGuardServer_AddIPToBlacklist(t *testing.T) {
 func TestABFGuardServer_AddIPToWhitelist(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	sp := db.NewMockStorage(ctrl)
+	sp := db.NewMockStorageManager(ctrl)
 
 	sp.EXPECT().Add(context.Background(), "1.1.1.0", false).Times(1).Return(fmt.Errorf(""))
 	sp.EXPECT().Add(context.Background(), "1.1.1.0", false).Times(1).Return(nil)
@@ -120,7 +119,7 @@ func TestABFGuardServer_AddIPToWhitelist(t *testing.T) {
 func TestABFGuardServer_DeleteIPFromBlacklist(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	sp := db.NewMockStorage(ctrl)
+	sp := db.NewMockStorageManager(ctrl)
 
 	sp.EXPECT().Delete(context.Background(), "1.1.1.0", true).Times(1).Return(fmt.Errorf(""))
 	sp.EXPECT().Delete(context.Background(), "1.1.1.0", true).Times(1).Return(nil)
@@ -150,7 +149,7 @@ func TestABFGuardServer_DeleteIPFromBlacklist(t *testing.T) {
 func TestABFGuardServer_DeleteIPFromWhitelist(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	sp := db.NewMockStorage(ctrl)
+	sp := db.NewMockStorageManager(ctrl)
 
 	sp.EXPECT().Delete(context.Background(), "1.1.1.0", false).Times(1).Return(fmt.Errorf(""))
 	sp.EXPECT().Delete(context.Background(), "1.1.1.0", false).Times(1).Return(nil)
@@ -180,7 +179,7 @@ func TestABFGuardServer_DeleteIPFromWhitelist(t *testing.T) {
 func TestABFGuardServer_FlushBuckets(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	bm := bucket.NewMockManager(ctrl)
+	bm := domain.NewMockManageController(ctrl)
 
 	bm.EXPECT().FlushBuckets("n", "1.1.1.0").Times(1).Return(nil)
 	bm.EXPECT().FlushBuckets("", "").Times(1).Return(fmt.Errorf(""))
@@ -210,7 +209,7 @@ func TestABFGuardServer_FlushBuckets(t *testing.T) {
 func TestABFGuardServer_GetIPList(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	sp := db.NewMockStorage(ctrl)
+	sp := db.NewMockStorageManager(ctrl)
 
 	wl := []string{"1.1.1.0", "1.1.1.1"}
 	bl := []string{"1.1.1.2", "1.1.1.3"}
@@ -245,7 +244,7 @@ func TestABFGuardServer_GetIPList(t *testing.T) {
 func TestABFGuardServer_PurgeBucket(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-	bm := bucket.NewMockManager(ctrl)
+	bm := domain.NewMockManageController(ctrl)
 
 	bm.EXPECT().PurgeBucket("n").Times(1).Return(nil)
 	bm.EXPECT().PurgeBucket("n").Times(1).Return(fmt.Errorf(""))

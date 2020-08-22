@@ -1,4 +1,4 @@
-package bucket
+package domain
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/omerkaya1/abf-guard/internal/domain/errors"
 	"github.com/stretchr/testify/require"
 )
 
@@ -51,7 +50,7 @@ func TestManager_Dispatch(t *testing.T) {
 	}{
 		{"First request", true, nil, "morty", "123", "10.0.0.1"},
 		{"Second request", true, nil, "morty", "123", "10.0.0.1"},
-		{"Third request", false, errors.ErrBucketFull, "morty", "123", "10.0.0.1"},
+		{"Third request", false, ErrBucketFull, "morty", "123", "10.0.0.1"},
 	}
 
 	pr, err := NewManager(context.Background(), &Settings{
@@ -180,9 +179,9 @@ func TestManager_PurgeBucket(t *testing.T) {
 		errStr string
 		bucket string
 	}{
-		{"Fourth purge request", errors.ErrNoBucketFound.Error(), "morty"},
-		{"Sixth purge request", errors.ErrNoBucketFound.Error(), "123"},
-		{"Seventh purge request", errors.ErrNoBucketFound.Error(), "10.0.0.1"},
+		{"Fourth purge request", ErrNoBucketFound.Error(), "morty"},
+		{"Sixth purge request", ErrNoBucketFound.Error(), "123"},
+		{"Seventh purge request", ErrNoBucketFound.Error(), "10.0.0.1"},
 	}
 
 	t.Run("Zero purge request", func(t *testing.T) {
@@ -237,9 +236,9 @@ func TestManager_PurgeBucket_Ctx(t *testing.T) {
 		errStr string
 		bucket string
 	}{
-		{"Fourth purge request", errors.ErrNoBucketFound.Error(), "morty"},
-		{"Sixth purge request", errors.ErrNoBucketFound.Error(), "123"},
-		{"Seventh purge request", errors.ErrNoBucketFound.Error(), "10.0.0.1"},
+		{"Fourth purge request", ErrNoBucketFound.Error(), "morty"},
+		{"Sixth purge request", ErrNoBucketFound.Error(), "123"},
+		{"Seventh purge request", ErrNoBucketFound.Error(), "10.0.0.1"},
 	}
 
 	t.Run("Zero purge request", func(t *testing.T) {

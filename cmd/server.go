@@ -6,14 +6,15 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/omerkaya1/abf-guard/internal/config"
 	"github.com/omerkaya1/abf-guard/internal/db"
-	"github.com/omerkaya1/abf-guard/internal/domain/bucket"
-	"github.com/omerkaya1/abf-guard/internal/domain/config"
-	"github.com/omerkaya1/abf-guard/internal/domain/errors"
-	"github.com/omerkaya1/abf-guard/internal/grpc"
+	"github.com/omerkaya1/abf-guard/internal/domain"
 	logger "github.com/omerkaya1/abf-guard/internal/log"
+	"github.com/omerkaya1/abf-guard/internal/server"
 	"github.com/spf13/cobra"
 )
+
+const serverErrPrefix = "server error"
 
 var cfgPath string
 
@@ -25,7 +26,7 @@ var ServerRootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		// Config file path check
 		if cfgPath == "" {
-			panic(errors.ErrCLIFlagsAreNotSet)
+			log.Fatal(errFlagsNotSet)
 		}
 		// Create the root context for the app
 		ctx, cancel := context.WithCancel(context.Background())
@@ -33,29 +34,29 @@ var ServerRootCmd = &cobra.Command{
 		go monitorSignalChan(cancel)
 		// Initialise configuration
 		cfg, err := config.InitConfig(cfgPath)
-		assertError(errors.ErrServiceCmdPrefix, err)
-		assertConfig(errors.ErrServiceCmdPrefix, "invalid server configuration", cfg.Server)
+		assertError(serverErrPrefix, err)
+		assertConfig(serverErrPrefix, "invalid server configuration", cfg.Server)
 		// Initialise project's logger
 		l, err := logger.InitLogger(cfg.Server.Level)
-		assertError(errors.ErrServiceCmdPrefix, err)
+		assertError(serverErrPrefix, err)
 		// Init DB
 		mainDB, err := db.NewPsqlStorage(&cfg.DB)
-		assertError(errors.ErrServiceCmdPrefix, err)
+		assertError(serverErrPrefix, err)
 		// Check the DB configuration
-		assertConfig(errors.ErrServiceCmdPrefix, "invalid DB configuration", cfg.DB)
+		assertConfig(serverErrPrefix, "invalid DB configuration", cfg.DB)
 		// Check the Limits configuration
-		assertConfig(errors.ErrServiceCmdPrefix, "invalid limits configuration", cfg.DB)
+		assertConfig(serverErrPrefix, "invalid limits configuration", cfg.DB)
 		// Init settings for the bucket manager
-		mgrSettings, err := bucket.InitBucketManagerSettings(&cfg.Limits)
-		assertError(errors.ErrServiceCmdPrefix, err)
+		mgrSettings, err := domain.InitBucketManagerSettings(&cfg.Limits)
+		assertError(serverErrPrefix, err)
 		// Check the validity of the bucket manager settings
-		assertConfig(errors.ErrServiceCmdPrefix, "invalid bucket manager settings", mgrSettings)
+		assertConfig(serverErrPrefix, "invalid bucket manager settings", mgrSettings)
 		// Get bucket manager
-		manager, err := bucket.NewManager(ctx, mgrSettings)
-		assertError(errors.ErrServiceCmdPrefix, err)
+		manager, err := domain.NewManager(ctx, mgrSettings)
+		assertError(serverErrPrefix, err)
 		// Init GRPC server
-		srv, err := grpc.NewServer(&cfg.Server, mainDB, manager)
-		assertError(errors.ErrServiceCmdPrefix, err)
+		srv, err := server.NewServer(&cfg.Server, mainDB, manager)
+		assertError(serverErrPrefix, err)
 		// Run the GRPC server
 		srv.Run(ctx, l.Sugar())
 	},
