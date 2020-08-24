@@ -48,34 +48,31 @@ func (ps *PsqlStorage) Add(ctx context.Context, ip string, blacklist bool) error
 	} else if ok {
 		return ErrAlreadyStored
 	}
-	// Prepare a query
-	query := "INSERT INTO ip_list(id, ip, bl) VALUES(default, $1, $2)"
 	// Make a DB request
-	_, err := ps.db.ExecContext(ctx, query, ip, blacklist)
+	_, err := ps.db.ExecContext(ctx, "INSERT INTO ip_list(id, ip, bl) VALUES(default, $1, $2)", ip, blacklist)
 	return err
 }
 
 // Delete method is used to delete an IP address from a specified list (black or white)
-func (ps *PsqlStorage) Delete(ctx context.Context, ip string, blacklist bool) error {
+func (ps *PsqlStorage) Delete(ctx context.Context, ip string, blacklist bool) (int64, error) {
 	// Check whether an IP is present in the DB
 	if ok, err := ps.checkIPIsPresent(ctx, blacklist, ip); err != nil {
-		return err
+		return 0, err
 	} else if !ok {
-		return ErrDoesNotExist
+		return 0, ErrDoesNotExist
 	}
-	// Prepare a query
-	query := "DELETE FROM ip_list WHERE ip=$1"
 	// Make a DB request
-	_, err := ps.db.ExecContext(ctx, query, ip)
-	return err
+	r, err := ps.db.ExecContext(ctx, "DELETE FROM ip_list WHERE ip=$1", ip)
+	if err != nil {
+		return 0, err
+	}
+	return r.RowsAffected()
 }
 
 // GetIPList returns an IP list requested by the callee (black or white)
 func (ps *PsqlStorage) GetIPList(ctx context.Context, blacklist bool) ([]string, error) {
-	// Prepare a query
-	query := "SELECT * FROM ip_list WHERE bl=$1"
 	// Make a DB request
-	rows, err := ps.db.QueryxContext(ctx, query, blacklist)
+	rows, err := ps.db.QueryxContext(ctx, "SELECT * FROM ip_list WHERE bl=$1", blacklist)
 	if err != nil {
 		return nil, err
 	}

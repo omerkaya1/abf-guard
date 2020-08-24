@@ -27,7 +27,7 @@ fmt: ## Runs goimports on all go files
 
 test: ## Runs all unit tests
 	echo 'mode: atomic' > coverage.txt && go test --count=1 -covermode=atomic -coverprofile=coverage.txt -v -race \
-	-timeout=30s ./log... ./internal/...
+	-timeout=30s ./internal/...
 
 coverage: test ## Runs all the tests and opens the coverage report
 	go tool cover -html=coverage.txt

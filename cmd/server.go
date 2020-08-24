@@ -84,7 +84,7 @@ func assertConfig(prefix, message string, cfg config.Validator) {
 func monitorSignalChan(cancel context.CancelFunc) {
 	// Handle interrupt
 	exitChan := make(chan os.Signal, 1)
-	signal.Notify(exitChan, os.Interrupt, os.Kill)
+	signal.Notify(exitChan, os.Interrupt)
 	defer close(exitChan)
 	// Listen for OS signals
 	for range exitChan {
