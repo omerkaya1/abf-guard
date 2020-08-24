@@ -121,8 +121,8 @@ func TestABFGuardServer_DeleteIPFromBlacklist(t *testing.T) {
 	defer ctrl.Finish()
 	sp := db.NewMockStorageManager(ctrl)
 
-	sp.EXPECT().Delete(context.Background(), "1.1.1.0", true).Times(1).Return(fmt.Errorf(""))
-	sp.EXPECT().Delete(context.Background(), "1.1.1.0", true).Times(1).Return(nil)
+	sp.EXPECT().Delete(context.Background(), "1.1.1.0", true).Times(1).Return(int64(0), fmt.Errorf(""))
+	sp.EXPECT().Delete(context.Background(), "1.1.1.0", true).Times(1).Return(int64(1), nil)
 
 	s := ABFGuardServer{
 		Cfg:           nil,
@@ -151,8 +151,8 @@ func TestABFGuardServer_DeleteIPFromWhitelist(t *testing.T) {
 	defer ctrl.Finish()
 	sp := db.NewMockStorageManager(ctrl)
 
-	sp.EXPECT().Delete(context.Background(), "1.1.1.0", false).Times(1).Return(fmt.Errorf(""))
-	sp.EXPECT().Delete(context.Background(), "1.1.1.0", false).Times(1).Return(nil)
+	sp.EXPECT().Delete(context.Background(), "1.1.1.0", false).Times(1).Return(int64(0), fmt.Errorf(""))
+	sp.EXPECT().Delete(context.Background(), "1.1.1.0", false).Times(1).Return(int64(1), nil)
 
 	s := ABFGuardServer{
 		Cfg:           nil,

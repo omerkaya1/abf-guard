@@ -14,8 +14,6 @@ import (
 
 // ABFGuardServer is the object that represents a server for the ABFGuard service
 type ABFGuardServer struct {
-	// TODO: come up with a way of hiding the configuration behind the interface so that we don't need to pass
-	// 		 the configuration by address
 	Cfg           *config.Server
 	Storage       db.StorageManager
 	BucketManager domain.ManageController

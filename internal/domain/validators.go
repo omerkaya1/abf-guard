@@ -3,11 +3,11 @@ package domain
 import "errors"
 
 var (
-	// ErrEmptyIP .
+	// ErrEmptyIP reports empty id errors
 	ErrEmptyIP = errors.New("empty IP is received")
-	// ErrEmptyIP .
+	// ErrEmptyLogin reports empty login errors
 	ErrEmptyLogin = errors.New("empty login is received")
-	// ErrEmptyIP .
+	// ErrEmptyPWD reports empty password errors
 	ErrEmptyPWD = errors.New("empty password is received")
 )
 

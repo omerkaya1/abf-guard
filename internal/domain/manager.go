@@ -9,7 +9,6 @@ import (
 )
 
 type (
-	// TODO(omerkaya1): integrate context into these methods
 	// ManageController is a representation of a Bucket Manager interface
 	ManageController interface {
 		// Dispatch accepts authorisation request parameters and creates a new or decrements a counter for each bucket

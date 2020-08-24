@@ -66,7 +66,7 @@ func (s *ABFGuardServer) DeleteIPFromWhitelist(ctx context.Context, r *api.Subne
 	if r == nil || r.GetIp() == "" {
 		return nil, errBadRequest
 	}
-	if err := s.Storage.Delete(ctx, r.GetIp(), r.GetList()); err != nil {
+	if _, err := s.Storage.Delete(ctx, r.GetIp(), r.GetList()); err != nil {
 		return PrepareGRPCResponse(false, nil), nil
 	}
 	return PrepareGRPCResponse(true, nil), nil
@@ -88,7 +88,7 @@ func (s *ABFGuardServer) DeleteIPFromBlacklist(ctx context.Context, r *api.Subne
 	if r == nil || r.GetIp() == "" {
 		return nil, errBadRequest
 	}
-	if err := s.Storage.Delete(ctx, r.GetIp(), r.GetList()); err != nil {
+	if _, err := s.Storage.Delete(ctx, r.GetIp(), r.GetList()); err != nil {
 		return PrepareGRPCResponse(false, nil), nil
 	}
 	return PrepareGRPCResponse(true, nil), nil

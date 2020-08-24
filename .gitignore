@@ -17,5 +17,6 @@ vendor
 go.sum
 .idea
 .vscode
+.DS_Store
 configs/config-test.json
 coverage.txt

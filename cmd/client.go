@@ -26,7 +26,7 @@ var (
 )
 
 var (
-	// ClientRootCmd .
+	// ClientRootCmd is the sub-root command for the client
 	ClientRootCmd = &cobra.Command{
 		Use:     "grpc-client",
 		Short:   "Run GRPC Web Service client for ABF-Guard",
